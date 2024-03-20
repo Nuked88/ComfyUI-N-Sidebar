@@ -1,7 +1,8 @@
 
-<a href="url"><img src="./images/header.jpg" height="auto" width="800" style="border-radius:5px"></a>
+![Drag and Drop Nodes](./images/header.png)
 
- 
+
+
 [![YouTube](./images/YouTube.svg)](https://www.youtube.com/channel/UCnu819ZX2xiusPpbQ4KzSmA)
 
 # ComfyUI-N-Sidebar
