@@ -52,6 +52,7 @@ Feel free to contribute to this project by reporting issues or suggesting improv
 ## Donations
 
 If you'd like to support the project, consider making a donation ❤️
+<br>
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0AJECJ)
 
