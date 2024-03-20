@@ -887,10 +887,6 @@ function addSidebar() {
 
 
 
-
-
-
-
 addSidebarStyles();
 addSidebar();
 
