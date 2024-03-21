@@ -749,10 +749,28 @@ function addSidebar() {
         item.draggable = true;
     });
 
-    setTimeout(() => {
-        createCategoryList();
 
-    }, 2000);
+
+// Function to check if the element is not an empty object
+function SidebarBoot() {
+    if (Object.keys(LiteGraph.registered_node_types).length !== 0) {
+        // Execute the function when the element is not an empty object
+        createCategoryList();
+    } else {
+        // Retry after a period of time
+        setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
+    }
+}
+
+// Start checking the element
+SidebarBoot();
+
+
+
+  // setTimeout(() => {
+  //     
+
+  // }, 2000);
 
 
     function convertCanvasToOffset(canvas, pos, out) {
