@@ -45,6 +45,16 @@ to your ComfyUI `custom_nodes` directory
 ### ➕Expand/Collapse Categories/Sidebar➖
 ![Expand/Collapse Categories and Sidebar](./images/expand_collapse.gif)
 
+### 🔁Reorder Nodes🔁
+![Reorder Nodes](./images/pin_reorder.gif)
+**Note**: The node will be placed **before** the element on which it is dragged!
+
+### Todo:
+[x] Reordering pinned nodes
+[ ] Node preview (i don't think it will be an image)
+[ ] Color integration with Jovimetrix
+
+
 ## Contributing
 
 Feel free to contribute to this project by reporting issues or suggesting improvements. Open an issue or submit a pull request on the GitHub repository.

@@ -39,255 +39,251 @@ function addSidebarStyles() {
 			user-select: none; 
 		}
 		
-.content_sidebar {
-    background-color: #353535; /*#3333337d;*/
-    overflow-y: auto; 
-    overflow-x: hidden;
-    height: 100%;
-	float:left;
-    backdrop-filter: blur(5px);
-}
+        .content_sidebar {
+            background-color: #353535; /*#3333337d;*/
+            overflow-y: auto; 
+            overflow-x: hidden;
+            height: 100%;
+            float:left;
+            backdrop-filter: blur(5px);
+        }
 
-.dragHandle {
-    position: relative;
-	float: left;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 10px; 
-    cursor: ew-resize; 
-	background: rgb(62,62,62);
-background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);
-}
-#searchInput {
-    box-sizing: border-box;
-    width: 100%;
-    border-radius: 5px;
-    padding: 10px;
-    border: none;
-    user-select: none; 
-    background: #222;
-    color: #fff;
+        .dragHandle {
+            position: relative;
+            float: left;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 10px; 
+            cursor: ew-resize; 
+            background: rgb(62,62,62);
+        background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);
+        }
+        #searchInput {
+            box-sizing: border-box;
+            width: 100%;
+            border-radius: 5px;
+            padding: 10px;
+            border: none;
+            user-select: none; 
+            background: #222;
+            color: #fff;
 
-}
-.sidebar-header {
-    position: absolute;
-    width: calc(100% - 49px);
-    margin-top: 5px;
-    margin-bottom: 10px;
-    margin-left: 10px;  
-   
-    z-index: 400;
-    
-}
-.clearIcon,.searchCategoryIcon{
-    position: absolute;
-    padding: 5px;
-    right: 30px;
-    color: #fff;
-    font-size: x-large;
-    cursor: pointer;
-    opacity: 0.5;
-    user-select: none;
-}
-
-
-.clearIcon:hover{
-    opacity: 1.0;
-}
-
-.searchCategoryIcon{
-    right: 0px;
-    padding: 3px;
-    font-size: larger;
-    background: #636363;
-    color: #fff;
-    margin: 4px;
-    border-radius: 5px;
-    width: 18px;
-    text-align: center;
-    top: 0;
-    
-
-}
-
-.searchCategoryIcon:hover{
-    opacity: 0.5;
-}
-
-.sidebarCategory, #sidebarBookmarks{
-	list-style-type: none;
-    font-family: 'Open Sans',sans-serif;
-    text-transform: capitalize;
-    margin: 2px;
-	background-color: #222;
-    border-radius: 9px;
-        padding-top: 11px;
-        font-size: 15px;
-}
-.sidebarCategory:hover{
-	background-color: #232323;
-}
-.sidebarItem:hover{
-	background-color: #3a3a3a;
-}
-.sidebarItem {
-    list-style-type: none;
-    font-family: 'Open Sans',sans-serif;
-    text-transform: capitalize;
-    margin: 2px;
-	background: #353535;
-    border-radius: 8px;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    max-width: calc(100% - 39px);
-}
+        }
+        .sidebar-header {
+            position: absolute;
+            width: calc(100% - 49px);
+            margin-top: 5px;
+            margin-bottom: 10px;
+            margin-left: 10px;  
+        
+            z-index: 400;
+            
+        }
+        .clearIcon,.searchCategoryIcon{
+            position: absolute;
+            padding: 5px;
+            right: 30px;
+            color: #fff;
+            font-size: x-large;
+            cursor: pointer;
+            opacity: 0.5;
+            user-select: none;
+        }
 
 
-.content_sidebar::-webkit-scrollbar {
-    margin-top: 0.5rem;
-    height: 1rem;
-    width: .5rem;
-    top: 10px;
-}
+        .clearIcon:hover{
+            opacity: 1.0;
+        }
 
-.content_sidebar::-webkit-scrollbar:horizontal {
-    height: .5rem;
-    width: 1rem
-}
+        .searchCategoryIcon{
+            right: 0px;
+            padding: 3px;
+            font-size: larger;
+            background: #636363;
+            color: #fff;
+            margin: 4px;
+            border-radius: 5px;
+            width: 18px;
+            text-align: center;
+            top: 0;
+            
 
-.content_sidebar::-webkit-scrollbar-track {
-    background-color: transparent;
-    border-radius: 9999px
-}
+        }
 
-.content_sidebar::-webkit-scrollbar-thumb {
-    --tw-border-opacity: 1;
-    background-color: hsla(0,0%,50%,.8);
-    border-color: rgba(255,255,255,0,0,0);
-    border-radius: 9999px;
-    border-width: 1px
-}
+        .searchCategoryIcon:hover{
+            opacity: 0.5;
+        }
 
-.content_sidebar::-webkit-scrollbar-thumb:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgba(150,150,150,var(--tw-bg-opacity))
-}
-#spacer {
-    height: 45px;
-}
+        .sidebarCategory, #sidebarBookmarks{
+            list-style-type: none;
+            font-family: 'Open Sans',sans-serif;
+            text-transform: capitalize;
+            margin: 2px;
+            background-color: #222;
+            border-radius: 9px;
+                padding-top: 11px;
+                font-size: 15px;
+        }
+        .sidebarCategory:hover{
+            background-color: #232323;
+        }
+        .sidebarItem:hover{
+            background-color: #3a3a3a;
+        }
+        .sidebarItem {
+            list-style-type: none;
+            font-family: 'Open Sans',sans-serif;
+            text-transform: capitalize;
+            margin: 2px;
+            background: #353535;
+            border-radius: 8px;
 
-#switch_sidebar {
-    position: relative;
-    float: left;
-    left: 0;
-    margin-left: -0.6rem;
-    cursor: pointer;
-    user-select: none;
-    padding: 2px;
-    font-size: 20px;
-    background-color: #353535;
-    border-bottom-right-radius: 5px;
-    border-top-right-radius: 5px;
-
-}
-#searchInput.closed {
-    display: none;
-}
-#content_sidebar.closed {
-    width: 0 !important; 
-}
-.searchCategoryIcon.closed {
-    display: none;
-}
-.clearIcon.closed {
-    display: none;
-}
-
-.sidebarCategory .pinButton {
-    background-color: transparent;
-    border: 0;
-    position: absolute;
-    right: 0;
-}
-
-#sidebarBookmarks .pinButton {
-
-    background-color: transparent;
-    border: 0;
-
-    position: absolute;
-    right: 0;
-}
-.pinned{
-    fill: #999 !important;
-    opacity: 1 !important;
-}
-.svg_class{
-    width: 24px;
-    height: 24px;
-    fill: #4e4e4e;
-    cursor: pointer;
-    /* hacky fix */
-    margin-top: -5px;
-    margin-left: -25px;
-}
-
-.pin_normal{
-    opacity: 0.5;
-}
-.pin_normal:hover{
-    opacity: 1;
-}
-.svg_class:hover{
-    fill: #4e4e4e;
-    
-}
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: calc(100% - 39px);
+        }
 
 
-#sidebarBookmarks .sidebarItem {
-    margin-left: 10px;
-    margin-right: 29px;
+        .content_sidebar::-webkit-scrollbar {
+            margin-top: 0.5rem;
+            height: 1rem;
+            width: .5rem;
+            top: 10px;
+        }
 
-}
-.sb_label {
-    font-family: 'Open Sans',sans-serif;
-    position: relative;
-    margin: 5px;
-    font-weight: bold;
-  
-    background: #1e1e1e;
-    /* border: 2px solid; */
-    border-radius: 3px;
-    padding-left: 6px;
-    padding-right: 6px;
-    display: block;
-    width: calc(100% - 20px);
-    text-align: center;
-    user-select: none;
-}
+        .content_sidebar::-webkit-scrollbar:horizontal {
+            height: .5rem;
+            width: 1rem
+        }
 
-.expand_node, .pin_node{
-    position: absolute;
-    right: 5px;
-    background: transparent;
-    border: 0;
-    
-}
-.expand_node svg ,  .pin_node svg {
-    
-    width: 20px;
-    height: 20px;
-    background: transparent;
-    fill: white;
-    cursor: pointer;
-}
+        .content_sidebar::-webkit-scrollbar-track {
+            background-color: transparent;
+            border-radius: 9999px
+        }
+
+        .content_sidebar::-webkit-scrollbar-thumb {
+            --tw-border-opacity: 1;
+            background-color: hsla(0,0%,50%,.8);
+            border-color: rgba(255,255,255,0,0,0);
+            border-radius: 9999px;
+            border-width: 1px
+        }
+
+        .content_sidebar::-webkit-scrollbar-thumb:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgba(150,150,150,var(--tw-bg-opacity))
+        }
+        #spacer {
+            height: 45px;
+        }
+
+        #switch_sidebar {
+            position: relative;
+            float: left;
+            left: 0;
+            margin-left: -0.6rem;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px;
+            font-size: 20px;
+            background-color: #353535;
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 5px;
+
+        }
+        #searchInput.closed {
+            display: none;
+        }
+        #content_sidebar.closed {
+            width: 0 !important; 
+        }
+        .searchCategoryIcon.closed {
+            display: none;
+        }
+        .clearIcon.closed {
+            display: none;
+        }
+
+        .sidebarCategory .pinButton {
+            background-color: transparent;
+            border: 0;
+            position: absolute;
+            right: 0;
+        }
+
+        #sidebarBookmarks .pinButton {
+
+            background-color: transparent;
+            border: 0;
+
+            position: absolute;
+            right: 0;
+        }
+        .pinned{
+            fill: #999 !important;
+            opacity: 1 !important;
+        }
+        .svg_class{
+            width: 24px;
+            height: 24px;
+            fill: #4e4e4e;
+            cursor: pointer;
+            /* hacky fix */
+            margin-top: -5px;
+            margin-left: -25px;
+        }
+
+        .pin_normal{
+            opacity: 0.5;
+        }
+        .pin_normal:hover{
+            opacity: 1;
+        }
+        .svg_class:hover{
+            fill: #4e4e4e;
+            
+        }
 
 
+        #sidebarBookmarks .sidebarItem {
+            margin-left: 10px;
+            margin-right: 29px;
 
+        }
+        .sb_label {
+            font-family: 'Open Sans',sans-serif;
+            position: relative;
+            margin: 5px;
+            font-weight: bold;
+        
+            background: #1e1e1e;
+            /* border: 2px solid; */
+            border-radius: 3px;
+            padding-left: 6px;
+            padding-right: 6px;
+            display: block;
+            width: calc(100% - 20px);
+            text-align: center;
+            user-select: none;
+        }
 
+        .expand_node, .pin_node{
+            position: absolute;
+            right: 5px;
+            background: transparent;
+            border: 0;
+            
+        }
+        .expand_node svg ,  .pin_node svg {
+            
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            fill: white;
+            cursor: pointer;
+        }
     `;
 
     const styleElement = $el("style", {
@@ -316,6 +312,46 @@ function setCookie(name, value, days) {
     }
     document.cookie = name + '=' + value + expires + '; path=/';
 }
+function getSidebarItemIds() {
+    const sidebarItems = document.querySelectorAll("#sidebarBookmarks .sidebarItem");
+    const itemIds = [];
+    
+    sidebarItems.forEach(function(item) {
+        itemIds.push(item.id);
+    });
+    
+    return itemIds;
+}
+function postPinned() {
+    
+
+    var dragItem = null;
+    const pinnedElement= document.getElementById("sidebarBookmarks");
+    pinnedElement.querySelectorAll(".sidebarItem").forEach(function(item) {
+        item.addEventListener("dragstart", function(event) {
+            dragItem = event.target;
+        });
+    });
+
+    pinnedElement.addEventListener("dragover", function(event) {
+        event.preventDefault();
+    });
+
+    pinnedElement.addEventListener("drop", function(event) {
+        event.preventDefault();
+        if (dragItem) {
+            var dropZone = event.target.closest("ul");
+            dropZone.insertBefore(dragItem, event.target);
+            dragItem = null;
+            //list element in sidebarBookmarks
+
+            savePinnedItems(getSidebarItemIds());
+        }
+    });
+
+}
+
+
 
 function sidebarAddNode(name, text, x, y) {
     const node = LiteGraph.createNode(name, text)
@@ -375,6 +411,7 @@ function pinItem(itemId) {
         addedItem.lastChild.lastChild.childNodes[1].classList.add("pinned");
         pinnedItems.push(itemId);
         savePinnedItems(pinnedItems);
+        postPinned();
     }
 
 }
@@ -426,6 +463,9 @@ function loadPinnedItemsAndAddToBookmarks() {
 
         }
     });
+
+
+    postPinned();
 }
 
 function sdExpandAll() {
@@ -656,7 +696,7 @@ function addSidebar() {
             const searchTerm = await handleSearch();
 
             
-            console.log("Search term cleared:", searchTerm);
+            //console.log("Search term cleared:", searchTerm);
 
             
         } catch (error) {
@@ -677,7 +717,7 @@ function addSidebar() {
             const searchTerm = await handleSearch();
 
             
-            console.log("Search term:", searchTerm);
+            //console.log("Search term:", searchTerm);
 
             
         } catch (error) {
@@ -756,6 +796,7 @@ function SidebarBoot() {
     if (Object.keys(LiteGraph.registered_node_types).length !== 0) {
         // Execute the function when the element is not an empty object
         createCategoryList();
+        
     } else {
         // Retry after a period of time
         setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
@@ -783,6 +824,11 @@ SidebarBoot();
 
     function handleDrop(event) {
         event.preventDefault();
+  
+        if (event.srcElement.tagName.toLowerCase() != "canvas") {
+            return; 
+        }
+    
 
         const coord = convertCanvasToOffset(app.canvasEl.data.ds, [event.clientX, event.clientY]);
         const x = coord[0];
@@ -820,6 +866,8 @@ SidebarBoot();
             const categories = document.querySelectorAll(".sidebarCategory");
             const listItems = document.querySelectorAll(".sidebar li");
             
+
+  
             categoryItems.forEach(category => {
                 const subItems = category.querySelectorAll("li");
                 category.style.display = "block";
@@ -875,7 +923,7 @@ SidebarBoot();
             const searchTerm = await handleSearch(event);
 
             
-            console.log("Search term:", searchTerm);
+            //console.log("Search term:", searchTerm);
 
             
         } catch (error) {
@@ -907,6 +955,10 @@ SidebarBoot();
 
 addSidebarStyles();
 addSidebar();
+
+
+
+
 
 
 /*
