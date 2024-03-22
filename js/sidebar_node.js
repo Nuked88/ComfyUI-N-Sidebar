@@ -1,4 +1,16 @@
+
+import { api } from "../../../scripts/api.js"
+import { app } from "../../../scripts/app.js";
 import { $el } from "../../../scripts/ui.js";
+
+async function api_get(url) {
+    var response = await api.fetchApi(url, { cache: "no-store" })
+    return await response.json()
+}
+
+const NODE_LIST = await api_get("./../object_info")
+const CONFIG_CORE = await api_get("/jovimetrix/config")
+const CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme
 
 let categorySearchToggle = false;
 function addSidebarStyles() {
@@ -10,38 +22,38 @@ function addSidebarStyles() {
         .sidebar {
             position: absolute;
             top: 0;
-            left: -250px; 
+            left: -250px;
             width: fit-content;
             height: calc(100% - 19px);
-			
+
             color: white;
             transition: left 0.3s ease;
 			z-index: 2;
 			overflow: hidden;
-		
+
 			padding-top: 19px;
             left: 0;
-            user-select: none; 
-	
+            user-select: none;
+
         }
-       
+
         .sidebar ul {
             list-style-type: none;
-      
+
             border-bottom: 6px solid #252525;
-            background: #222;    
+            background: #222;
             padding-left: 5px;
             padding-right: 5px;
         }
         .sidebar li {
 			padding: 10px;
 			cursor: pointer;
-			user-select: none; 
+			user-select: none;
 		}
-		
+
         .content_sidebar {
             background-color: #353535; /*#3333337d;*/
-            overflow-y: auto; 
+            overflow-y: auto;
             overflow-x: hidden;
             height: 100%;
             float:left;
@@ -54,8 +66,8 @@ function addSidebarStyles() {
             right: 0;
             top: 0;
             height: 100%;
-            width: 10px; 
-            cursor: ew-resize; 
+            width: 10px;
+            cursor: ew-resize;
             background: rgb(62,62,62);
         background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);
         }
@@ -65,7 +77,7 @@ function addSidebarStyles() {
             border-radius: 5px;
             padding: 10px;
             border: none;
-            user-select: none; 
+            user-select: none;
             background: #222;
             color: #fff;
 
@@ -75,10 +87,10 @@ function addSidebarStyles() {
             width: calc(100% - 49px);
             margin-top: 5px;
             margin-bottom: 10px;
-            margin-left: 10px;  
-        
+            margin-left: 10px;
+
             z-index: 400;
-            
+
         }
         .clearIcon,.searchCategoryIcon{
             position: absolute;
@@ -107,7 +119,7 @@ function addSidebarStyles() {
             width: 18px;
             text-align: center;
             top: 0;
-            
+
 
         }
 
@@ -197,7 +209,7 @@ function addSidebarStyles() {
             display: none;
         }
         #content_sidebar.closed {
-            width: 0 !important; 
+            width: 0 !important;
         }
         .searchCategoryIcon.closed {
             display: none;
@@ -243,7 +255,7 @@ function addSidebarStyles() {
         }
         .svg_class:hover{
             fill: #4e4e4e;
-            
+
         }
 
 
@@ -257,7 +269,7 @@ function addSidebarStyles() {
             position: relative;
             margin: 5px;
             font-weight: bold;
-        
+
             background: #1e1e1e;
             /* border: 2px solid; */
             border-radius: 3px;
@@ -274,10 +286,10 @@ function addSidebarStyles() {
             right: 5px;
             background: transparent;
             border: 0;
-            
+
         }
         .expand_node svg ,  .pin_node svg {
-            
+
             width: 20px;
             height: 20px;
             background: transparent;
@@ -315,15 +327,15 @@ function setCookie(name, value, days) {
 function getSidebarItemIds() {
     const sidebarItems = document.querySelectorAll("#sidebarBookmarks .sidebarItem");
     const itemIds = [];
-    
+
     sidebarItems.forEach(function(item) {
         itemIds.push(item.id);
     });
-    
+
     return itemIds;
 }
 function postPinned() {
-    
+
 
     var dragItem = null;
     const pinnedElement= document.getElementById("sidebarBookmarks");
@@ -479,7 +491,7 @@ function sdExpandAll() {
     if (side_bar_status === "true") {
 
         display_value = "none";
-        expand_node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg" 
+        expand_node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
                     <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"
                         />
@@ -501,7 +513,7 @@ function sdExpandAll() {
                         V39.5z"></path>
                     <path d="M34.5,29c0.8,0,1.5-0.7,1.5-1.5v-3c0-0.8-0.7-1.5-1.5-1.5h-17c-0.8,0-1.5,0.7-1.5,1.5v3
                         c0,0.8,0.7,1.5,1.5,1.5H34.5z"></path>
-                       
+
                         <rect class="expand_node" style="opacity:0" x="0" y="0" width="52" height="52"  />
                     </svg>`;
         document.querySelector(".content_sidebar").dataset.expanded = "true";
@@ -563,9 +575,31 @@ function createCategoryList() {
                 displayNameItem.title = displayName.title;
                 displayNameItem.draggable = true;
 
+                // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
+                //
+                if (CUSTOM_COLORS) {
+                    let color = CUSTOM_COLORS[displayName.title];
+                    if (color === undefined) {
+                        const segments = displayName.nodeData.category.split('/')
+                        let k = segments.join('/')
+                        while (k) {
+                            color = CUSTOM_COLORS[k]
+                            if (color) {
+                                color = color.title
+                                break
+                            }
+                            const last = k.lastIndexOf('/')
+                            k = last !== -1 ? k.substring(0, last) : ''
+                        }
+                    }
+                    if (color) {
+                        displayNameItem.style = `background: ${color}`;
+                    }
+                }
+                //
+                //
+
                 displayNameItem.id = displayName.type;
-
-
                 const pinButton = document.createElement("button");
                 pinButton.classList.add("pinButton");
 
@@ -649,13 +683,13 @@ function addSidebar() {
     <span class="searchCategoryIcon">C</span>
     </div>
 	<div class="content_sidebar" id ="content_sidebar" data-expanded="false" style="width:${sidebar_width};">
-    
-	
+
+
     <div id="spacer"></div>
     <label class="sb_label">PINNED</label>
 	<ul id="sidebarBookmarks"></ul>
     <label class="sb_label">CUSTOM NODES<button class="expand_node" >
-    <svg  xmlns="http://www.w3.org/2000/svg" 
+    <svg  xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
                     <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"
                         />
@@ -671,7 +705,7 @@ function addSidebar() {
 	<div class="dragHandle" id="dragHandle"></div>
     <div id ="switch_sidebar">☰</div>
 	</div>
-	 
+
     `;
 
     const sidebarElement = $el("sidebar", {
@@ -689,39 +723,39 @@ function addSidebar() {
 
     clearIcon.addEventListener("click", async function () {
         try {
-            
+
             searchInput.value = "";
 
-            
+
             const searchTerm = await handleSearch();
 
-            
+
             //console.log("Search term cleared:", searchTerm);
 
-            
+
         } catch (error) {
-            
+
             console.error("Error occurred during search:", error);
         }
     });
 
     searchCategoryIcon.addEventListener("click", async function () {
         try {
-            
+
             categorySearchToggle = !categorySearchToggle;
 
-            
+
             searchCategoryIcon.style.opacity = categorySearchToggle ? "1" : "0.5";
 
-            
+
             const searchTerm = await handleSearch();
 
-            
+
             //console.log("Search term:", searchTerm);
 
-            
+
         } catch (error) {
-            
+
             console.error("Error occurred during search:", error);
         }
     });
@@ -796,7 +830,7 @@ function SidebarBoot() {
     if (Object.keys(LiteGraph.registered_node_types).length !== 0) {
         // Execute the function when the element is not an empty object
         createCategoryList();
-        
+
     } else {
         // Retry after a period of time
         setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
@@ -809,7 +843,7 @@ SidebarBoot();
 
 
   // setTimeout(() => {
-  //     
+  //
 
   // }, 2000);
 
@@ -824,11 +858,11 @@ SidebarBoot();
 
     function handleDrop(event) {
         event.preventDefault();
-  
+
         if (event.srcElement.tagName.toLowerCase() != "canvas") {
-            return; 
+            return;
         }
-    
+
 
         const coord = convertCanvasToOffset(app.canvasEl.data.ds, [event.clientX, event.clientY]);
         const x = coord[0];
@@ -865,9 +899,9 @@ SidebarBoot();
             const categoryItems = document.querySelectorAll(".sidebarCategory li");
             const categories = document.querySelectorAll(".sidebarCategory");
             const listItems = document.querySelectorAll(".sidebar li");
-            
 
-  
+
+
             categoryItems.forEach(category => {
                 const subItems = category.querySelectorAll("li");
                 category.style.display = "block";
@@ -878,10 +912,10 @@ SidebarBoot();
 
             });
 
-            
+
             const sidebarItems = categorySearchToggle ? categories : listItems;
 
-            
+
             sidebarItems.forEach(item => {
 
                 let itemText = item.textContent.toLowerCase();
@@ -894,13 +928,13 @@ SidebarBoot();
                 }
 
                 const isInSearchTerm = itemText.includes(searchTerm);
-                
 
-                
+
+
                 item.style.display = isInSearchTerm ? "block" : "none";
             });
 
-            
+
             categories.forEach(category => {
                 const subItems = category.querySelectorAll("li");
 
@@ -911,7 +945,7 @@ SidebarBoot();
                 category.style.display = areAllHidden ? "none" : category.style.display;
             });
 
-            
+
             resolve(searchTerm);
         });
     }
@@ -919,15 +953,15 @@ SidebarBoot();
     const search_bar = document.getElementById('searchInput');
     search_bar.addEventListener("input", async (event) => {
         try {
-            
+
             const searchTerm = await handleSearch(event);
 
-            
+
             //console.log("Search term:", searchTerm);
 
-            
+
         } catch (error) {
-            
+
             console.error("Error occurred during search:", error);
         }
     });
@@ -951,10 +985,18 @@ SidebarBoot();
 
 }
 
-
-
-addSidebarStyles();
-addSidebar();
+app.registerExtension({
+    name: "COMFYUI-sidebar",
+    async init(app) {
+        addSidebarStyles();
+    },
+    async setup(app) {
+        addSidebar();
+    },
+    async beforeRegisterNodeDef(nodeType, nodeData) {
+        // console.log(nodeType, nodeData)
+    }
+});
 
 
 
