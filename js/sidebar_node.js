@@ -40,8 +40,7 @@ function addSidebarStyles() {
 
         .sidebar ul {
             list-style-type: none;
-
-            border-bottom: 6px solid #252525;
+            border-bottom: 2px solid #252525;
             background: #222;
             padding-left: 5px;
             padding-right: 5px;
@@ -134,9 +133,9 @@ function addSidebarStyles() {
             text-transform: capitalize;
             margin: 2px;
             background-color: #222;
-            border-radius: 9px;
+            border-radius: 2px;
                 padding-top: 11px;
-                font-size: 15px;
+                font-size: 13px;
         }
         .sidebarCategory:hover{
             background-color: #232323;
