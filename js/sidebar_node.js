@@ -3,18 +3,6 @@ import { api } from "../../../scripts/api.js"
 import { app } from "../../../scripts/app.js";
 import { $el } from "../../../scripts/ui.js";
 
-async function api_get(url) {
-    var response = await api.fetchApi(url, { cache: "no-store" })
-    return await response.json()
-}
-
-let CUSTOM_COLORS;
-try {
-    const CONFIG_CORE = await api_get("/jovimetrix/config")
-    CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
-} catch {}
-
-
 console.time('execution time');
 async function api_get(url) {
     var response = await api.fetchApi(url, { cache: "no-store" })
