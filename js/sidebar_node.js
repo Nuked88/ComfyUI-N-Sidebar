@@ -1,4 +1,20 @@
+
+import { api } from "../../../scripts/api.js"
+import { app } from "../../../scripts/app.js";
 import { $el } from "../../../scripts/ui.js";
+
+
+console.time('execution time');
+async function api_get(url) {
+    var response = await api.fetchApi(url, { cache: "no-store" })
+    return await response.json()
+}
+
+let CUSTOM_COLORS;
+try {
+    const CONFIG_CORE = await api_get("/jovimetrix/config")
+    CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
+} catch {}
 
 let categorySearchToggle = false;
 function addSidebarStyles() {
@@ -10,15 +26,12 @@ function addSidebarStyles() {
         .sidebar {
             position: absolute;
             top: 0;
-            left: -250px; 
+            left: -250px;
             width: fit-content;
             height: calc(100% - 19px);
-			
             color: white;
             transition: left 0.3s ease;
 			z-index: 2;
-			overflow: hidden;
-		
 			padding-top: 19px;
             left: 0;
             user-select: none; 
@@ -68,7 +81,7 @@ function addSidebarStyles() {
             user-select: none; 
             background: #222;
             color: #fff;
-
+            line-height: 1.4;
         }
         .sidebar-header {
             position: absolute;
@@ -213,6 +226,7 @@ function addSidebarStyles() {
             right: 0;
         }
 
+
         #sidebarBookmarks .pinButton {
 
             background-color: transparent;
@@ -221,6 +235,14 @@ function addSidebarStyles() {
             position: absolute;
             right: 0;
         }
+
+        .previewButton{
+            background-color: transparent;
+            border: 0;
+            position: absolute;
+            right: 35px;
+        }
+
         .pinned{
             fill: #999 !important;
             opacity: 1 !important;
@@ -283,6 +305,128 @@ function addSidebarStyles() {
             background: transparent;
             fill: white;
             cursor: pointer;
+        }
+    
+        .sb_dot {
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%;
+            background-color: grey; 
+          }
+          .node_header {
+            line-height: 1;
+            padding: 8px 13px 7px;
+            background: var(--border-color);
+            margin-bottom: 5px;
+            font-size: 15px;
+            text-wrap: nowrap;
+            overflow: hidden;
+          }
+          .headdot {
+            width: 10px;
+            height: 10px;
+            float: inline-start;
+            margin-right: 8px;
+          }
+          .sb_hidden {
+            display: none;
+          }
+          
+          .IMAGE {
+            background-color: #64b5f6; 
+          }
+          
+          .VAE {
+            background-color: #ff6e6e; 
+          }
+          
+          .LATENT {
+            background-color: #ff9cf9; 
+          }
+
+          .MASK{
+            background-color: #81c784;
+          }
+
+          .CONDITIONING{
+            background-color: #ffa931;
+          }
+
+          .CLIP{
+            background-color: #ffd500;
+          }
+
+          .MODEL{
+            background-color: #b39ddb;
+          }
+
+          .CONTROL_NET{
+            background-color: #a5d6a7;
+          }
+
+
+        #previewDiv {
+            position: absolute;
+            background-color: #353535;
+            font-family: 'Open Sans', sans-serif;
+            font-size: small;
+            color: var(--descrip-text);
+            border: 1px solid var(--descrip-text);
+            display: none;
+            min-width: 300px;
+            width: min-content;
+            height: fit-content;
+            z-index: 9999;
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 12px;
+            padding-bottom: 10px;
+            
+        }
+        .sb_table {
+            display: grid;
+           
+            grid-column-gap: 10px; /* Spazio tra le colonne */
+            width: 100%; /* Imposta la larghezza della tabella al 100% del contenitore */
+        }
+        
+        .sb_row {
+            display: grid;
+            grid-template-columns: 10px 1fr 1fr 1fr 10px; 
+            grid-column-gap: 10px; 
+            align-items: baseline;
+            padding-left: 9px;
+            padding-right: 9px;
+        }
+        
+        .sb_col {
+            border: 0px solid #000;
+            display: flex;
+            align-items: flex-end;
+            flex-direction: row-reverse;
+            flex-wrap: nowrap;
+            align-content: flex-start;
+            justify-content: flex-end;
+        }
+        .sb_inherit{
+            display: inherit;
+        }
+        .long_field{
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            margin: 5px 5px 0 5px;
+            border-radius: 10px;
+            line-height: 1.7;
+        }
+   
+        .sb_arrow{
+            color: var(--fg-color);
+        }
+        .sb_preview_badge{
+            text-align: center;
+            background: black;
+            font-weight: bold;
+            color: var(--error-text);   
         }
     `;
 
@@ -368,8 +512,6 @@ function sidebarAddNode(name, text, x, y) {
 
 function saveSidebarWidth(sideb) {
     const width = sideb.style.width;
-
-
     document.cookie = setCookie("sidebarWidth", width, 3000);
 }
 
@@ -378,7 +520,6 @@ function restoreSidebarWidth() {
     let width_sidebar = "auto";
     let cookieValue = getCookie("sidebarWidth");
     if (cookieValue) {
-
         width_sidebar = cookieValue;
     }
     return width_sidebar;
@@ -520,19 +661,188 @@ function sdExpandAll() {
 
     });
 }
+function safeObjectKeys(obj) {
+    try {
+      return Object.keys(obj);
+    } catch (error) {
+      //console.error('Error while trying to get object keys:', error);
+      return [];
+    }
+  }
+function createNodePreview(nodeID) {
+    
+    const data = LiteGraph.registered_node_types;
+
+    const category = data[nodeID].category;
+    let inputs = data[nodeID].nodeData.input; //divided between optional and required
+    let outputs_name = data[nodeID].nodeData.output_name;
+    let outputs = data[nodeID].nodeData.output;
+    //console.log(category, inputs, outputs);
+    //create array with objectkeys from input and output
+    const inputArray = [];
+    const outputArray = [];
+  
+    const inputKeysRequired =  safeObjectKeys(inputs.required)
+    const inputKeysOptional =  safeObjectKeys(inputs.optional)
+
+    
+        for (let i = 0; i < inputKeysRequired.length; i++) {
+            try{
+            let thirdV = null;
+            let secondV = inputs.required[inputKeysRequired[i]][0];
+            
+                if (Array.isArray(secondV)){
+                    //array
+                    secondV = inputs.required[inputKeysRequired[i]][0][0];
+                    thirdV = inputs.required[inputKeysRequired[i]][0][0];
+                }
+               if (inputs.required[inputKeysRequired[i]][1]!=undefined){  
+                
+                    //object
+                    thirdV = inputs.required[inputKeysRequired[i]][1].default;
+                }
+
+             
+            inputArray.push([inputKeysRequired[i],secondV,thirdV]);
+            }catch(err){
+                console.log("error",err)
+            }
+         }
+      
+    try{
+        for (let i = 0; i < inputKeysOptional.length; i++) {
+            let thirdV = null;
+            let secondV = inputs.optional[inputKeysOptional[i]][0];
+                if (Array.isArray(secondV)){
+                    //array
+                    secondV = inputs.optional[inputKeysOptional[i]][0][0];
+                    thirdV = inputs.optional[inputKeysOptional[i]][0][0];
+                }
+               if (inputs.optional[inputKeysOptional[i]][1]!=undefined){  
+                
+                    //object
+                    thirdV = inputs.optional[inputKeysOptional[i]][1].default;
+                }
+            inputArray.push([inputKeysOptional[i],secondV,thirdV]);
+         }
+      
+    }catch(err){
+         console.log(err)
+    }
 
 
+   
+  
+    for (let i = 0; i < outputs.length; i++) {
+        if (outputs_name[i] != undefined) {
+            outputArray.push([outputs[i],outputs_name[i]]);
+        }
+        else{
+        outputArray.push(outputs[i],outputs[i]);
+        }
+
+   
+    }
+
+
+
+
+
+    let rows = "";
+    let last_rows = "";
+    let length_loop = outputArray.length;
+    if (inputArray.length> outputArray.length){ 
+        length_loop = inputArray.length;
+    }
+    for (let i = 0; i < length_loop; i++) {
+      
+        const inputList= inputArray[i] ? inputArray[i] : null;
+        const outputList= outputArray[i] ? outputArray[i] : null;
+        let inputName = "";
+        let inputType = "";
+        let inputValue = null;
+        let outputType = "";
+        let outputName = "";
+
+        if (inputList != null){
+            inputName = inputList[0];
+            inputType = inputList[1];
+            inputValue = inputList[2];
+        }else
+        {
+            inputName = "";
+            inputType = "sb_hidden";
+            inputValue = null;
+        }
+        if (outputList != null){
+            outputType = outputList[0];
+            outputName = outputList[1];
+   
+        }else
+        {
+            outputType = "sb_hidden";
+            outputName = "";
+        }
+
+
+        if (inputValue != null){
+            last_rows += `<div class="sb_row nodepreview long_field">
+        <div class="sb_col sb_arrow">&#x25C0;</div>
+        <div class="sb_col ">${inputName}</div>
+        <div class="sb_col  middle-column"></div>
+        <div class="sb_col sb_inherit">${inputValue}</div>
+        <div class="sb_col sb_arrow">&#x25B6;</div>
+        </div>`;
+        inputType = "sb_hidden";
+        inputName = "";
+        }
+       
+
+            rows += `<div class="sb_row nodepreview">
+        <div class="sb_col"><div class="sb_dot ${inputType}"></div></div>
+        <div class="sb_col">${inputName}</div>
+        <div class="sb_col middle-column"> </div>
+        <div class="sb_col sb_inherit">${outputName}</div>
+        <div class="sb_col "><div class="sb_dot ${outputType}"></div></div>
+        </div>`;
+        
+
+      
+
+       
+    }
+    //console.log( inputArray,outputArray);
+    
+   ////create preview
+   //const nodePreview = document.createElement("div");
+   //nodePreview.classList.add("node_preview");
+   //nodePreview.id = nodeID;
+
+
+return `<div class="sb_table">
+       <div class="node_header"><div class="sb_dot headdot"></div>${nodeID}</div>
+       <div class="sb_preview_badge">PREVIEW</div>
+       ${rows}
+       ${last_rows}
+       </div>`;
+}
 
 function createCategoryList() {
     const data = LiteGraph.registered_node_types;
     const categories = {};
     const pinnedItems = loadPinnedItems();
+    //createNodePreview("ACN_AdvancedControlNetApply");
     for (const objKey in data) {
+        try{
+            
         const category = data[objKey].category;
         if (!categories[category]) {
             categories[category] = [];
         }
         categories[category].push(data[objKey]);
+    }catch(err){
+        console.log(err)
+    }
     }
 
 
@@ -562,10 +872,37 @@ function createCategoryList() {
                 displayNameItem.textContent = displayName.title;
                 displayNameItem.title = displayName.title;
                 displayNameItem.draggable = true;
+                
+                // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
+                //
+                if (CUSTOM_COLORS) {
+                    console.log("shouldnt be here")
+                    let color = CUSTOM_COLORS[displayName.title];
+                    if (color === undefined) {
+                        const segments = displayName.nodeData.category.split('/')
+                        let k = segments.join('/')
+                        while (k) {
+                            color = CUSTOM_COLORS[k]
+                            if (color) {
+                                color = color.title
+                                break
+                            }
+                            const last = k.lastIndexOf('/')
+                            k = last !== -1 ? k.substring(0, last) : ''
+                        }
+                    } else {
+                        color = color.title
+                    }
+                    if (color) {
+                        displayNameItem.style = `background: ${color}`;
+                    }
+                }
+                //
+                //
 
                 displayNameItem.id = displayName.type;
 
-
+                /* Create Pin Button */
                 const pinButton = document.createElement("button");
                 pinButton.classList.add("pinButton");
 
@@ -581,10 +918,12 @@ function createCategoryList() {
 
 
                 displayNameItem.appendChild(pinButton);
+                /* End Pin Button */
+
 
                 displayNamesList.appendChild(displayNameItem);
             } catch (err) {
-
+                console.log(err);
             }
         });
 
@@ -635,6 +974,59 @@ function createCategoryList() {
     });
 
     loadPinnedItemsAndAddToBookmarks();
+
+
+    function getElementPosition(element) {
+        const rect = element.getBoundingClientRect();
+        return {
+            top: rect.top,
+            left: rect.left 
+        };
+    }
+    
+    /* preview */
+
+    const sidebarItems_cat = document.querySelectorAll('.sidebarItem');
+    const previewDiv = document.getElementById('previewDiv');
+   
+    sidebarItems_cat.forEach(item => {
+        item.addEventListener('mouseover', function() {
+            if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
+                
+            const itemPosition = getElementPosition(this);
+            const previewDivTop = itemPosition.top - this.offsetHeight >=0 ? itemPosition.top - this.offsetHeight : 0; 
+            const previewDivLeft = itemPosition.left + this.offsetWidth + 45;
+        
+            previewDiv.style.top = `${previewDivTop}px`;
+            previewDiv.style.left = `${previewDivLeft}px`;
+       
+            previewDiv.style.display = 'block';
+       
+            const previewContent = createNodePreview(item.id);
+            
+            previewDiv.innerHTML = previewContent;
+          
+
+      } });
+
+    item.addEventListener('mouseout', function() {
+        previewDiv.style.display = 'none';
+    })
+
+    });
+
+categoriesList.addEventListener('scroll', function() {
+    previewDiv.style.display = 'none';
+});
+
+window.addEventListener('click', function(event) {
+
+    if (!event.target.classList.contains('sidebarItem')) {
+     previewDiv.style.display = 'none';
+
+    }
+});
+
 }
 
 function addSidebar() {
@@ -667,14 +1059,16 @@ function addSidebar() {
                         <rect class="expand_node" style="opacity:0" x="0" y="0" width="52" height="52"  />
     </svg>
     </button></label>
+   
 	</div>
 	<div class="dragHandle" id="dragHandle"></div>
     <div id ="switch_sidebar">☰</div>
-	</div>
+   
+	</div> <div id="previewDiv"></div>
 	 
     `;
 
-    const sidebarElement = $el("sidebar", {
+    const canvas = $el("sidebar", {
         parent: document.body,
         innerHTML: sidebarHtml
     });
@@ -731,24 +1125,19 @@ function addSidebar() {
     document.getElementById("content_sidebar").addEventListener("click", function (event) {
         const clickedElement = event.target;
         const pinnedItems = loadPinnedItems();
-
         const pinButton = clickedElement.tagName;
-
-
 
         if (pinButton == "rect" && clickedElement.classList.contains("pin_node")) {
             let itemId;
             try {
                 itemId = clickedElement.parentElement.parentElement.parentElement.id;
             } catch (err) {
-
+                console.log(err);
             }
 
             if (!pinnedItems.includes(itemId)) {
 
                 const sidebarItemId = itemId;
-
-
                 pinItem(sidebarItemId);
                 clickedElement.parentElement.getElementsByClassName("pin_normal")[0].classList.add("pinned");
 
@@ -790,30 +1179,6 @@ function addSidebar() {
     });
 
 
-
-// Function to check if the element is not an empty object
-function SidebarBoot() {
-    if (Object.keys(LiteGraph.registered_node_types).length !== 0) {
-        // Execute the function when the element is not an empty object
-        createCategoryList();
-        
-    } else {
-        // Retry after a period of time
-        setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
-    }
-}
-
-// Start checking the element
-SidebarBoot();
-
-
-
-  // setTimeout(() => {
-  //     
-
-  // }, 2000);
-
-
     function convertCanvasToOffset(canvas, pos, out) {
         out = out || [0, 0];
         out[0] = pos[0] / canvas.scale - canvas.offset[0];
@@ -828,17 +1193,10 @@ SidebarBoot();
         if (event.srcElement.tagName.toLowerCase() != "canvas") {
             return; 
         }
-    
-
         const coord = convertCanvasToOffset(app.canvasEl.data.ds, [event.clientX, event.clientY]);
         const x = coord[0];
         const y = coord[1];
-
-
         sidebarAddNode(draggedElementId, draggedElementId, x, y);
-        const draggedElementId_string = draggedElementId;
-
-
         draggedElementId = null;
     }
 
@@ -848,26 +1206,45 @@ SidebarBoot();
     }
 
 
-    const canvas = sidebarElement;
-
+    const search_bar = document.getElementById('searchInput');
 
 
     canvas.addEventListener("dragstart", function (event) {
 
         draggedElementId = event.target.id;
+        previewDiv.style.display = 'none';
     });
 
+   
 
-
+      function cleanText(text) {
+        // Rimuove tutti i caratteri che non sono lettere, numeri, spazi o newline (\n)
+        let cleanedText = text.replace(/[^a-zA-Z0-9\s\n]/g, '');
+        // Sostituisce gli spazi multipli con uno singolo
+        cleanedText = cleanedText.replace(/\s+/g, ' ');
+        // Rimuove i caratteri di nuova riga
+        cleanedText = cleanedText.replace(/\n/g, '');
+        return cleanedText;
+    }
     function handleSearch(event) {
+        // Importa la libreria Fuse.js
+        // Definisci le opzioni di configurazione per la ricerca
+
         return new Promise((resolve, reject) => {
+            const options = {
+                keys: ['textContent','category'],
+                threshold: 0.5,
+                useExtendedSearch: true
+              };
+              
+
             const searchTerm = document.getElementById("searchInput").value.toLowerCase();
             const categoryItems = document.querySelectorAll(".sidebarCategory li");
             const categories = document.querySelectorAll(".sidebarCategory");
             const listItems = document.querySelectorAll(".sidebar li");
             
 
-  
+            /*reset*/
             categoryItems.forEach(category => {
                 const subItems = category.querySelectorAll("li");
                 category.style.display = "block";
@@ -878,11 +1255,11 @@ SidebarBoot();
 
             });
 
+
             
             const sidebarItems = categorySearchToggle ? categories : listItems;
 
-            
-            sidebarItems.forEach(item => {
+           sidebarItems.forEach(item => {
 
                 let itemText = item.textContent.toLowerCase();
                 if (categorySearchToggle) {
@@ -892,21 +1269,15 @@ SidebarBoot();
                         .map(node => node.textContent.trim())
                         .join(' ').toLowerCase();
                 }
-
+                
+                //fts_fuzzy_match(searchTerm, cleanText(itemText))
                 const isInSearchTerm = itemText.includes(searchTerm);
-                
-
-                
                 item.style.display = isInSearchTerm ? "block" : "none";
             });
 
-            
+            /* hide empty categories */
             categories.forEach(category => {
                 const subItems = category.querySelectorAll("li");
-
-
-
-
                 const areAllHidden = Array.from(subItems).every(subItem => subItem.style.display === "none");
                 category.style.display = areAllHidden ? "none" : category.style.display;
             });
@@ -916,15 +1287,11 @@ SidebarBoot();
         });
     }
 
-    const search_bar = document.getElementById('searchInput');
+    
     search_bar.addEventListener("input", async (event) => {
         try {
             
             const searchTerm = await handleSearch(event);
-
-            
-            //console.log("Search term:", searchTerm);
-
             
         } catch (error) {
             
@@ -952,18 +1319,41 @@ SidebarBoot();
 }
 
 
+// Function to check if the element is not an empty object
+function SidebarBoot() {
+    if (Object.keys(LiteGraph.registered_node_types).length > 10) {
+        // Execute the function when the element is not an empty object
+        createCategoryList();
+        console.timeEnd('execution time');
+    } else {
+        // Retry after a period of time
+        setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
+    }
+}
 
+// Start checking the element
+SidebarBoot();
 addSidebarStyles();
 addSidebar();
 
 
+//Shortcuts
 
-
-
-
-/*
 function handleKeyPress(event) {
-       if (event.key === "x") {   }
+    if (event.altKey && event.key === "x") {
+
+        //focus on searchInput
+        searchInput.focus();
+
+          }
+    if (event.altKey && event.key === "z") {
+        const side_bar = document.getElementById('content_sidebar');
+        const search_bar = document.getElementById('searchInput');
+        search_bar.classList.toggle('closed');
+        side_bar.classList.toggle('closed');
+        clearIcon.classList.toggle('closed');
+        searchCategoryIcon.classList.toggle('closed');
+    }
 }
 document.addEventListener("keydown", handleKeyPress);
-*/
+

@@ -26,6 +26,11 @@ to your ComfyUI `custom_nodes` directory
 1. Navigate to the cloned repo e.g. `custom_nodes/ComfyUI-N-Sidebar`
 2. `git pull`
 
+# Keyboard Shortcuts
+
+- `Alt+Z` to toggle show/hide sidebar
+- `Alt+X` to focus on the search field
+
 # Features
 
 
@@ -47,12 +52,17 @@ to your ComfyUI `custom_nodes` directory
 
 ### 🔁Reorder Nodes🔁
 ![Reorder Nodes](./images/pin_reorder.gif)
+<br>
 **Note**: The node will be placed **before** the element on which it is dragged!
 
+### 👁 Preview Node 👁
+![Preview Node](./images/preview.gif)
+
 ### Todo:
-[x] Reordering pinned nodes
-[ ] Node preview (i don't think it will be an image)
-[ ] Color integration with Jovimetrix
+- [x] Reordering pinned nodes
+- [x] Node preview (i don't think it will be an image)
+- [x] Color integration with Jovimetrix
+- [ ] Better search
 
 
 ## Contributing
