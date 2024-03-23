@@ -827,7 +827,7 @@ function addSidebar() {
 
 // Function to check if the element is not an empty object
 function SidebarBoot() {
-    if (Object.keys(LiteGraph.registered_node_types).length !== 0) {
+    if (Object.keys(LiteGraph.registered_node_types).length > 10) {
         // Execute the function when the element is not an empty object
         createCategoryList();
 
