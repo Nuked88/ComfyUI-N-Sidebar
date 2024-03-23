@@ -8,9 +8,11 @@ async function api_get(url) {
     return await response.json()
 }
 
-const NODE_LIST = await api_get("./../object_info")
-const CONFIG_CORE = await api_get("/jovimetrix/config")
-const CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme
+let CUSTOM_COLORS;
+try {
+    const CONFIG_CORE = await api_get("/jovimetrix/config")
+    CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
+} catch {}
 
 let categorySearchToggle = false;
 function addSidebarStyles() {
@@ -578,6 +580,7 @@ function createCategoryList() {
                 // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
                 //
                 if (CUSTOM_COLORS) {
+                    console.log("shouldnt be here")
                     let color = CUSTOM_COLORS[displayName.title];
                     if (color === undefined) {
                         const segments = displayName.nodeData.category.split('/')
@@ -985,22 +988,8 @@ SidebarBoot();
 
 }
 
-app.registerExtension({
-    name: "COMFYUI-sidebar",
-    async init(app) {
-        addSidebarStyles();
-    },
-    async setup(app) {
-        addSidebar();
-    },
-    async beforeRegisterNodeDef(nodeType, nodeData) {
-        // console.log(nodeType, nodeData)
-    }
-});
-
-
-
-
+addSidebarStyles();
+addSidebar();
 
 
 /*
