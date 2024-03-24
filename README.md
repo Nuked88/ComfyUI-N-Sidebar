@@ -58,6 +58,13 @@ to your ComfyUI `custom_nodes` directory
 ### 👁 Preview Node 👁
 ![Preview Node](./images/preview.gif)
 
+### 🎨 ComfyUI Themes Support 🎨
+![Themes Support ](./images/theme.gif)
+
+### 🎨 Custom Values From ComfyUI Settings 🎨
+![ComfyUI Settings](./images/settings.png)
+
+
 ### Todo:
 - [x] Reordering pinned nodes
 - [x] Node preview (i don't think it will be an image)

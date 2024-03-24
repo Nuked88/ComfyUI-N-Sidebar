@@ -4,6 +4,8 @@ import { app } from "../../../scripts/app.js";
 import { $el } from "../../../scripts/ui.js";
 
 console.time('execution time');
+
+
 async function api_get(url) {
     var response = await api.fetchApi(url, { cache: "no-store" })
     return await response.json()
@@ -16,7 +18,76 @@ try {
 } catch {}
 
 let categorySearchToggle = false;
+
+
+
+const settingsStyle = ` 
+    
+#comfy-settings-dialog input{
+    background: var(--comfy-input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--border-color);
+    padding: 5px;
+}
+#comfy-settings-dialog tr > td:first-child {
+    text-align: left;
+}
+#comfy-settings-dialog select{
+background: var(--bg-color);
+color: var(--drag-text);
+padding: 5px;
+}
+
+#comfy-settings-dialog {
+
+    background: var(--bg-color);
+}
+
+#comfy-settings-dialog::-webkit-scrollbar {
+    margin-top: 0.5rem;
+    height: 1rem;
+    width: .6rem;
+    top: 10px;
+    background-color: transparent;
+}
+
+#comfy-settings-dialog::-webkit-scrollbar:horizontal {
+    height: .5rem;
+    width: 2.5rem
+}
+
+#comfy-settings-dialog::-webkit-scrollbar-track {
+    background-color: var(--comfy-input-bg);
+    border-radius: 9999px
+
+}
+
+#comfy-settings-dialog::-webkit-scrollbar-thumb {
+    --tw-border-opacity: 1;
+    background-color:  var(--border-color);
+    border: 0;
+    border-radius: 9999px;
+
+}
+
+#comfy-settings-dialog::-webkit-scrollbar-thumb:hover {
+    --tw-bg-opacity: 1;
+    background-color: var(--border-color);
+
+}
+
+.comfy-table td, .comfy-table th {
+    border: 0px solid var(--border-color);
+    padding: 8px;
+}
+
+
+` 
+
+
 function addSidebarStyles() {
+
+
     const sidebarStyle = `
     .litegraph .dialog {
         z-index: 100 !important;
@@ -29,31 +100,35 @@ function addSidebarStyles() {
             left: -250px;
             width: fit-content;
             height: calc(100% - 19px);
-            color: white;
+            color: var(--drag-text);
             transition: left 0.3s ease;
 			z-index: 2;
 			padding-top: 19px;
             left: 0;
             user-select: none;
 
+
         }
 
         .sidebar ul {
             list-style-type: none;
-
-            border-bottom: 6px solid #252525;
-            background: #222;
+            /* border-bottom: 6px solid rgb(from var(--comfy-input-bg) r g b / 60%);*/
+         
             padding-left: 5px;
             padding-right: 5px;
+            margin-bottom: 8px;
+            
         }
         .sidebar li {
 			padding: 10px;
 			cursor: pointer;
 			user-select: none;
+            color: var(--input-text);
 		}
 
         .content_sidebar {
-            background-color: #353535; /*#3333337d;*/
+     
+            background:rgb(from var(--comfy-menu-bg) r g b / 100%);  
             overflow-y: auto;
             overflow-x: hidden;
             height: 100%;
@@ -79,8 +154,8 @@ function addSidebarStyles() {
             padding: 10px;
             border: none;
             user-select: none;
-            background: #222;
-            color: #fff;
+            background: var(--comfy-input-bg);
+            color: var(--input-text);
             line-height: 1.4;
         }
         .sidebar-header {
@@ -97,7 +172,7 @@ function addSidebarStyles() {
             position: absolute;
             padding: 5px;
             right: 30px;
-            color: #fff;
+            color: var(--input-text);
             font-size: x-large;
             cursor: pointer;
             opacity: 0.5;
@@ -113,8 +188,8 @@ function addSidebarStyles() {
             right: 0px;
             padding: 3px;
             font-size: larger;
-            background: #636363;
-            color: #fff;
+            background: var(--border-color);
+            color:var(--drag-text);
             margin: 4px;
             border-radius: 5px;
             width: 18px;
@@ -133,23 +208,24 @@ function addSidebarStyles() {
             font-family: 'Open Sans',sans-serif;
             text-transform: capitalize;
             margin: 2px;
-            background-color: #222;
-            border-radius: 9px;
-                padding-top: 11px;
-                font-size: 15px;
+            background-color:var(--comfy-input-bg);  
+            opacity:1;
+            border-radius: 8px;
+            padding-top: 11px;
+            font-size: 15px;
+            padding-bottom: 8px;
         }
-        .sidebarCategory:hover{
-            background-color: #232323;
-        }
+      
         .sidebarItem:hover{
-            background-color: #3a3a3a;
+            background:color-mix(in srgb, currentColor 15%, transparent);
         }
         .sidebarItem {
             list-style-type: none;
             font-family: 'Open Sans',sans-serif;
             text-transform: capitalize;
             margin: 2px;
-            background: #353535;
+            background: color-mix(in srgb,  var(--border-color) 35%, transparent) ; 
+            opacity:1; 
             border-radius: 8px;
 
             white-space: nowrap;
@@ -186,6 +262,7 @@ function addSidebarStyles() {
 
         .content_sidebar::-webkit-scrollbar-thumb:hover {
             --tw-bg-opacity: 1;
+            
             background-color: rgba(150,150,150,var(--tw-bg-opacity))
         }
         #spacer {
@@ -201,7 +278,7 @@ function addSidebarStyles() {
             user-select: none;
             padding: 2px;
             font-size: 20px;
-            background-color: #353535;
+            background-color: var(--comfy-menu-bg);
             border-bottom-right-radius: 5px;
             border-top-right-radius: 5px;
 
@@ -244,13 +321,13 @@ function addSidebarStyles() {
         }
 
         .pinned{
-            fill: #999 !important;
+            fill:    var(--descrip-text) !important;
             opacity: 1 !important;
         }
         .svg_class{
             width: 24px;
             height: 24px;
-            fill: #4e4e4e;
+            fill: var(--border-color);
             cursor: pointer;
             /* hacky fix */
             margin-top: -5px;
@@ -264,7 +341,7 @@ function addSidebarStyles() {
             opacity: 1;
         }
         .svg_class:hover{
-            fill: #4e4e4e;
+            fill: var(--border-color);
 
         }
 
@@ -280,8 +357,7 @@ function addSidebarStyles() {
             margin: 5px;
             font-weight: bold;
 
-            background: #1e1e1e;
-            /* border: 2px solid; */
+            background: var(--comfy-input-bg);
             border-radius: 3px;
             padding-left: 6px;
             padding-right: 6px;
@@ -303,7 +379,7 @@ function addSidebarStyles() {
             width: 20px;
             height: 20px;
             background: transparent;
-            fill: white;
+            fill: var(--input-text);
             cursor: pointer;
         }
     
@@ -316,7 +392,7 @@ function addSidebarStyles() {
           .node_header {
             line-height: 1;
             padding: 8px 13px 7px;
-            background: var(--border-color);
+            background: var(--comfy-input-bg);
             margin-bottom: 5px;
             font-size: 15px;
             text-wrap: nowrap;
@@ -367,7 +443,7 @@ function addSidebarStyles() {
 
         #previewDiv {
             position: absolute;
-            background-color: #353535;
+            background-color: var(--comfy-menu-bg);
             font-family: 'Open Sans', sans-serif;
             font-size: small;
             color: var(--descrip-text);
@@ -424,7 +500,7 @@ function addSidebarStyles() {
         }
         .sb_preview_badge{
             text-align: center;
-            background: black;
+            background:var(--comfy-input-bg);
             font-weight: bold;
             color: var(--error-text);   
         }
@@ -434,6 +510,27 @@ function addSidebarStyles() {
         parent: document.head,
         textContent: sidebarStyle
     });
+}
+
+/* Utils */
+function addDynamicCSSRule(selector, property, value) {
+    const styleId = 'dynamic-styles'; 
+    let customStyle = document.getElementById(styleId);
+
+    if (!customStyle) {
+        customStyle = document.createElement('style');
+        customStyle.type = 'text/css';
+        customStyle.id = styleId;
+        document.head.appendChild(customStyle);
+    }
+
+    const existingRule = Array.from(customStyle.sheet.cssRules).find(rule => rule.selectorText === selector);
+    if (existingRule) {
+        existingRule.style[property] = value;
+    } else {
+
+        customStyle.sheet.insertRule(`${selector} { ${property}: ${value} !important; }`, customStyle.sheet.cssRules.length);
+    }
 }
 
 function getCookie(name) {
@@ -456,6 +553,8 @@ function setCookie(name, value, days) {
     }
     document.cookie = name + '=' + value + expires + '; path=/';
 }
+/* End Utils */
+
 function getSidebarItemIds() {
     const sidebarItems = document.querySelectorAll("#sidebarBookmarks .sidebarItem");
     const itemIds = [];
@@ -1318,11 +1417,178 @@ function addSidebar() {
 
 }
 
+function toggleSHSB() {
+    const side_bar = document.getElementById('content_sidebar');
+    const search_bar = document.getElementById('searchInput');
+        
+    const clearIcon = document.querySelector(".clearIcon");
+    const searchCategoryIcon = document.querySelector(".searchCategoryIcon");
+    search_bar.classList.toggle('closed');
+    side_bar.classList.toggle('closed');
+    clearIcon.classList.toggle('closed');
+    searchCategoryIcon.classList.toggle('closed');
+}
+
+
+//Shortcuts
+
+function handleKeyPress(event) {
+    if (event.altKey && event.key === "x") {
+        //toggle sidebar if it's closed
+        const side_bar = document.getElementById('content_sidebar');
+        if (side_bar.classList.contains('closed')) {
+            toggleSHSB();
+        }
+        //focus on searchInput
+        searchInput.focus();
+        
+
+          }
+    if (event.altKey && event.key === "z") {
+        toggleSHSB()
+    }
+}
+
+//Settings
+function settingsSetup() {
+
+    app.ui.settings.addSetting({
+        id: "0_sidebar_settings",
+        name: "[Sidebar] Better ComfyUI Settings Style",
+        type: "boolean",
+		defaultValue: false,
+        onChange(value) {
+            let styleElement;
+            if (value) {
+                styleElement = $el("style", {
+                    id: "sb-settings-style",
+                    parent: document.head,
+                    textContent: settingsStyle
+                });
+            } else {
+              try{ 
+                document.getElementById("sb-settings-style").remove();
+              } catch(e) {
+                  
+              }
+            }
+        },
+    });
+
+    app.ui.settings.addSetting({
+        id: "sidebar_font_settings",
+        name: "[Sidebar] Font Size",
+        defaultValue: "13",
+        type: "slider",
+        attrs: {
+            min: 5,
+            max: 30,
+            step: 1,
+        },
+        onChange(value) {
+            addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'font-size', value+'px');
+        },
+    });
+
+    app.ui.settings.addSetting({
+        id: "sidebar_node_settings",
+        name: "[Sidebar] Node Size",
+        defaultValue: "10",
+        type: "slider",
+        attrs: {
+            min: 2,
+            max: 40,
+            step: 1,
+        },
+        onChange(value) {
+            addDynamicCSSRule('.sidebar li', 'padding', value+'px');
+        },
+    });
+
+
+    app.ui.settings.addSetting({
+        id: "sidebar_bartop",
+        name: "[Sidebar] Space Top",
+        defaultValue: "19",
+        type: "slider",
+        attrs: {
+            min: 0,
+            max: 300,
+            step: 1,
+        },
+        onChange(value) {
+            addDynamicCSSRule('.sidebar', 'height', 'calc(100% - '+value+'px');
+            addDynamicCSSRule('.sidebar', 'padding-top', value+'px');
+        }
+    });
+
+    
+    app.ui.settings.addSetting({
+        id: "sidebar_noderadius_settings",
+        name: "[Sidebar] Node Radius Border",
+        defaultValue: "9",
+        type: "slider",
+        attrs: {
+            min: 0,
+            max: 20,
+            step: 1,
+        },
+        onChange(value) {
+           addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'border-radius', value+'px');
+           addDynamicCSSRule('.sidebarItem', 'border-radius', value+'px');
+             
+        },
+    });
+
+
+    app.ui.settings.addSetting({
+        id: "sidebar_blur_settings",
+        name: "[Sidebar] Blur Intesity",
+        defaultValue: "5",
+        type: "slider",
+        attrs: {
+            min: 0,
+            max: 30,
+            step: 1,
+        },
+    
+        onChange(value) {
+           addDynamicCSSRule('.content_sidebar', 'backdrop-filter', 'blur('+value+'px)');
+
+             
+        },
+    });
+
+    app.ui.settings.addSetting({
+        id: "sidebar_opacity_settings",
+        name: "[Sidebar] Opacity",
+        defaultValue: "1.0",
+        type: "slider",
+        attrs: {
+            min: 0.1,
+            max: 1,
+            step: 0.1,
+        },
+        onChange(value) {
+          let value_perc = (value * 100).toFixed(0);
+            
+          addDynamicCSSRule('.content_sidebar', 'background', 'rgb(from var(--comfy-menu-bg) r g b / '+value_perc+'%)');
+          addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'opacity', value);
+
+             
+        },
+    });
+  
+    
+
+}
+
 
 // Function to check if the element is not an empty object
 function SidebarBoot() {
     if (Object.keys(LiteGraph.registered_node_types).length > 10) {
         // Execute the function when the element is not an empty object
+        settingsSetup();
         createCategoryList();
         console.timeEnd('execution time');
     } else {
@@ -1337,23 +1603,5 @@ addSidebarStyles();
 addSidebar();
 
 
-//Shortcuts
-
-function handleKeyPress(event) {
-    if (event.altKey && event.key === "x") {
-
-        //focus on searchInput
-        searchInput.focus();
-
-          }
-    if (event.altKey && event.key === "z") {
-        const side_bar = document.getElementById('content_sidebar');
-        const search_bar = document.getElementById('searchInput');
-        search_bar.classList.toggle('closed');
-        side_bar.classList.toggle('closed');
-        clearIcon.classList.toggle('closed');
-        searchCategoryIcon.classList.toggle('closed');
-    }
-}
 document.addEventListener("keydown", handleKeyPress);
 
