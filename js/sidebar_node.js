@@ -6,6 +6,7 @@ import { $el } from "../../../scripts/ui.js";
 console.time('execution time');
 
 
+
 async function api_get(url) {
     var response = await api.fetchApi(url, { cache: "no-store" })
     return await response.json()
@@ -1400,12 +1401,7 @@ function addSidebar() {
 
 
     document.getElementById('switch_sidebar').addEventListener('click', function () {
-        const side_bar = document.getElementById('content_sidebar');
-
-        search_bar.classList.toggle('closed');
-        side_bar.classList.toggle('closed');
-        clearIcon.classList.toggle('closed');
-        searchCategoryIcon.classList.toggle('closed');
+        toggleSHSB();
 
     });
 
@@ -1427,6 +1423,12 @@ function toggleSHSB() {
     side_bar.classList.toggle('closed');
     clearIcon.classList.toggle('closed');
     searchCategoryIcon.classList.toggle('closed');
+    if (side_bar.classList.contains('closed')) {
+        setCookie("sb_minimized", true, 3000);
+    }else {
+        setCookie("sb_minimized", false, 3000);
+    }
+   
 }
 
 
@@ -1474,7 +1476,7 @@ function settingsSetup() {
             }
         },
     });
-
+    
     app.ui.settings.addSetting({
         id: "sidebar_font_settings",
         name: "[Sidebar] Font Size",
@@ -1584,6 +1586,16 @@ function settingsSetup() {
 }
 
 
+function SidebarPostBoot() {
+    addSidebarStyles();
+    addSidebar();
+    if (getCookie("sb_minimized")=="true") {
+        toggleSHSB();
+    }
+    document.addEventListener("keydown", handleKeyPress);
+}
+
+
 // Function to check if the element is not an empty object
 function SidebarBoot() {
     if (Object.keys(LiteGraph.registered_node_types).length > 10) {
@@ -1599,9 +1611,8 @@ function SidebarBoot() {
 
 // Start checking the element
 SidebarBoot();
-addSidebarStyles();
-addSidebar();
+SidebarPostBoot();
 
 
-document.addEventListener("keydown", handleKeyPress);
+
 
