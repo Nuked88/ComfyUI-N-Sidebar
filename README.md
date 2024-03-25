@@ -33,7 +33,6 @@ to your ComfyUI `custom_nodes` directory
 
 # Features
 
-
 ### 🖱️Drag and Drop Nodes🖱️
 ![Drag and Drop Nodes](./images/dd.gif)
 
@@ -63,6 +62,9 @@ to your ComfyUI `custom_nodes` directory
 
 ### 🎨 Custom Values From ComfyUI Settings 🎨
 ![ComfyUI Settings](./images/settings.png)
+
+### Additional Features
+- Width and Minimized State of the sidebar are saved in cookies
 
 
 ### Todo:
