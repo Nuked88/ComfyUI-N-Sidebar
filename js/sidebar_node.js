@@ -1094,17 +1094,31 @@ function createCategoryList() {
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
                 
             const itemPosition = getElementPosition(this);
-            const previewDivTop = itemPosition.top - this.offsetHeight >=0 ? itemPosition.top - this.offsetHeight : 0; 
+            let previewDivTop = 0;
+            const previewContent = createNodePreview(item.id);
+            previewDiv.innerHTML = previewContent;
+            previewDiv.style.display = 'block';
+
+
+            if (itemPosition.top - this.offsetHeight >=0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
+               previewDivTop = itemPosition.top - this.offsetHeight
+               
+            }else if (itemPosition.top - this.offsetHeight <=0){
+                previewDivTop = 0;
+
+            }
+            else {
+         
+                previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
+            }
             const previewDivLeft = itemPosition.left + this.offsetWidth + 45;
         
             previewDiv.style.top = `${previewDivTop}px`;
             previewDiv.style.left = `${previewDivLeft}px`;
        
-            previewDiv.style.display = 'block';
-       
-            const previewContent = createNodePreview(item.id);
             
-            previewDiv.innerHTML = previewContent;
+       
+            
           
 
       } });
