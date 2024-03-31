@@ -10,6 +10,18 @@ A simple sidebar for ComfyUI.
 For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
+# Updates
+
+- 31-03-2024 
+  - Added fuzzy search (work in reverse too!) (enabled by default) -  You can disable it in the settings
+  - Added description of the node under the preview (Visible only if the description is set in the node)
+  - Added possibility to collapse pinned node/custom nodes sections
+  - Added possibility to set the bottom space for the sidebar
+  - Added the scroll to top button
+  - Fixed some bugs
+  - Started migration from cookies to localstorage
+  - 🐰 Happy Easter! 🐰
+
 # Installation
 
 1. Clone the repository:
@@ -45,6 +57,10 @@ to your ComfyUI `custom_nodes` directory
 
 ### 🔍Search within categories📂
 ![Search within categories](./images/search_categories.gif)
+
+### 🔍Fuzzy Search🔄
+![Fuzzy Search](./images/fuzzysearch.gif)
+This feature is enabled by default, you can disable it in the settings. I've used fts_fuzzy_match.js by [Forrest Smith](https://github.com/forrestthewoods/lib_fts)
 
 ### ➕Expand/Collapse Categories/Sidebar➖
 ![Expand/Collapse Categories and Sidebar](./images/expand_collapse.gif)
