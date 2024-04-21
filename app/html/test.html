@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context Menu</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: rgb(26, 26, 26);
+    }
+    .context-menu {
+        display: none;
+        position: absolute;
+        background-color: #3b3b3b;
+        border: 1px solid #313131;
+        color: #d4d4d4;
+        padding: 5px 0;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+    .context-menu ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .context-menu li {
+        padding: 8px 15px;
+        cursor: pointer;
+    }
+    .context-menu li:hover {
+        background-color: #6d6d6d;
+    }
+    .sub-menu {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 100%;
+        background-color: #3b3b3b;
+        border: 1px solid #313131;
+        border-radius: 5px;
+        z-index: 1001; /* Ensure sub-menu appears above main menu */
+    }
+</style>
+</head>
+<body oncontextmenu="return false;">
+
+<div class="context-menu" id="context-menu">
+
+</div>
+
+<script>
+    const options = ["op1", "op2", "op3"];
+    const subOptions = [
+        ["sub1", "sub2"],
+        ["sub3", "sub4"],
+        ["sub5", "sub6", "sub44", "sub26"]
+    ];
+    let subMenuVisible = false;
+
+    contextMenu = document.getElementById('context-menu');
+    const menuOptions = document.createElement("ul");
+    menuOptions.id = "menu-options";
+    contextMenu.appendChild(menuOptions);
+
+    const subMenus = [];
+    for (let i = 0; i < subOptions.length; i++) {
+        const subMenu = document.createElement("ul");
+        subMenu.id = `sub-menu-op${i + 1}`;
+        subMenu.classList.add("sub-menu");
+        contextMenu.appendChild(subMenu);
+        subMenus.push(subMenu);
+
+        for (let j = 0; j < subOptions[i].length; j++) {
+            const li = document.createElement("li");
+            li.textContent = subOptions[i][j];
+            subMenu.appendChild(li);
+            li.addEventListener('click', () => {
+                alert(`Selected option: ${subOptions[i][j]}`);
+            })
+
+        }
+    }
+
+    function createContextMenu(event) {
+        event.preventDefault();
+
+        hideAllSubMenus();
+        const contextMenu = document.getElementById('context-menu');
+        const menuOptions = document.getElementById('menu-options');
+
+        // Clear existing menu items
+        menuOptions.innerHTML = '';
+
+        // Populate main options
+        options.forEach((option, index) => {
+            const li = document.createElement('li');
+            li.textContent = option;
+            li.addEventListener('mouseenter', () => {
+                hideAllSubMenus();
+                showSubMenu(subMenus[index], li, index);
+            });
+            li.addEventListener('click', () => {
+                // Handle main option click
+                alert(`Selected option: ${option}`);
+            });
+            menuOptions.appendChild(li);
+        });
+
+        // Show context menu
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = event.clientX + 'px';
+        contextMenu.style.top = event.clientY + 'px';
+
+        // Hide context menu on body click
+        document.body.addEventListener('click', hideContextMenu);
+    }
+
+    function showSubMenu(subMenu, element, index) {
+        subMenu.style.display = 'block';
+
+        const rect = element.getBoundingClientRect();
+        subMenu.style.top = element.offsetTop + 'px';
+
+        subMenuVisible = true;
+    }
+
+    function hideAllSubMenus() {
+        const subMenus = document.querySelectorAll('.sub-menu');
+        subMenus.forEach(subMenu => {
+            subMenu.style.display = 'none';
+        });
+        subMenuVisible = false;
+    }
+
+    function hideContextMenu() {
+        const contextMenu = document.getElementById('context-menu');
+        contextMenu.style.display = 'none';
+        document.body.removeEventListener('click', hideContextMenu);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('contextmenu', createContextMenu);
+    });
+
+    document.addEventListener('click', hideContextMenu);
+</script>
+
+</body>
+</html>

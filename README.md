@@ -11,6 +11,18 @@ For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
 # Updates
+- 21-04-2024
+  - Rewritten a lot of the code to improve performance and readability, and slightly adjusted the UI to ensure compatibility with future updates.
+  - ADDEDD CUSTOM CATEGORIES
+  - Added custom setting panel
+  - Re-Implemented the 'original' search function to support translated versions of ComfyUI (requires testing)
+  - Added LEFT and RIGHT positioning options
+  - Added "Auto Hide" feature
+  - Now you have the option to use the default node ordering in ComfyUI instead of the alphabetical one
+  - Added the possibility to perform a Soft or Factory Reset of the configuration
+  - Now most configuration settings are stored in the settings.json file.
+  - Fixed some bugs
+  - Added some other bugs for sure!
 
 - 31-03-2024 
   - Added fuzzy search (work in reverse too!) (enabled by default) -  You can disable it in the settings
@@ -62,6 +74,11 @@ to your ComfyUI `custom_nodes` directory
 ![Fuzzy Search](./images/fuzzysearch.gif)
 This feature is enabled by default, you can disable it in the settings. I've used fts_fuzzy_match.js by [Forrest Smith](https://github.com/forrestthewoods/lib_fts)
 
+### 🎨 Custom Categories 📂
+![Custom Categories](./images/custom_categories.gif)
+
+
+
 ### ➕Expand/Collapse Categories/Sidebar➖
 ![Expand/Collapse Categories and Sidebar](./images/expand_collapse.gif)
 
@@ -76,7 +93,7 @@ This feature is enabled by default, you can disable it in the settings. I've use
 ### 🎨 ComfyUI Themes Support 🎨
 ![Themes Support ](./images/theme.gif)
 
-### 🎨 Custom Values From ComfyUI Settings 🎨
+### 🎨 New Settings Panel 🎨
 ![ComfyUI Settings](./images/settings.png)
 
 ### Additional Features
@@ -87,7 +104,9 @@ This feature is enabled by default, you can disable it in the settings. I've use
 - [x] Reordering pinned nodes
 - [x] Node preview (i don't think it will be an image)
 - [x] Color integration with Jovimetrix
-- [ ] Better search
+- [x] Better search
+- [x] Custom Categories!!
+
 
 
 ## Contributing
@@ -98,7 +117,8 @@ Feel free to contribute to this project by reporting issues or suggesting improv
 
 If you'd like to support the project, consider making a donation ❤️
 <br>
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0AJECJ)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/C0C0AJECJ) 
+<a href="https://patreon.com/DreamingAIChannel"><img src="./images/patreon_badge.png" alt="Support me on Patreon" height="27" /></a>
 
 ## License
 
