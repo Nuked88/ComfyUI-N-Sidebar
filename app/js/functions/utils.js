@@ -227,7 +227,7 @@ function createContextMenu(event, subMenus,settingsData) {
         }
         menuOptions.appendChild(li);
     });
-console.log("lll")
+
     // Show context menu
     sbcontextMenu.style.display = 'block';
     sbcontextMenu.style.top = event.clientY + 'px';

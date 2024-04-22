@@ -360,8 +360,11 @@ async function renderList(elementID) {
                         previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
                     }
 
-                    const previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-
+                    let  previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
+                    if (sbPosition == "right") {
+                    
+                          previewDivLeft = -itemPosition.left +  this.offsetWidth + correction_offset;
+                     }
                     previewDiv.style.top = `${previewDivTop}px`;
                     previewDiv.style.left = `${previewDivLeft}px`;
 
