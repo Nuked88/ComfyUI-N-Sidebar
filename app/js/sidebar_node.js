@@ -30,9 +30,12 @@ jsloader(cnPath+"js/functions/settings.js");
 
 let CUSTOM_COLORS;
 try {
-    const CONFIG_CORE = await api_get("/jovimetrix/config")
+    var response = await api.fetchApi("/jovimetrix/config", { cache: "no-store" })
+    const CONFIG_CORE =  await response.json()
     CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
-} catch {}
+} catch (err) {
+    console.log(err)
+}
 
 let categorySearchToggle = false;
 
@@ -55,16 +58,16 @@ function postPinned() {
 
 
     var dragItem = null;
-   
+
     const pinnedElement= document.getElementById("sidebarBookmarks");
     pinnedElement.querySelectorAll(".sidebarItem").forEach(function(item) {
-        
+
         item.addEventListener("dragstart", function(event) {
             dragItem = event.target;
         });
 
         item.addEventListener('mouseover', function() {
-           
+
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
             let descriptionDiv = "";
             const itemPosition = getElementPosition(this);
@@ -76,26 +79,26 @@ function postPinned() {
             previewDiv.innerHTML = previewContent+descriptionDiv;
             previewDiv.style.display = 'block';
             const correction_offset = 45;
-    
+
             if (itemPosition.top - this.offsetHeight >=0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
                previewDivTop = itemPosition.top - this.offsetHeight
-               
+
             }else if (itemPosition.top - this.offsetHeight -previewDiv.offsetHeight <=0){
                 previewDivTop = 0 +correction_offset;
-    
-                
+
+
             }
             else {
-         
+
                 previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
             }
             const previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-        
+
             previewDiv.style.top = `${previewDivTop}px`;
             previewDiv.style.left = `${previewDivLeft}px`;
-      
+
       } });
-    
+
         item.addEventListener('mouseout', function() {
             previewDiv.style.display = 'none';
         })
@@ -127,7 +130,7 @@ function postPinned() {
     });
 
 
- 
+
 
 }
 
@@ -146,7 +149,7 @@ function restoreSidebarWidth() {
         width_sidebar = cookieValue;
     }
     return width_sidebar;
-    
+
 }
 
 
@@ -208,7 +211,7 @@ async function loadPinnedItemsAndAddToBookmarks() {
     // delete pinned
     const sidebarCategories = sidebarBookmarks.querySelectorAll(".sidebarItem");
     sidebarCategories.forEach(category => { category.remove();   });
- 
+
 
     pinnedItems.forEach(itemId => {
         pinItem(itemId);
@@ -233,7 +236,7 @@ function toggleCollapsePinned() {
 
     // expand/collapse pinned
     const sidebarBookmarks = document.getElementById('sidebarBookmarks');
-    
+
     if (sidebarBookmarks.style.display === 'none') {
         sidebarBookmarks.style.display = 'block';
         setVar('sb_pinned_collapsed', 'block');
@@ -254,11 +257,11 @@ function toggleCollapseCustom() {
         sidebarCustomNodes.style.display = 'none';
         setVar('sb_custom_collapsed', 'none');
     }
-    
+
 }
 
 async function createCategoryList() {
- 
+
     const data = LiteGraph.registered_node_types;
     let categories = {};
    // const pinnedItems = loadPinnedItems();
@@ -270,34 +273,34 @@ async function createCategoryList() {
     const sidebar_main = document.getElementById('sidebar');
     //const categoriesList = document.getElementById("content_sidebar");
     const itemSearchInput = document.getElementById("searchInput");
-   
+
     itemSearchInput.addEventListener("input", async function () {
        // defaultSearchToggle = await getConfiguration("sb_search_type")
         if (defaultSearchToggle == "original" && itemSearchInput.value != "")
             {
                 //search in all .sidebarItem
                 handleSearch(categorySearchToggle,"#content_sidebar_home","searchInput")
-                
-               
+
+
             }
             else{
                 updateList();
-            } 
+            }
     });
-     
+
 
     const clearIcon = document.querySelector(".clearIcon");
     const searchCategoryIcon = document.querySelector(".searchCategoryIcon");
     clearIcon.addEventListener("click", async function () {
         try {
-    
+
             itemSearchInput.value = "";
             const searchTerm =  updateList();
         } catch (error) {
             console.error("Error occurred during search:", error);
         }
     });
-    
+
     searchCategoryIcon.addEventListener("click", async function () {
         try {
 
@@ -315,19 +318,19 @@ async function createCategoryList() {
 
  async function updateList() {
 
-  
+
     return new Promise(async (resolve, reject) => {
     categories = {};
-  
+
     const itemSearchString = itemSearchInput.value.toLowerCase();
-   
+
     // delete all element conaining sidebarCategory class
-    
+
     const sidebarCategories = categoriesList.querySelectorAll(".sidebarCategory");
     sidebarCategories.forEach(category => {
         category.remove();
     });
-    
+
     let shortedArray = {};
     for (const objKey in data) {
         try {
@@ -345,42 +348,42 @@ async function createCategoryList() {
                     if (!categories[category]) {
                         categories[category] = [];
                     }
-                    categories[category].push(data[objKey]);  
+                    categories[category].push(data[objKey]);
                      //remove category if empty
 
                     // if (categories[category].length === 0) {
                     //     delete categories[category];
                     // }
 
-                } 
+                }
             } else {
                 if (itemSearchString === "") {
                     if (!categories[category]) {
                         categories[category] = [];
                     }
                     categories[category].push(data[objKey]);
-                    
+
                 } else {
-                    
-                    
-                       
+
+
+
                     // fuzzy search for eng
                     const [accepted,rank]  = fuzzyMatch(itemSearchString, reverseAndAppend(cleanText(searchable)));
-                    
 
-                            
+
+
                         if (accepted && rank >= 130) {
-                         
+
                             if (!shortedArray[rank]) {
                                 shortedArray[rank] = [];
                             }
-                            shortedArray[rank].push(data[objKey]); 
+                            shortedArray[rank].push(data[objKey]);
 
-                                
-                     
+
+
                         }
-                    
-                    
+
+
                 }
             }
 
@@ -395,10 +398,10 @@ async function createCategoryList() {
         ranks.sort((a, b) => b - a);
 
         ranks.forEach(rank => {
-            
+
             const dataArr = shortedArray[rank];
             dataArr.forEach(item => {
-            
+
                 if (!categories[item.category]) {
                     categories[item.category] = [];
                 }
@@ -413,19 +416,19 @@ async function createCategoryList() {
             const sortedCategoriesData = {};
             const sortedCategories = Object.keys(categories).sort();
             sortedCategories.forEach(category => {
-                
+
                 sortedCategoriesData[category] = categories[category];
 
             });
 
             categories = sortedCategoriesData;
-    
+
         }
-        
+
     }
 
-    
- 
+
+
     renderList();
 
     resolve(itemSearchString);
@@ -433,9 +436,9 @@ async function createCategoryList() {
 });
 }
 
-   
+
     async function renderList() {
-        
+
         return new Promise(async (resolve, reject) => {
             const pinnedItems = await loadPinnedItems();
             //
@@ -444,11 +447,11 @@ async function createCategoryList() {
                 const categoryItem = document.createElement("li");
                 categoryItem.classList.add("sidebarCategory");
                 categoryItem.textContent = category;
-                
+
                 const displayNamesList = document.createElement("ul");
                 displayNamesList.style.display = "none";
                 categoryItem.appendChild(displayNamesList);
-                
+
                 categories[category].forEach(displayName => {
                     try {
                         const displayNameItem = document.createElement("li");
@@ -456,62 +459,61 @@ async function createCategoryList() {
                         displayNameItem.textContent = displayName.title;
                         displayNameItem.title = displayName.title;
                         displayNameItem.draggable = true;
-                    
-                    // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
-                    //
-                    if (CUSTOM_COLORS) {
-                 
-                        let color = CUSTOM_COLORS[displayName.title];
-                        if (color === undefined) {
-                            const segments = displayName.nodeData.category.split('/')
-                            let k = segments.join('/')
-                            while (k) {
-                                color = CUSTOM_COLORS[k]
-                                if (color) {
-                                    color = color.title
-                                    break
+
+                        // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
+                        //
+                        if (CUSTOM_COLORS) {
+                            let color = CUSTOM_COLORS[displayName.title];
+                            if (color === undefined) {
+                                const segments = displayName.nodeData.category.split('/')
+                                let k = segments.join('/')
+                                while (k) {
+                                    color = CUSTOM_COLORS[k]
+                                    if (color) {
+                                        color = color.title
+                                        break
+                                    }
+                                    const last = k.lastIndexOf('/')
+                                    k = last !== -1 ? k.substring(0, last) : ''
                                 }
-                                const last = k.lastIndexOf('/')
-                                k = last !== -1 ? k.substring(0, last) : ''
+                            } else {
+                                color = color.title
                             }
-                        } else {
-                            color = color.title
+                            if (color) {
+                                displayNameItem.style = `background: ${color}`;
+                            }
                         }
-                        if (color) {
-                            displayNameItem.style = `background: ${color}`;
+                        //
+
+                        displayNameItem.id = displayName.type;
+
+                        /* Create Pin Button */
+                        const pinButton = document.createElement("button");
+                        pinButton.classList.add("pinButton");
+
+                        let add_class = "";
+
+                        if (pinnedItems.includes(displayName.type)) {
+                            add_class = "pinned";
                         }
-                    }
-                    //
-
-                    displayNameItem.id = displayName.type;
-
-                    /* Create Pin Button */
-                    const pinButton = document.createElement("button");
-                    pinButton.classList.add("pinButton");
-
-                    let add_class = "";
-
-                    if (pinnedItems.includes(displayName.type)) {
-                        add_class = "pinned";
-                    }
-                    pinButton.innerHTML = `<svg class="svg_class" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path class="pin_normal ${add_class}" d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" />
-                    <rect class="pin_node" style="opacity:0" x="0" y="0" width="24" height="24"  />
-                    </svg>`;
+                        pinButton.innerHTML = `<svg class="svg_class" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="pin_normal ${add_class}" d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" />
+                        <rect class="pin_node" style="opacity:0" x="0" y="0" width="24" height="24"  />
+                        </svg>`;
 
 
-                    displayNameItem.appendChild(pinButton);
-                    /* End Pin Button */
+                        displayNameItem.appendChild(pinButton);
+                        /* End Pin Button */
 
 
-                    displayNamesList.appendChild(displayNameItem);
+                        displayNamesList.appendChild(displayNameItem);
                     } catch (err) {
                         console.log(err);
                     }
                 });
 
                 categoryItem.addEventListener("click", function (event) {
-               
+
                     if (event.target === event.currentTarget) {
 
                         displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
@@ -519,15 +521,15 @@ async function createCategoryList() {
                 });
 
 
-            
+
                 sidebarCustomNodes.appendChild(categoryItem);
-           
-         
-    
+
+
+
     }
  if (!categorySearchToggle && itemSearchInput.value != "") {
             sdExpandAll(1);
-        
+
             }
 
             loadPinnedItemsAndAddToBookmarks();
@@ -537,11 +539,11 @@ async function createCategoryList() {
 
     const sidebarItems_cat = document.querySelectorAll('.sidebarItem');
     const previewDiv = document.getElementById('previewDiv');
-   
+
     sidebarItems_cat.forEach(item => {
-  
+
         item.addEventListener('mouseover', function() {
-           
+
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
             let descriptionDiv = "";
             const itemPosition = getElementPosition(this);
@@ -556,22 +558,22 @@ async function createCategoryList() {
 
             if (itemPosition.top - this.offsetHeight >=0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
                previewDivTop = itemPosition.top - this.offsetHeight
-               
+
             }else if (itemPosition.top - this.offsetHeight -previewDiv.offsetHeight <=0){
                 previewDivTop = 0 +correction_offset;
 
-                
+
             }
             else {
-         
+
                 previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
             }
-          
+
             const previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-        
+
             previewDiv.style.top = `${previewDivTop}px`;
             previewDiv.style.left = `${previewDivLeft}px`;
-      
+
       } });
 
         item.addEventListener('mouseout', function() {
@@ -641,11 +643,11 @@ async function createCategoryList() {
         }
     });
 
-    
 
 
 
-    
+
+
 
 }
 
@@ -718,7 +720,7 @@ async function addSidebar() {
 
 
             toggleCollapseCustom();
-           
+
         }
 
 
@@ -780,7 +782,7 @@ async function addSidebar() {
 
 
     canvas.addEventListener('dragover', allowDrop);
-   
+
 
     // expand/collapse pinned
     const pinnedLabel = document.getElementById("sb_label_pinned");
@@ -789,7 +791,7 @@ async function addSidebar() {
     pinnedLabel.addEventListener('click', function() {
         toggleCollapsePinned();
     });
-   
+
 
 
     createCategoryList();
@@ -806,13 +808,13 @@ function toggleSHSB(force = undefined) {
     const searchCategoryIcon = document.querySelector(".searchCategoryIcon");
     const switch_sidebar = document.getElementById('switch_sidebar');
     //search_bar.classList.toggle('closed',force);
-    
+
     side_bars.forEach(side_bar => {
        //side_bar.classList.toggle('closed',force);
 
        if (force !== undefined) {
         if (force) {
-          side_bar.classList.add('closed'); 
+          side_bar.classList.add('closed');
           clearIcon.classList.add('closed');
           searchCategoryIcon.classList.add('closed');
           search_bar.classList.add('closed');
@@ -823,7 +825,7 @@ function toggleSHSB(force = undefined) {
           searchCategoryIcon.classList.remove('closed');
           search_bar.classList.remove('closed');
           scrollToTopButton.classList.remove('closed');
-        
+
         }
       } else {
 
@@ -836,7 +838,7 @@ function toggleSHSB(force = undefined) {
           if (getVar("sb_minimized")=="true") {
             switch_sidebar.style.filter  = "brightness(0.8)";
           }
-          
+
         } else {
             if (getVar("sb_minimized")=="false") {
                 side_bar.classList.add('closed');
@@ -850,14 +852,14 @@ function toggleSHSB(force = undefined) {
             }
         }
       }
-      
+
     });
-    
-    
+
+
   if (getVar("sb_minimized")=="false") {
-   
-            if (force==undefined) { 
-                setVar("sb_minimized", true); 
+
+            if (force==undefined) {
+                setVar("sb_minimized", true);
             }
             main_sidebar.style.width = '45px';
         } else {
@@ -866,10 +868,10 @@ function toggleSHSB(force = undefined) {
             }
             main_sidebar.style.width = getVar("sidebarWidth") || '300px';
         }
-    
 
 
-    
+
+
 }
 
 //option: disable auto-hide when minimized
@@ -883,11 +885,11 @@ function handleKeyPress(event) {
         const side_bar = document.getElementById('content_sidebar_home');
         if (side_bar.classList.contains('closed')) {
             toggleSHSB();
-            
+
         }
         //focus on searchInput
         searchInput.focus();
-        
+
 
           }
     if (event.altKey && event.key.toLowerCase() === "z") {
@@ -901,16 +903,16 @@ function handleKeyPress(event) {
 
 // Custom Node View
 function processViews(viewsData,settingsData) {
-    
+
     const sb =document.getElementById('sidebar');
     const sbv = document.getElementById('sidebar_views');
-            
+
     const promises = viewsData.map(async (view) => {
-    const icon = view.icon; 
+    const icon = view.icon;
     if (!icon) {
         return;
     }
-    const description = view.description; 
+    const description = view.description;
 
     const div_view = document.createElement('div');
     div_view.classList = "content_sidebar sb_hidden";
@@ -919,7 +921,7 @@ function processViews(viewsData,settingsData) {
     const bsb = document.getElementById('content_sidebar_home');
     // add button to sidebarviews
     bsb.insertAdjacentElement('afterend', div_view);
- 
+
     //console.log('Icon:', icon);
     //console.log('Descr:', description);
     //console.log('Panel:', view.panels);
@@ -942,15 +944,15 @@ function processViews(viewsData,settingsData) {
 
                 div_panel_title.innerHTML = panel.replace("_", " ");
 
-        
+
 
                 div_panel.appendChild(div_panel_title);
-  
+
                 const canvas = $el("div", {
                     parent: div_panel,
                     innerHTML: html,
                 });
-            
+
 
                 div_view.insertAdjacentElement('beforeend', div_panel);
                 jsloader(`${cnPath}panels/${panel}/${panel}.jsb`);
@@ -982,9 +984,9 @@ function processViews(viewsData,settingsData) {
     sbv.appendChild(div_button);
 });
 return Promise.all(promises).then(() => {
-   
+
     setTimeout(() => {
-        
+
         settingsSetup(app,$el)
         setContextMenu(settingsData,"#content_sidebar_home .sidebarItem",1);
         switchTab(getVar('sb_current_tab'));
@@ -993,9 +995,9 @@ return Promise.all(promises).then(() => {
         sidebar_view.addEventListener('mouseover', function() {
             if (getVar('sb_minimized')=="true") {
                 toggleSHSB(false);
-             
+
             }
-       
+
         });
         document.addEventListener('click', function(event) {
             //if click is outside sidebar id element
@@ -1004,13 +1006,13 @@ return Promise.all(promises).then(() => {
                 toggleSHSB(true);
             }
             }
-            
+
         });
     }, 100);
-    
+
 });
 
-   
+
 
 }
 
@@ -1019,7 +1021,7 @@ return Promise.all(promises).then(() => {
 async function loadData() {
 
     try {
-      
+
         const response1 = await fetch(cnPath + 'views/views.json');
         const viewsData1 = await response1.json();
         const response2 = await fetch(cnPath +'views/custom_views.json');
@@ -1031,7 +1033,7 @@ async function loadData() {
     } catch (error) {
         console.error('Error loading views:', error);
     }
-    
+
 }
 
 
@@ -1039,27 +1041,27 @@ async function loadData() {
 
 async function SidebarPostBoot() {
     console.log('SidebarPostBoot');
-    
 
-  
-   
+
+
+
     const switch_home = document.getElementById("switch_home");
 
     //only for home
     switch_home.addEventListener('click', function() {
         switchTab("content_sidebar_home",1)
-    
+
 
 
     });
-    
-   
-    
+
+
+
     if (getVar("sb_minimized")=="false") {
         const switch_sidebar = document.getElementById('switch_sidebar');
         switch_sidebar.style.filter  = "brightness(0.8)";
     }
-    
+
 
     document.addEventListener("keydown", handleKeyPress);
     const sb =document.getElementById('content_sidebar_home');
@@ -1071,10 +1073,10 @@ async function SidebarPostBoot() {
         });
       });
 
-      
+
 
     sb.addEventListener("scroll", function() {
-      
+
     if (sb.scrollTop > 0) {
         scrollToTopButton.style.display = "block";
     } else {
@@ -1115,14 +1117,14 @@ function SidebarBoot() {
 migrationSettings()
 
         addSidebarStyles("css/base_style.css");
-        
+
         addSidebar();
-        
+
         console.log('SidebarBoot');
         console.timeEnd('execution time');
-    
-            
-        
+
+
+
     } else {
         // Retry after a period of time
         setTimeout(SidebarBoot, 500); // Check every 100 milliseconds
