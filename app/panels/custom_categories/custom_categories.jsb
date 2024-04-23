@@ -330,6 +330,7 @@ async function renderList(elementID) {
         // Preview
         const sidebarItems_cat = document.querySelectorAll('#' + elementID + ' .sidebarItem');
         const previewDiv = document.getElementById('previewDiv');
+        let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
 
         sidebarItems_cat.forEach(item => {
 
@@ -360,13 +361,21 @@ async function renderList(elementID) {
                         previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
                     }
 
-                    let  previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-                    if (sbPosition == "right") {
-                    
-                          previewDivLeft = -itemPosition.left +  this.offsetWidth + correction_offset;
-                     }
+                    let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
+
                     previewDiv.style.top = `${previewDivTop}px`;
-                    previewDiv.style.left = `${previewDivLeft}px`;
+
+                    const  previewDivLeft = sidebar_width - sidebad_view_width;
+            
+                    if (sbPosition == "left") {
+
+                        previewDiv.style.left = `${previewDivLeft}px`;
+                    }else {
+
+                        previewDiv.style.right = `${previewDivLeft}px`;
+                    }
+                    
+
 
                 }
             });

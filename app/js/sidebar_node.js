@@ -57,6 +57,7 @@ function postPinned() {
     var dragItem = null;
    
     const pinnedElement= document.getElementById("sidebarBookmarks");
+    let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
     pinnedElement.querySelectorAll(".sidebarItem").forEach(function(item) {
         
         item.addEventListener("dragstart", function(event) {
@@ -89,13 +90,17 @@ function postPinned() {
          
                 previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
             }
-            let previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-            if (sbPosition == "right") {
-           
-                previewDivLeft = -itemPosition.left +  this.offsetWidth + correction_offset;
-           }
+            let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
             previewDiv.style.top = `${previewDivTop}px`;
+            const  previewDivLeft = sidebar_width - sidebad_view_width;
+            
+            if (sbPosition == "left") {
             previewDiv.style.left = `${previewDivLeft}px`;
+            }else {
+            previewDiv.style.right = `${previewDivLeft}px`;
+            }
+           
+
       
       } });
     
@@ -540,9 +545,9 @@ async function createCategoryList() {
 
     const sidebarItems_cat = document.querySelectorAll('.sidebarItem');
     const previewDiv = document.getElementById('previewDiv');
-   
+    let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
     sidebarItems_cat.forEach(item => {
-  
+   
         item.addEventListener('mouseover', function() {
            
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
@@ -570,14 +575,19 @@ async function createCategoryList() {
                 previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
             }
        
-           let  previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-           if (sbPosition == "right") {
+            let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
            
-                 previewDivLeft = -itemPosition.left +  this.offsetWidth + correction_offset;
-            }
-            
+        
             previewDiv.style.top = `${previewDivTop}px`;
+
+
+            const  previewDivLeft = sidebar_width - sidebad_view_width;
+            
+            if (sbPosition == "left") {
             previewDiv.style.left = `${previewDivLeft}px`;
+            }else {
+            previewDiv.style.right = `${previewDivLeft}px`;
+            }
       
       } });
 
