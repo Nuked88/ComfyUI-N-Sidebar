@@ -260,7 +260,7 @@ async function renderList(elementID) {
 
 
 
-                    displayNameItem.id = displayName.replace(" ", "_");
+                    displayNameItem.id = displayName//.replace(" ", "_");
 
                     /* Create Pin Button 
                     const pinButton = document.createElement("button");

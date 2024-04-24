@@ -13,7 +13,7 @@ Maybe you don't need it. I need it >.<
 # Updates
 - 21-04-2024
   - Rewritten a lot of the code to improve performance and readability, and slightly adjusted the UI to ensure compatibility with future updates.
-  - ADDEDD CUSTOM CATEGORIES
+  - ADDED CUSTOM CATEGORIES
   - Added custom setting panel
   - Re-Implemented the 'original' search function to support translated versions of ComfyUI (requires testing)
   - Added LEFT and RIGHT positioning options
