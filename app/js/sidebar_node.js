@@ -2,11 +2,11 @@
 import { api } from "../../../../scripts/api.js"
 import { app } from "../../../../scripts/app.js";
 import { $el } from "../../../../scripts/ui.js";
-import {fuzzyMatch} from "./fts_fuzzy_match.js";
+import { fuzzyMatch } from "./fts_fuzzy_match.js";
 
 //import {settingsSetup} from './functions/settings.jsb';
 console.time('execution time');
-const cnPath="../extensions/ComfyUI-N-Sidebar/"
+const cnPath = "../extensions/ComfyUI-N-Sidebar/"
 function jsloader(url) {
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -21,21 +21,18 @@ function jsloader(url) {
 
 
 
-jsloader(cnPath+"js/functions/sb_fn.js");
-jsloader(cnPath+"js/functions/utils.js");
-jsloader(cnPath+"js/functions/settings.js");
+jsloader(cnPath + "js/functions/sb_fn.js");
+jsloader(cnPath + "js/functions/utils.js");
+jsloader(cnPath + "js/functions/settings.js");
 
 
 
 
 let CUSTOM_COLORS;
 try {
-    var response = await api.fetchApi("/jovimetrix/config", { cache: "no-store" })
-    const CONFIG_CORE =  await response.json()
+    const CONFIG_CORE = await api_get("/jovimetrix/config")
     CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
-} catch (err) {
-    console.log(err)
-}
+} catch { }
 
 let categorySearchToggle = false;
 
@@ -48,7 +45,7 @@ function getSidebarItemIds() {
     const sidebarItems = document.querySelectorAll("#sidebarBookmarks .sidebarItem");
     const itemIds = [];
 
-    sidebarItems.forEach(function(item) {
+    sidebarItems.forEach(function (item) {
         itemIds.push(item.id);
     });
 
@@ -59,47 +56,56 @@ function postPinned() {
 
     var dragItem = null;
 
-    const pinnedElement= document.getElementById("sidebarBookmarks");
-    pinnedElement.querySelectorAll(".sidebarItem").forEach(function(item) {
+    const pinnedElement = document.getElementById("sidebarBookmarks");
+    let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
+    pinnedElement.querySelectorAll(".sidebarItem").forEach(function (item) {
 
-        item.addEventListener("dragstart", function(event) {
+        item.addEventListener("dragstart", function (event) {
             dragItem = event.target;
         });
 
-        item.addEventListener('mouseover', function() {
+        item.addEventListener('mouseover', function () {
 
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
-            let descriptionDiv = "";
-            const itemPosition = getElementPosition(this);
-            let previewDivTop = 0;
-            const [previewContent,node_description] = createNodePreview(item.id);
-            if (node_description) {
-            descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
+                let descriptionDiv = "";
+                const itemPosition = getElementPosition(this);
+                let previewDivTop = 0;
+                const [previewContent, node_description] = createNodePreview(item.id);
+                if (node_description) {
+                    descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
+                }
+                previewDiv.innerHTML = previewContent + descriptionDiv;
+                previewDiv.style.display = 'block';
+                const correction_offset = 45;
+
+                if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
+                    previewDivTop = itemPosition.top - this.offsetHeight
+
+                } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
+                    previewDivTop = 0 + correction_offset;
+
+
+                }
+                else {
+
+                    previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
+                }
+                let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
+                previewDiv.style.top = `${previewDivTop}px`;
+                const previewDivLeft = sidebar_width - sidebad_view_width;
+
+                if (sbPosition == "left") {
+                    previewDiv.style.left = `${previewDivLeft}px`;
+                } else {
+                    previewDiv.style.right = `${previewDivLeft}px`;
+                }
+
+
+
             }
-            previewDiv.innerHTML = previewContent+descriptionDiv;
-            previewDiv.style.display = 'block';
-            const correction_offset = 45;
+        });
 
-            if (itemPosition.top - this.offsetHeight >=0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-               previewDivTop = itemPosition.top - this.offsetHeight
-
-            }else if (itemPosition.top - this.offsetHeight -previewDiv.offsetHeight <=0){
-                previewDivTop = 0 +correction_offset;
-
-
-            }
-            else {
-
-                previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
-            }
-            const previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
-
-            previewDiv.style.top = `${previewDivTop}px`;
-            previewDiv.style.left = `${previewDivLeft}px`;
-
-      } });
-
-        item.addEventListener('mouseout', function() {
+        item.addEventListener('mouseout', function () {
             previewDiv.style.display = 'none';
         })
 
@@ -113,11 +119,11 @@ function postPinned() {
 
     });
 
-    pinnedElement.addEventListener("dragover", function(event) {
+    pinnedElement.addEventListener("dragover", function (event) {
         event.preventDefault();
     });
 
-    pinnedElement.addEventListener("drop", function(event) {
+    pinnedElement.addEventListener("drop", function (event) {
         event.preventDefault();
         if (dragItem) {
             var dropZone = event.target.closest("ul");
@@ -210,7 +216,7 @@ async function loadPinnedItemsAndAddToBookmarks() {
 
     // delete pinned
     const sidebarCategories = sidebarBookmarks.querySelectorAll(".sidebarItem");
-    sidebarCategories.forEach(category => { category.remove();   });
+    sidebarCategories.forEach(category => { category.remove(); });
 
 
     pinnedItems.forEach(itemId => {
@@ -221,7 +227,7 @@ async function loadPinnedItemsAndAddToBookmarks() {
         if (item) {
             let addedItem = sidebarBookmarks.appendChild(item.cloneNode(true));
             addedItem.lastChild.lastChild.classList.add("pinned");
-         }
+        }
     });
 
 
@@ -264,7 +270,7 @@ async function createCategoryList() {
 
     const data = LiteGraph.registered_node_types;
     let categories = {};
-   // const pinnedItems = loadPinnedItems();
+    // const pinnedItems = loadPinnedItems();
 
     //search init
     //get class content_sidebar element
@@ -275,17 +281,16 @@ async function createCategoryList() {
     const itemSearchInput = document.getElementById("searchInput");
 
     itemSearchInput.addEventListener("input", async function () {
-       // defaultSearchToggle = await getConfiguration("sb_search_type")
-        if (defaultSearchToggle == "original" && itemSearchInput.value != "")
-            {
-                //search in all .sidebarItem
-                handleSearch(categorySearchToggle,"#content_sidebar_home","searchInput")
+        // defaultSearchToggle = await getConfiguration("sb_search_type")
+        if (defaultSearchToggle == "original" && itemSearchInput.value != "") {
+            //search in all .sidebarItem
+            handleSearch(categorySearchToggle, "#content_sidebar_home", "searchInput")
 
 
-            }
-            else{
-                updateList();
-            }
+        }
+        else {
+            updateList();
+        }
     });
 
 
@@ -295,7 +300,7 @@ async function createCategoryList() {
         try {
 
             itemSearchInput.value = "";
-            const searchTerm =  updateList();
+            const searchTerm = updateList();
         } catch (error) {
             console.error("Error occurred during search:", error);
         }
@@ -316,125 +321,125 @@ async function createCategoryList() {
     //end search init
 
 
- async function updateList() {
+    async function updateList() {
 
 
-    return new Promise(async (resolve, reject) => {
-    categories = {};
+        return new Promise(async (resolve, reject) => {
+            categories = {};
 
-    const itemSearchString = itemSearchInput.value.toLowerCase();
+            const itemSearchString = itemSearchInput.value.toLowerCase();
 
-    // delete all element conaining sidebarCategory class
+            // delete all element conaining sidebarCategory class
 
-    const sidebarCategories = categoriesList.querySelectorAll(".sidebarCategory");
-    sidebarCategories.forEach(category => {
-        category.remove();
-    });
+            const sidebarCategories = categoriesList.querySelectorAll(".sidebarCategory");
+            sidebarCategories.forEach(category => {
+                category.remove();
+            });
 
-    let shortedArray = {};
-    for (const objKey in data) {
-        try {
-            let searchable;
-            const category = data[objKey].category.toLowerCase();
-            if (!categorySearchToggle) {
-                searchable = data[objKey].title.toLowerCase();
-            }   else{
-                searchable = category;
-            }
-
-
-            if (defaultSearchToggle == "normal") {
-                if (searchable.includes(itemSearchString) || itemSearchString === "") {
-                    if (!categories[category]) {
-                        categories[category] = [];
+            let shortedArray = {};
+            for (const objKey in data) {
+                try {
+                    let searchable;
+                    const category = data[objKey].category.toLowerCase();
+                    if (!categorySearchToggle) {
+                        searchable = data[objKey].title.toLowerCase();
+                    } else {
+                        searchable = category;
                     }
-                    categories[category].push(data[objKey]);
-                     //remove category if empty
-
-                    // if (categories[category].length === 0) {
-                    //     delete categories[category];
-                    // }
-
-                }
-            } else {
-                if (itemSearchString === "") {
-                    if (!categories[category]) {
-                        categories[category] = [];
-                    }
-                    categories[category].push(data[objKey]);
-
-                } else {
 
 
-
-                    // fuzzy search for eng
-                    const [accepted,rank]  = fuzzyMatch(itemSearchString, reverseAndAppend(cleanText(searchable)));
-
-
-
-                        if (accepted && rank >= 130) {
-
-                            if (!shortedArray[rank]) {
-                                shortedArray[rank] = [];
+                    if (defaultSearchToggle == "normal") {
+                        if (searchable.includes(itemSearchString) || itemSearchString === "") {
+                            if (!categories[category]) {
+                                categories[category] = [];
                             }
-                            shortedArray[rank].push(data[objKey]);
+                            categories[category].push(data[objKey]);
+                            //remove category if empty
 
+                            // if (categories[category].length === 0) {
+                            //     delete categories[category];
+                            // }
+
+                        }
+                    } else {
+                        if (itemSearchString === "") {
+                            if (!categories[category]) {
+                                categories[category] = [];
+                            }
+                            categories[category].push(data[objKey]);
+
+                        } else {
+
+
+
+                            // fuzzy search for eng
+                            const [accepted, rank] = fuzzyMatch(itemSearchString, reverseAndAppend(cleanText(searchable)));
+
+
+
+                            if (accepted && rank >= 130) {
+
+                                if (!shortedArray[rank]) {
+                                    shortedArray[rank] = [];
+                                }
+                                shortedArray[rank].push(data[objKey]);
+
+
+
+                            }
 
 
                         }
+                    }
 
-
+                } catch (err) {
+                    console.log(err);
                 }
             }
+            if (itemSearchString != "") {
+                if (defaultSearchToggle !== "normal") {
 
-        } catch (err) {
-            console.log(err);
-        }
-    }
- if(itemSearchString != ""){
-    if (defaultSearchToggle !== "normal")  {
+                    const ranks = Object.keys(shortedArray);
+                    ranks.sort((a, b) => b - a);
 
-        const ranks = Object.keys(shortedArray);
-        ranks.sort((a, b) => b - a);
+                    ranks.forEach(rank => {
 
-        ranks.forEach(rank => {
+                        const dataArr = shortedArray[rank];
+                        dataArr.forEach(item => {
 
-            const dataArr = shortedArray[rank];
-            dataArr.forEach(item => {
-
-                if (!categories[item.category]) {
-                    categories[item.category] = [];
+                            if (!categories[item.category]) {
+                                categories[item.category] = [];
+                            }
+                            categories[item.category].push(item);
+                        });
+                    });
                 }
-                categories[item.category].push(item);
-            });
+            } else {
+                defaultSearchOrder = await getConfiguration("sb_order_type")
+                if (defaultSearchOrder == "alphabetical") {
+
+                    const sortedCategoriesData = {};
+                    const sortedCategories = Object.keys(categories).sort();
+                    sortedCategories.forEach(category => {
+
+                        sortedCategoriesData[category] = categories[category];
+
+                    });
+
+                    categories = sortedCategoriesData;
+
+                }
+
+            }
+
+
+
+            renderList();
+
+            resolve(itemSearchString);
+
         });
     }
-    } else {
-        defaultSearchOrder = await getConfiguration("sb_order_type")
-        if (defaultSearchOrder == "alphabetical") {
-
-            const sortedCategoriesData = {};
-            const sortedCategories = Object.keys(categories).sort();
-            sortedCategories.forEach(category => {
-
-                sortedCategoriesData[category] = categories[category];
-
-            });
-
-            categories = sortedCategoriesData;
-
-        }
-
-    }
-
-
-
-    renderList();
-
-    resolve(itemSearchString);
-
-});
-}
 
 
     async function renderList() {
@@ -463,6 +468,7 @@ async function createCategoryList() {
                         // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
                         //
                         if (CUSTOM_COLORS) {
+
                             let color = CUSTOM_COLORS[displayName.title];
                             if (color === undefined) {
                                 const segments = displayName.nodeData.category.split('/')
@@ -497,9 +503,9 @@ async function createCategoryList() {
                             add_class = "pinned";
                         }
                         pinButton.innerHTML = `<svg class="svg_class" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path class="pin_normal ${add_class}" d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" />
-                        <rect class="pin_node" style="opacity:0" x="0" y="0" width="24" height="24"  />
-                        </svg>`;
+                    <path class="pin_normal ${add_class}" d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" />
+                    <rect class="pin_node" style="opacity:0" x="0" y="0" width="24" height="24"  />
+                    </svg>`;
 
 
                         displayNameItem.appendChild(pinButton);
@@ -526,80 +532,90 @@ async function createCategoryList() {
 
 
 
-    }
- if (!categorySearchToggle && itemSearchInput.value != "") {
-            sdExpandAll(1);
+            }
+            if (!categorySearchToggle && itemSearchInput.value != "") {
+                sdExpandAll(1);
 
             }
 
             loadPinnedItemsAndAddToBookmarks();
 
 
-    /* preview */
+            /* preview */
 
-    const sidebarItems_cat = document.querySelectorAll('.sidebarItem');
-    const previewDiv = document.getElementById('previewDiv');
+            const sidebarItems_cat = document.querySelectorAll('.sidebarItem');
+            const previewDiv = document.getElementById('previewDiv');
+            let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
+            sidebarItems_cat.forEach(item => {
 
-    sidebarItems_cat.forEach(item => {
+                item.addEventListener('mouseover', function () {
 
-        item.addEventListener('mouseover', function() {
+                    if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
+                        let descriptionDiv = "";
+                        const itemPosition = getElementPosition(this);
+                        let previewDivTop = 0;
+                        const [previewContent, node_description] = createNodePreview(item.id);
+                        if (node_description) {
+                            descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
+                        }
+                        previewDiv.innerHTML = previewContent + descriptionDiv;
+                        previewDiv.style.display = 'block';
+                        const correction_offset = 45;
 
-            if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
-            let descriptionDiv = "";
-            const itemPosition = getElementPosition(this);
-            let previewDivTop = 0;
-            const [previewContent,node_description] = createNodePreview(item.id);
-            if (node_description) {
-            descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
-            }
-            previewDiv.innerHTML = previewContent+descriptionDiv;
-            previewDiv.style.display = 'block';
-            const correction_offset = 45;
+                        if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
+                            previewDivTop = itemPosition.top - this.offsetHeight
 
-            if (itemPosition.top - this.offsetHeight >=0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-               previewDivTop = itemPosition.top - this.offsetHeight
-
-            }else if (itemPosition.top - this.offsetHeight -previewDiv.offsetHeight <=0){
-                previewDivTop = 0 +correction_offset;
+                        } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
+                            previewDivTop = 0 + correction_offset;
 
 
-            }
-            else {
+                        }
+                        else {
 
-                previewDivTop =   (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
-            }
+                            previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
+                        }
 
-            const previewDivLeft = itemPosition.left + this.offsetWidth + correction_offset;
+                        let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
 
-            previewDiv.style.top = `${previewDivTop}px`;
-            previewDiv.style.left = `${previewDivLeft}px`;
 
-      } });
+                        previewDiv.style.top = `${previewDivTop}px`;
 
-        item.addEventListener('mouseout', function() {
-            previewDiv.style.display = 'none';
-        })
 
+                        const previewDivLeft = sidebar_width - sidebad_view_width;
+
+                        if (sbPosition == "left") {
+                            previewDiv.style.left = `${previewDivLeft}px`;
+                        } else {
+                            previewDiv.style.right = `${previewDivLeft}px`;
+                        }
+
+                    }
+                });
+
+                item.addEventListener('mouseout', function () {
+                    previewDiv.style.display = 'none';
+                })
+
+            });
+
+            categoriesList.addEventListener('scroll', function () {
+                previewDiv.style.display = 'none';
+            });
+
+            window.addEventListener('click', function (event) {
+
+                if (!event.target.classList.contains('sidebarItem')) {
+                    previewDiv.style.display = 'none';
+
+                }
+            });
+
+
+            reloadCtxMenu()
+            resolve();
         });
-
-        categoriesList.addEventListener('scroll', function() {
-            previewDiv.style.display = 'none';
-        });
-
-        window.addEventListener('click', function(event) {
-
-            if (!event.target.classList.contains('sidebarItem')) {
-            previewDiv.style.display = 'none';
-
-            }
-        });
-
-
-        reloadCtxMenu()
-        resolve();
-    });
     }
-    let udata  = await updateList();
+    let udata = await updateList();
 
 
 
@@ -668,7 +684,7 @@ async function addSidebar() {
         innerHTML: html
     });
 
-    document.getElementById("content_sidebar_home").addEventListener("click",async function (event) {
+    document.getElementById("content_sidebar_home").addEventListener("click", async function (event) {
         const clickedElement = event.target;
         const pinnedItems = await loadPinnedItems();
         const pinButton = clickedElement.tagName;
@@ -762,7 +778,7 @@ async function addSidebar() {
     }
 
 
-   // const search_bar = document.getElementById('searchInput');
+    // const search_bar = document.getElementById('searchInput');
 
 
     canvas.addEventListener("dragstart", function (event) {
@@ -788,7 +804,7 @@ async function addSidebar() {
     const pinnedLabel = document.getElementById("sb_label_pinned");
 
 
-    pinnedLabel.addEventListener('click', function() {
+    pinnedLabel.addEventListener('click', function () {
         toggleCollapsePinned();
     });
 
@@ -810,64 +826,72 @@ function toggleSHSB(force = undefined) {
     //search_bar.classList.toggle('closed',force);
 
     side_bars.forEach(side_bar => {
-       //side_bar.classList.toggle('closed',force);
+        //side_bar.classList.toggle('closed',force);
 
-       if (force !== undefined) {
-        if (force) {
-          side_bar.classList.add('closed');
-          clearIcon.classList.add('closed');
-          searchCategoryIcon.classList.add('closed');
-          search_bar.classList.add('closed');
-          scrollToTopButton.classList.add('closed');
-        } else {
-          side_bar.classList.remove('closed');
-          clearIcon.classList.remove('closed');
-          searchCategoryIcon.classList.remove('closed');
-          search_bar.classList.remove('closed');
-          scrollToTopButton.classList.remove('closed');
-
-        }
-      } else {
-
-        if (side_bar.classList.contains('closed')) {
-          side_bar.classList.remove('closed');
-          clearIcon.classList.remove('closed');
-          searchCategoryIcon.classList.remove('closed');
-          search_bar.classList.remove('closed');
-          //fix for keyboard shortcuts
-          if (getVar("sb_minimized")=="true") {
-            switch_sidebar.style.filter  = "brightness(0.8)";
-          }
-
-        } else {
-            if (getVar("sb_minimized")=="false") {
+        if (force !== undefined) {
+            if (force) {
                 side_bar.classList.add('closed');
                 clearIcon.classList.add('closed');
                 searchCategoryIcon.classList.add('closed');
                 search_bar.classList.add('closed');
                 scrollToTopButton.classList.add('closed');
-                switch_sidebar.style.filter  = "brightness(1.0)";
-            }else {
-            switch_sidebar.style.filter  = "brightness(0.8)";
+            } else {
+                side_bar.classList.remove('closed');
+                clearIcon.classList.remove('closed');
+                searchCategoryIcon.classList.remove('closed');
+                search_bar.classList.remove('closed');
+                scrollToTopButton.classList.remove('closed');
+
+            }
+        } else {
+
+            if (side_bar.classList.contains('closed')) {
+                side_bar.classList.remove('closed');
+                clearIcon.classList.remove('closed');
+                searchCategoryIcon.classList.remove('closed');
+                search_bar.classList.remove('closed');
+                //fix for keyboard shortcuts
+                if (getVar("sb_minimized") == "true") {
+                    switch_sidebar.style.filter = "brightness(0.8)";
+                }
+
+            } else {
+                if (getVar("sb_minimized") == "false") {
+                    side_bar.classList.add('closed');
+                    clearIcon.classList.add('closed');
+                    searchCategoryIcon.classList.add('closed');
+                    search_bar.classList.add('closed');
+                    scrollToTopButton.classList.add('closed');
+                    switch_sidebar.style.filter = "brightness(1.0)";
+                } else {
+                    switch_sidebar.style.filter = "brightness(0.8)";
+                }
             }
         }
-      }
 
     });
 
 
-  if (getVar("sb_minimized")=="false") {
+    if (getVar("sb_minimized") == "false") {
 
-            if (force==undefined) {
-                setVar("sb_minimized", true);
-            }
-            main_sidebar.style.width = '45px';
+        if (force == undefined) {
+            setVar("sb_minimized", true);
+        }
+        main_sidebar.style.width = '45px';
+    } else {
+
+        if (force == undefined) {
+            setVar("sb_minimized", false);
+            main_sidebar.style.width = getVar("sidebarWidth") || '300px';
+        } else if (force == true) {
+
+            main_sidebar.style.width = '45px'; console.log("minimized")
+
         } else {
-            if (force==undefined) {
-                setVar("sb_minimized", false);
-            }
             main_sidebar.style.width = getVar("sidebarWidth") || '300px';
         }
+
+    }
 
 
 
@@ -891,7 +915,7 @@ function handleKeyPress(event) {
         searchInput.focus();
 
 
-          }
+    }
     if (event.altKey && event.key.toLowerCase() === "z") {
         toggleSHSB()
     }
@@ -902,115 +926,115 @@ function handleKeyPress(event) {
 
 
 // Custom Node View
-function processViews(viewsData,settingsData) {
+function processViews(viewsData, settingsData) {
 
-    const sb =document.getElementById('sidebar');
+    const sb = document.getElementById('sidebar');
     const sbv = document.getElementById('sidebar_views');
 
     const promises = viewsData.map(async (view) => {
-    const icon = view.icon;
-    if (!icon) {
-        return;
-    }
-    const description = view.description;
-
-    const div_view = document.createElement('div');
-    div_view.classList = "content_sidebar sb_hidden";
-    div_view.id = "panel_" + view.id;
-    div_view.dataset.content = view.id;
-    const bsb = document.getElementById('content_sidebar_home');
-    // add button to sidebarviews
-    bsb.insertAdjacentElement('afterend', div_view);
-
-    //console.log('Icon:', icon);
-    //console.log('Descr:', description);
-    //console.log('Panel:', view.panels);
-    //console.log('-------------------');
-
-    await Promise.all(view.panels.map(async (panel) => {
-        try {
-            const response = await fetch(cnPath + `panels/${panel}/${panel}.html`);
-            const html = await response.text();
-
-            if (html !== "404: Not Found") {
-                //inherit width from bsb
-                const div_panel = document.createElement('div');
-                div_panel.classList = "panel_sidebar";
-                div_panel.id = "panel_" + panel;
-
-                const div_panel_title = document.createElement('label');
-                div_panel_title.classList = "panel_sidebar_title sb_label";
-                div_panel_title.id = "panel_title_" + panel;
-
-                div_panel_title.innerHTML = panel.replace("_", " ");
-
-
-
-                div_panel.appendChild(div_panel_title);
-
-                const canvas = $el("div", {
-                    parent: div_panel,
-                    innerHTML: html,
-                });
-
-
-                div_view.insertAdjacentElement('beforeend', div_panel);
-                jsloader(`${cnPath}panels/${panel}/${panel}.jsb`);
-                console.log("LOADING " + cnPath + `panels/${panel}/${panel}.js`)
-            }
-        } catch (error) {
-            console.error('Errore nel caricamento del file HTML:', error);
+        const icon = view.icon;
+        if (!icon) {
+            return;
         }
-    }));
+        const description = view.description;
+
+        const div_view = document.createElement('div');
+        div_view.classList = "content_sidebar sb_hidden";
+        div_view.id = "panel_" + view.id;
+        div_view.dataset.content = view.id;
+        const bsb = document.getElementById('content_sidebar_home');
+        // add button to sidebarviews
+        bsb.insertAdjacentElement('afterend', div_view);
+
+        //console.log('Icon:', icon);
+        //console.log('Descr:', description);
+        //console.log('Panel:', view.panels);
+        //console.log('-------------------');
+
+        await Promise.all(view.panels.map(async (panel) => {
+            try {
+                const response = await fetch(cnPath + `panels/${panel}/${panel}.html`);
+                const html = await response.text();
+
+                if (html !== "404: Not Found") {
+                    //inherit width from bsb
+                    const div_panel = document.createElement('div');
+                    div_panel.classList = "panel_sidebar";
+                    div_panel.id = "panel_" + panel;
+
+                    const div_panel_title = document.createElement('label');
+                    div_panel_title.classList = "panel_sidebar_title sb_label";
+                    div_panel_title.id = "panel_title_" + panel;
+
+                    div_panel_title.innerHTML = panel.replace("_", " ");
 
 
 
-    //sidebar menu
-    const div_button = document.createElement('div');
+                    div_panel.appendChild(div_panel_title);
+
+                    const canvas = $el("div", {
+                        parent: div_panel,
+                        innerHTML: html,
+                    });
 
 
-    div_button.classList = "view_button";
-    div_button.id = "switch_" + view.id;
-    //inherit width from bsb
+                    div_view.insertAdjacentElement('beforeend', div_panel);
+                    jsloader(`${cnPath}panels/${panel}/${panel}.jsb`);
+                    console.log("LOADING " + cnPath + `panels/${panel}/${panel}.js`)
+                }
+            } catch (error) {
+                console.error('Errore nel caricamento del file HTML:', error);
+            }
+        }));
 
-    div_button.dataset.tab = view.id;
-    div_button.alt = view.description;
-    div_button.innerHTML += view.icon;
 
-    div_button.addEventListener('click', function () {
-        const tabId = "panel_" + this.getAttribute('data-tab');
-        switchTab(tabId)
+
+        //sidebar menu
+        const div_button = document.createElement('div');
+
+
+        div_button.classList = "view_button";
+        div_button.id = "switch_" + view.id;
+        //inherit width from bsb
+
+        div_button.dataset.tab = view.id;
+        div_button.alt = view.description;
+        div_button.innerHTML += view.icon;
+
+        div_button.addEventListener('click', function () {
+            const tabId = "panel_" + this.getAttribute('data-tab');
+            switchTab(tabId)
+        });
+        sbv.appendChild(div_button);
     });
-    sbv.appendChild(div_button);
-});
-return Promise.all(promises).then(() => {
+    return Promise.all(promises).then(() => {
 
-    setTimeout(() => {
+        setTimeout(() => {
 
-        settingsSetup(app,$el)
-        setContextMenu(settingsData,"#content_sidebar_home .sidebarItem",1);
-        switchTab(getVar('sb_current_tab'));
-        const sidebar_view = document.getElementById('sidebar_views');
-        const sidebar = document.getElementById('sidebar');
-        sidebar_view.addEventListener('mouseover', function() {
-            if (getVar('sb_minimized')=="true") {
-                toggleSHSB(false);
+            settingsSetup(app, $el)
+            setContextMenu(settingsData, "#content_sidebar_home .sidebarItem", 1);
+            switchTab(getVar('sb_current_tab'));
+            const sidebar_view = document.getElementById('sidebar_views');
+            const sidebar = document.getElementById('sidebar');
+            sidebar_view.addEventListener('mouseover', function () {
+                if (getVar('sb_minimized') == "true") {
+                    toggleSHSB(false);
 
-            }
+                }
 
-        });
-        document.addEventListener('click', function(event) {
-            //if click is outside sidebar id element
-            if (!sidebar.contains(event.target)) {
-                if (getVar('sb_minimized')=="true") {
-                toggleSHSB(true);
-            }
-            }
+            });
+            document.addEventListener('click', function (event) {
+                //if click is outside sidebar id element
+                if (!sidebar.contains(event.target)) {
+                    if (getVar('sb_minimized') == "true") {
+                        toggleSHSB(true);
+                    }
+                }
 
-        });
-    }, 100);
+            });
+        }, 100);
 
-});
+    });
 
 
 
@@ -1024,12 +1048,12 @@ async function loadData() {
 
         const response1 = await fetch(cnPath + 'views/views.json');
         const viewsData1 = await response1.json();
-        const response2 = await fetch(cnPath +'views/custom_views.json');
+        const response2 = await fetch(cnPath + 'views/custom_views.json');
         const viewsData2 = await response2.json();
         const allViewsData = [...viewsData1, ...viewsData2];
-        const response3 = await fetch(cnPath +'settings.json');
+        const response3 = await fetch(cnPath + 'settings.json');
         const settingsData = await response3.json();
-        processViews(allViewsData,settingsData);
+        processViews(allViewsData, settingsData);
     } catch (error) {
         console.error('Error loading views:', error);
     }
@@ -1048,8 +1072,8 @@ async function SidebarPostBoot() {
     const switch_home = document.getElementById("switch_home");
 
     //only for home
-    switch_home.addEventListener('click', function() {
-        switchTab("content_sidebar_home",1)
+    switch_home.addEventListener('click', function () {
+        switchTab("content_sidebar_home", 1)
 
 
 
@@ -1057,31 +1081,31 @@ async function SidebarPostBoot() {
 
 
 
-    if (getVar("sb_minimized")=="false") {
+    if (getVar("sb_minimized") == "false") {
         const switch_sidebar = document.getElementById('switch_sidebar');
-        switch_sidebar.style.filter  = "brightness(0.8)";
+        switch_sidebar.style.filter = "brightness(0.8)";
     }
 
 
     document.addEventListener("keydown", handleKeyPress);
-    const sb =document.getElementById('content_sidebar_home');
+    const sb = document.getElementById('content_sidebar_home');
     const scrollToTopButton = document.getElementById("sb_scrollToTopButton");
-    scrollToTopButton.addEventListener("click", function() {
+    scrollToTopButton.addEventListener("click", function () {
         sb.scrollTo({
-          top: 0,
-          behavior: "smooth"
+            top: 0,
+            behavior: "smooth"
         });
-      });
+    });
 
 
 
-    sb.addEventListener("scroll", function() {
+    sb.addEventListener("scroll", function () {
 
-    if (sb.scrollTop > 0) {
-        scrollToTopButton.style.display = "block";
-    } else {
-        scrollToTopButton.style.display = "none";
-    }
+        if (sb.scrollTop > 0) {
+            scrollToTopButton.style.display = "block";
+        } else {
+            scrollToTopButton.style.display = "none";
+        }
     });
 
     const sidebarBookmarks = document.getElementById("sidebarBookmarks");
@@ -1114,7 +1138,7 @@ function SidebarBoot() {
         // Execute the function when the element is not an empty object
         //
         //MIGRATION
-migrationSettings()
+        migrationSettings()
 
         addSidebarStyles("css/base_style.css");
 

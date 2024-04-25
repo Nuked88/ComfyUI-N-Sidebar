@@ -230,9 +230,19 @@ function createContextMenu(event, subMenus,settingsData) {
 
     // Show context menu
     sbcontextMenu.style.display = 'block';
-    sbcontextMenu.style.left = event.clientX + 'px';
     sbcontextMenu.style.top = event.clientY + 'px';
-
+    if (sbPosition === "left") {
+    
+    sbcontextMenu.style.left = event.clientX + 'px';
+    } else {
+       // const sidebar_width =  getVar("sidebarWidth");
+        //console.log(parseInt(sidebar_width))
+        //console.log(event)
+        //console.log(event.clientX - parseInt(sidebar_width) )
+        //temp bugfix
+    sbcontextMenu.style.left =  event.layerX  + 'px';
+    }
+    
     // Hide context menu on body click
     document.body.addEventListener('click', hideContextMenu);
 }
