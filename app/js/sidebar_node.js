@@ -30,9 +30,12 @@ jsloader(cnPath + "js/functions/settings.js");
 
 let CUSTOM_COLORS;
 try {
-    const CONFIG_CORE = await api_get("/jovimetrix/config")
+    var response = await api.fetchApi("/jovimetrix/config", { cache: "no-store" })
+    const CONFIG_CORE =  await response.json()
     CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
-} catch { }
+} catch (err) {
+    console.log(err)
+}
 
 let categorySearchToggle = false;
 
