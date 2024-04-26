@@ -139,7 +139,7 @@ function settingsSetup(app,$el) {
         defaultValue: "10",
         type: "slider",
         attrs: {
-            min: 2,
+            min: 0,
             max: 40,
             step: 1,
         },
@@ -170,7 +170,7 @@ function settingsSetup(app,$el) {
         type: "slider",
         attrs: {
             min: 0,
-            max: 300,
+            max: 500,
             step: 1,
         },
         onChange(value) {
@@ -307,16 +307,15 @@ function settingsSetup(app,$el) {
     });
 
 
+  
+
+
     const switch_settings = document.getElementById("switch_settings");
-        const sb_modal_backdrop = document.getElementById("sb-modal-backdrop-settings");
+    const sb_modal_backdrop = document.getElementById("sb-modal-backdrop-settings");
         switch_settings.addEventListener('click', function() {
 
             //set sb-settingsDiv visible
-            
-            const sb_settingsDiv = document.getElementById("sb_settingsDiv");
-            
-            sb_settingsDiv.classList.remove('sb_hidden');
-            sb_modal_backdrop.classList.remove('sb_hidden');
+            showSettings();
 
         })
         document.body.addEventListener('click', function(event) {

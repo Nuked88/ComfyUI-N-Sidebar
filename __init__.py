@@ -50,6 +50,23 @@ class JSONConfigManager:
         self.data[parameter_name] = value
         self.write_json_file()
 
+
+# If is different from ComfyUISidebar, change it
+if __package__ != "ComfyUI-N-Sidebar":
+    RED = "\033[31m"
+    END = '\33[0m'
+    print(f"{RED}!!!{END}")
+    print(f"{RED}!!!{END}")
+    print(f"{RED}WARNING:'{__package__}' folder name is WRONG!!! Please rename it 'ComfyUI-N-Sidebar'.{END}")
+    print(f"{RED}!!!{END}")
+    print(f"{RED}!!!{END}")
+else:
+    print("ComfyUI-N-Sidebar is loading...") 
+    
+
+
+
+
 file_path = os.path.join(folder_paths.get_folder_paths("custom_nodes")[0],"ComfyUI-N-Sidebar","app","settings.json")
 
 
@@ -57,7 +74,7 @@ config_manager = JSONConfigManager(file_path)
 
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
-print(folder_paths.get_folder_paths("custom_nodes"))
+
 list_panels = os.path.join(folder_paths.get_folder_paths("custom_nodes")[0],"ComfyUI-N-Sidebar","app","panels")
 
 list_panels_array = []

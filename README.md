@@ -41,6 +41,7 @@ Maybe you don't need it. I need it >.<
 to your ComfyUI `custom_nodes` directory
 2. Enjoy!
 
+NOTE: If you choose to use a different method to install the ComfyUI-N-Sidebar, please ensure that you rename the folder to `ComfyUI-N-Sidebar`.
 
 # Uninstall
   - Delete the `ComfyUI-N-Sidebar` folder in `custom_nodes`
@@ -54,6 +55,7 @@ to your ComfyUI `custom_nodes` directory
 
 - `Alt+Z` to toggle show/hide sidebar
 - `Alt+X` to focus on the search field
+- `Alt+G` to open the settings
 
 # Features
 

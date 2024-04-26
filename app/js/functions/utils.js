@@ -504,3 +504,9 @@ document.body.addEventListener('click', function(event) {
 
 
  
+function showSettings() {
+    const sb_settingsDiv = document.getElementById("sb_settingsDiv");
+    const sb_modal_backdrop = document.getElementById("sb-modal-backdrop-settings");
+        sb_settingsDiv.classList.remove('sb_hidden');
+        sb_modal_backdrop.classList.remove('sb_hidden');
+}

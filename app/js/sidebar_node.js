@@ -919,6 +919,9 @@ function handleKeyPress(event) {
     if (event.altKey && event.key.toLowerCase() === "z") {
         toggleSHSB()
     }
+    if (event.altKey && event.key.toLowerCase() === "g") {
+        showSettings()
+    }
 }
 
 
