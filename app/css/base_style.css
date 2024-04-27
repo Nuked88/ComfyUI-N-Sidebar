@@ -267,6 +267,9 @@
         right: 0;
     }
 
+    #sb_scrollToTopButton.closed {
+        display: none !important;
+    }
 
     #sidebarBookmarks .pinButton {
 
