@@ -158,11 +158,67 @@ function settingsSetup(app,$el) {
             max: 300,
             step: 1,
         },
-        onChange(value) {
+        async onChange(value) {
             addDynamicCSSRule('.sidebar', 'padding-top', value + 'px');
+           
+            /*var element = document.getElementById('sidebar');
+   
+            const sb_barbottom_range = document.getElementById('sb_barbottom_range');
+            const sb_barbottom_span = document.getElementById('sb_barbottom_span');
+
+
+
+            let sb_bartop = await getConfiguration("sb_bartop")
+           var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            var rect = element.getBoundingClientRect();
+            console.log("viewportHeight: "+ viewportHeight);
+            console.log("value: "+value)
+            console.log("bottom: "+rect.bottom);
+            console.log("sb_bartop: "+sb_bartop)
+            if ((parseInt(rect.bottom)+parseInt(sb_bartop)) > (parseInt(viewportHeight)+parseInt(value))) {
+
+
+                let diff_height = (parseInt(rect.bottom)+parseInt(sb_bartop)) - (parseInt(viewportHeight)+parseInt(value) - 20);
+                //
+                console.log(diff_height);
+                addDynamicCSSRule('.sidebar', 'height', 'calc(100% - ' + diff_height + 'px');
+                updateConfiguration("sb_barbottom",diff_height);
+
+                try{
+                    //sb_barbottom_range.value = (parseInt(diff_height)+1);
+                    //sb_barbottom_span.innerText = (parseInt(diff_height)+1);
+              
+                    console.log("Not Visible")
+                    } catch(e) {
+                        console.log(e)
+                    }
+                console.log("NOT Visible")
+       
+            }
+
+            if (!isBottomEdgeVisible(element)) {
+               
+                // Get botton height value
+                let sb_barbottom = await getConfiguration("sb_barbottom")
+               
+                sb_barbottom = parseInt(sb_barbottom)+1
+                console.log(sb_barbottom);
+                updateConfiguration("sb_barbottom",(parseInt(sb_barbottom)));
+                addDynamicCSSRule('.sidebar', 'height', 'calc(100% - ' + (parseInt(sb_barbottom)+10) + 'px');
+                try{
+                sb_barbottom_range.value = (parseInt(sb_barbottom)+10);
+                sb_barbottom_span.innerText = (parseInt(sb_barbottom)+10);
+                console.log(sb_barbottom_range.value)
+                console.log("Not Visible")
+                } catch(e) {
+                    
+                }
+                
+            }*/
         }
     });
-    
+    var last_right_value = 0;
+    var element = document.getElementById('sidebar');
     addSBSetting( "sb_settingsDiv", {
         id: "barbottom",
         name: "Space Bottom",
@@ -173,10 +229,63 @@ function settingsSetup(app,$el) {
             max: 500,
             step: 1,
         },
-        onChange(value) {
+        async onChange(value) {
             addDynamicCSSRule('.sidebar', 'height', 'calc(100% - ' + value + 'px');
+
+           /* const sb_barbottom_range = document.getElementById('sb_barbottom_range');
+            const sb_barbottom_span = document.getElementById('sb_barbottom_span');
+            
+
+            let sb_bartop = await getConfiguration("sb_bartop")
+
+            var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+           var rect = element.getBoundingClientRect();
+     
+
+            if ((parseInt(rect.bottom)+parseInt(sb_bartop)) <= (parseInt(viewportHeight)+parseInt(value)+20)) {
+
+                addDynamicCSSRule('.sidebar', 'height', 'calc(100% - ' + value + 'px');
+                last_right_value = value
+                console.log("Visible")
+       
+            }
+            else {
+         
+                
+                try{
+                    let diff_height = (parseInt(rect.bottom)+parseInt(sb_bartop)) - (parseInt(viewportHeight)+parseInt(value));
+
+                 value = (parseInt(diff_height))
+                sb_barbottom_range.value = (parseInt(diff_height));
+                sb_barbottom_span.innerText = (parseInt(diff_height));
+                console.log(value)
+    
+                } catch(e) {
+                    
+                }
+            }
+
+*/
+            
         }
     });
+
+    //z-index sidebar
+    addSBSetting( "sb_settingsDiv",{
+        id: "zindex",
+        name: "Sidebar Z-Index",
+        defaultValue: "2",
+        type: "slider",
+        attrs: {
+            min: 2,
+            max: 1000,
+            step: 1,
+        },
+        onChange(value) {
+            addDynamicCSSRule('.sidebar', 'z-index', value);
+          
+        },
+    })
     
     addSBSetting( "sb_settingsDiv",{
         id: "noderadius",
@@ -381,6 +490,7 @@ async function addSBSetting(fieldLocation, setting) {
 
         inputElement = document.createElement("input");
         inputElement.type = "range";
+        inputElement.id = setting.id+"_range";
         inputElement.min = setting.attrs.min;
         inputElement.max = setting.attrs.max;
         inputElement.step = setting.attrs.step;
@@ -396,6 +506,7 @@ async function addSBSetting(fieldLocation, setting) {
         // Crea l'elemento per il valore testuale dello slider
         const valueText = document.createElement("span");
         valueText.textContent = await getConfiguration(setting.id) || setting.defaultValue;
+        valueText.id = setting.id+"_span";
         sliderContainer.appendChild(inputElement);
         sliderContainer.appendChild(valueText);
         settingElement.appendChild(sliderContainer);

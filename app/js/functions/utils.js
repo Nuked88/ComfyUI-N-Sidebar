@@ -510,3 +510,15 @@ function showSettings() {
         sb_settingsDiv.classList.remove('sb_hidden');
         sb_modal_backdrop.classList.remove('sb_hidden');
 }
+
+function isBottomEdgeVisible(el) {
+
+    var rect = el.getBoundingClientRect();
+    var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    if (rect.bottom <= viewportHeight) {
+        return true;
+    }
+
+    return false;
+}
