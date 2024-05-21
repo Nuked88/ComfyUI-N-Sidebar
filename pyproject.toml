@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-n-sidebar"
+description = ""
+version = "1.0.0"
+license = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/Nuked88/ComfyUI-N-Sidebar"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-N-Sidebar"
+Icon = ""
