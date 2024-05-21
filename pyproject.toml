@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-n-sidebar"
-description = ""
+description = "A simple sidebar for ComfyUI."
 version = "1.0.0"
 license = "LICENSE"
 
