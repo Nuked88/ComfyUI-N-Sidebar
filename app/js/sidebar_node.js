@@ -477,7 +477,6 @@ async function createCategoryList() {
                                 if (nodeData !== undefined) {
                                     let k = nodeData.category;
                                     while (k) {
-                                        console.info(k)
                                         color = CUSTOM_COLORS[k];
                                         if (color) {
                                             color = color.title;
