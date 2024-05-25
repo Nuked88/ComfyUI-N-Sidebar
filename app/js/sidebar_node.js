@@ -12,7 +12,8 @@ const cnPath = "../extensions/ComfyUI-N-Sidebar/"
 function jsloader(url) {
     return new Promise((resolve, reject) => {
         const script = document.createElement("script");
-        script.src = url;
+        const timestamp = new Date().getTime();
+        script.src = `${url}?v=${timestamp}`;
         script.type = "text/javascript";
         script.onload = () => resolve(script);
         script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
@@ -953,7 +954,8 @@ function processViews(viewsData, settingsData) {
 
         await Promise.all(view.panels.map(async (panel) => {
             try {
-                const response = await fetch(cnPath + `panels/${panel}/${panel}.html`);
+                const timestamp = new Date().getTime();
+                const response = await fetch(cnPath + `panels/${panel}/${panel}.html?v=${timestamp}`);
                 const html = await response.text();
 
                 if (html !== "404: Not Found") {
@@ -1046,13 +1048,13 @@ function processViews(viewsData, settingsData) {
 async function loadData() {
 
     try {
-
-        const response1 = await fetch(cnPath + 'views/views.json');
+        const timestamp = new Date().getTime();
+        const response1 = await fetch(`${cnPath}views/views.json?v=${timestamp}`);
         const viewsData1 = await response1.json();
-        const response2 = await fetch(cnPath + 'views/custom_views.json');
+        const response2 = await fetch(`${cnPath}views/custom_views.json?v=${timestamp}`);
         const viewsData2 = await response2.json();
         const allViewsData = [...viewsData1, ...viewsData2];
-        const response3 = await fetch(cnPath + 'settings.json');
+        const response3 = await fetch(`${cnPath}settings.json?v=${timestamp}`);
         const settingsData = await response3.json();
         processViews(allViewsData, settingsData);
     } catch (error) {

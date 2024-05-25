@@ -1,9 +1,10 @@
 const cnPath="../extensions/ComfyUI-N-Sidebar/"
 function addSidebarStyles(cssPath) {
+    const timestamp = new Date().getTime();
     const   linkElement = document.createElement("link");
             linkElement.rel = "stylesheet";
             linkElement.type = "text/css";
-            linkElement.href = cnPath+cssPath
+            linkElement.href =`${cnPath}${cssPath}?v=${timestamp}` 
     document.head.appendChild(linkElement);
     }
     
