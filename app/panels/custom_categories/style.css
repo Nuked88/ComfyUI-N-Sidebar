@@ -16,9 +16,9 @@ padding-top: 44px;
 }
 #custom_categories_header #h_search {
     position: absolute;
-width: calc(100% - 74px);
+width: calc(100% - 76px);
 margin-top: 0px;
-
+left: 10px;
 z-index: 400;
 
 }
@@ -33,8 +33,8 @@ border: 2px solid var(--border-color);
 color: var(--input-text);
 border-radius: 5px;
 float: right;
-position: absolute;
-margin: 2px 2px 2px 8px;
+position: relative;
+margin: 3px 2px 2px 8px;
 cursor: pointer;
 }
 
