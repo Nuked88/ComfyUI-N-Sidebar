@@ -471,22 +471,23 @@ async function createCategoryList() {
                         // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
                         //
                         if (CUSTOM_COLORS) {
-
                             let color = CUSTOM_COLORS[displayName.title];
+                            const nodeData = displayName?.nodeData;
                             if (color === undefined) {
-                                const segments = displayName.nodeData.category.split('/')
-                                let k = segments.join('/')
-                                while (k) {
-                                    color = CUSTOM_COLORS[k]
-                                    if (color) {
-                                        color = color.title
-                                        break
+                                if (nodeData !== undefined) {
+                                    let k = nodeData.category;
+                                    while (k) {
+                                        color = CUSTOM_COLORS[k];
+                                        if (color) {
+                                            color = color.title;
+                                            break;
+                                        }
+                                        const last = k.lastIndexOf('/');
+                                        k = last !== -1 ? k.substring(0, last) : '';
                                     }
-                                    const last = k.lastIndexOf('/')
-                                    k = last !== -1 ? k.substring(0, last) : ''
                                 }
                             } else {
-                                color = color.title
+                                color = color.title;
                             }
                             if (color) {
                                 displayNameItem.style = `background: ${color}`;
