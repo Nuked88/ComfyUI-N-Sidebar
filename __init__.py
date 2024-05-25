@@ -80,6 +80,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {}
 
 
 default_path = os.path.join(folder_paths.base_path, "workflows")
+
 try:
     list_workflows_dirs = config_manager.read_item("sb_wf_path").replace("\n\r", "\n").split('\n')
 except:
@@ -92,8 +93,9 @@ for list_workflows in list_workflows_dirs:
     if  os.path.isdir(list_workflows.strip()):
         workflow_dirs.append(list_workflows.strip())
 
+if os.path.isdir(default_path):
+    workflow_dirs.insert(0, default_path)
 
-workflow_dirs.insert(0, default_path)
 
 
 list_panels = os.path.join(os.path.dirname(os.path.realpath(__file__)),"app","panels")
