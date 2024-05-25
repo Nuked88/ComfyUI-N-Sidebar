@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-n-sidebar"
 description = "A simple sidebar for ComfyUI."
-version = "1.0.1"
+version = "1.1.0"
 license = "LICENSE"
 
 [project.urls]

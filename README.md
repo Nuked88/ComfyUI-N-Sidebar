@@ -11,6 +11,21 @@ For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
 # Updates
+- 25-05-2024
+  - Fixed some bugs
+  - Added Templates support**
+    - Added ability categorize custom categories
+    - Added preview (list of used nodes)
+    
+  - Added Workflow support!
+    - Added ability to rename workflows
+    - Added ability to remove workflows
+    - Added ability to categorize workflows
+    - Added preview (list of used nodes), (disabled by default)
+
+** i did not enabled the **rename** and **delete** because it's conflicing with the TemplateManager
+
+
 - 21-04-2024
   - Rewritten a lot of the code to improve performance and readability, and slightly adjusted the UI to ensure compatibility with future updates.
   - ADDED CUSTOM CATEGORIES
@@ -80,7 +95,6 @@ This feature is enabled by default, you can disable it in the settings. I've use
 ![Custom Categories](./images/custom_categories.gif)
 
 
-
 ### ➕Expand/Collapse Categories/Sidebar➖
 ![Expand/Collapse Categories and Sidebar](./images/expand_collapse.gif)
 
@@ -92,14 +106,21 @@ This feature is enabled by default, you can disable it in the settings. I've use
 ### 👁 Preview Node 👁
 ![Preview Node](./images/preview.gif)
 
+### 📄 Templates Support 📄
+![Templates Support](./images/templates.gif)
+
+#### 📄 Workflow Support 📄
+![Workflow Support](./images/workflows.gif)
+
 ### 🎨 ComfyUI Themes Support 🎨
 ![Themes Support ](./images/theme.gif)
 
 ### 🎨 New Settings Panel 🎨
 ![ComfyUI Settings](./images/settings.png)
 
-### Additional Features
-- Width and Minimized State of the sidebar are saved in cookies
+PS: Workflow Path 
+
+
 
 
 ### Todo:

@@ -3,6 +3,8 @@ import folder_paths
 from aiohttp import web
 import os
 import json
+from collections import OrderedDict
+from pathlib import Path
 
 
 
@@ -14,7 +16,8 @@ class JSONConfigManager:
             "menuctx_options": [],
             "menuctx_subOptions": [],
             "menuctx_opt_callback": [],
-            "menuctx_sub_opt_callback": []
+            "menuctx_sub_opt_callback": [],
+            "sb_wf_path": ""
             }"""
         if os.path.isfile(file_name):
             self.data = self.read_json_file()
@@ -67,7 +70,7 @@ else:
 
 
 
-file_path = os.path.join(folder_paths.get_folder_paths("custom_nodes")[0],"ComfyUI-N-Sidebar","app","settings.json")
+file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"app","settings.json")
 
 
 config_manager = JSONConfigManager(file_path)
@@ -75,14 +78,105 @@ config_manager = JSONConfigManager(file_path)
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
 
-list_panels = os.path.join(folder_paths.get_folder_paths("custom_nodes")[0],"ComfyUI-N-Sidebar","app","panels")
 
+default_path = os.path.join(folder_paths.base_path, "workflows")
+try:
+    list_workflows_dirs = config_manager.read_item("sb_wf_path").replace("\n\r", "\n").split('\n')
+except:
+    print("No 'sb_wf_path' in settings.json. Using default path.")
+    list_workflows_dirs = []
+
+workflow_dirs = []
+
+for list_workflows in list_workflows_dirs:
+    if  os.path.isdir(list_workflows.strip()):
+        workflow_dirs.append(list_workflows.strip())
+
+
+workflow_dirs.insert(0, default_path)
+
+
+list_panels = os.path.join(os.path.dirname(os.path.realpath(__file__)),"app","panels")
+
+list_workflows_array = []
 list_panels_array = []
 #list folders
 folders = os.listdir(list_panels)
 for folder in folders:
     if os.path.isdir(os.path.join(list_panels, folder)):
         list_panels_array.append(folder)
+
+
+
+@server.PromptServer.instance.routes.get("/sidebar/workflows" )
+async def s_get(request):
+    workflows_dict = {}
+    existing_names = set()
+
+    for list_workflows in workflow_dirs:
+        for entry in os.scandir(list_workflows):
+            if entry.is_file() and entry.name.endswith('.json'):
+                base_name = entry.name[:-5]  # Remove the '.json' extension
+                unique_name = base_name
+                
+                if unique_name in workflows_dict:
+                    folder_name = os.path.basename(list_workflows)
+                    unique_name = f"{base_name} (from {folder_name})"
+                
+                workflows_dict[unique_name] = entry.path
+                existing_names.add(unique_name)
+    sorted_workflows_dict = dict(sorted(workflows_dict.items()))
+
+    return web.json_response(sorted_workflows_dict, content_type='application/json')
+
+
+
+@server.PromptServer.instance.routes.post("/sidebar/workflow")
+async def s_get(request):
+
+    data = await request.json()
+
+    action = data["action"]
+
+    if action == "delete":
+        path = Path(data["path"])
+        os.remove(path)
+        result = {"result": "OK"}
+        return web.json_response(result, content_type='application/json')
+
+    elif action == "rename":
+        path = Path(data["path"])
+        newName = data["newName"]
+        
+        if not path.exists():
+                raise FileNotFoundError(f"The system cannot find the path specified: {path}")
+
+            # Ottieni la directory e il nuovo percorso
+        new_path = path.with_name(newName).with_suffix('.json')
+        if new_path.exists():
+             result = {"result": "File already exists!"}
+        else:
+            #rename 
+            os.rename(path, new_path)
+            result = {"result": "OK"}
+        return web.json_response(result, content_type='application/json')
+    else:
+        file = data["path"]
+
+        # if file exists
+        if os.path.isfile(file):
+        
+            return web.FileResponse(file)
+        else:
+            return web.Response(status=403)
+
+
+
+
+
+
+
+
 
 
 

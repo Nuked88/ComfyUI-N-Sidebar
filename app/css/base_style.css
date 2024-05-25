@@ -84,7 +84,7 @@
 
     }
 
-    .clearIcon, .searchCategoryIcon, .clearIconCustomCategory, .searchCategoryIconCustomCategory {
+    .clearIcon, .searchCategoryIcon, .clearIconCustomCategory, .searchCategoryIconCustomCategory, .clearIconCustomTemplate, .searchTemplateIconCustomTemplate, .clearIconCustomWorkflow, .searchWorkflowIconCustomWorkflow {
         position: absolute;
         padding: 5px;
         right: 30px;
@@ -98,11 +98,11 @@
     }
 
 
-    .clearIcon:hover, .clearIconCustomCategory:hover {
+    .clearIcon:hover, .clearIconCustomCategory:hover, .clearIconCustomTemplate:hover, .clearIconCustomWorkflow:hover {
         opacity: 1.0;
     }
 
-    .searchCategoryIcon, .searchCategoryIconCustomCategory {
+    .searchCategoryIcon, .searchCategoryIconCustomCategory, .searchTemplateIconCustomTemplate, .searchWorkflowIconCustomWorkflow {
         right: 0px;
         padding: 3px;
         font-size: larger;
@@ -117,7 +117,7 @@
 
     }
 
-    .searchCategoryIcon:hover, .searchCategoryIconCustomCategory:hover {
+    .searchCategoryIcon:hover, .searchCategoryIconCustomCategory:hover, .searchTemplateIconCustomTemplate:hover, .searchWorkflowIconCustomWorkflow:hover {
         opacity: 0.5;
     }
 
@@ -528,6 +528,7 @@
 
         border-radius: 5px;
         margin-left: 7px;
+ 
     }
 
     .panel_sidebar label{
@@ -648,6 +649,27 @@
      
     }
 
+    #sb_settingsDiv .setting  input[type="text"]{
+        background: var(--comfy-menu-bg);
+        color: var(--drag-text);
+        padding: 5px;
+        float: right;
+        width: 129px;
+        margin-right: 47px;
+        border-radius: 5px;
+        border: solid 1px var(--descrip-text);
+    }
+    #sb_settingsDiv .setting  textarea{
+        background: var(--comfy-menu-bg);
+        color: var(--drag-text);
+        padding: 5px;
+        float: right;
+        width: calc(100% - 60px);
+        resize: vertical;
+        margin-right: 47px;
+        border-radius: 5px;
+        border: solid 1px var(--descrip-text);
+    }
     #sb_settingsDiv .setting input[type="checkbox"]{
         width: 18px;
         height: 18px;
@@ -756,4 +778,9 @@
   #switch_sidebar{
 
     margin-top: 5px;
+  }
+
+  #sbModal{
+    display: none;
+    z-index: 9999;
   }

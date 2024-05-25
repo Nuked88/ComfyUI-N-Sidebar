@@ -3,7 +3,9 @@ import { api } from "../../../../scripts/api.js"
 import { app } from "../../../../scripts/app.js";
 import { $el } from "../../../../scripts/ui.js";
 import { fuzzyMatch } from "./fts_fuzzy_match.js";
+import { GroupNodeConfig, GroupNodeHandler } from "../../../../extensions/core/groupNode.js";
 
+const gnc = GroupNodeConfig;
 //import {settingsSetup} from './functions/settings.jsb';
 console.time('execution time');
 const cnPath = "../extensions/ComfyUI-N-Sidebar/"
@@ -93,7 +95,7 @@ function postPinned() {
 
                     previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
                 }
-                let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
+                let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
                 previewDiv.style.top = `${previewDivTop}px`;
                 const previewDivLeft = sidebar_width - sidebad_view_width;
 
@@ -112,13 +114,7 @@ function postPinned() {
             previewDiv.style.display = 'none';
         })
 
-
-
-
         reloadCtxMenu()
-
-
-
 
     });
 
@@ -228,8 +224,11 @@ async function loadPinnedItemsAndAddToBookmarks() {
 
 
         if (item) {
+            try{
             let addedItem = sidebarBookmarks.appendChild(item.cloneNode(true));
             addedItem.lastChild.lastChild.classList.add("pinned");
+
+            }catch(err){   }
         }
     });
 
@@ -579,7 +578,7 @@ async function createCategoryList() {
                             previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
                         }
 
-                        let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
+                        let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
 
 
                         previewDiv.style.top = `${previewDivTop}px`;
@@ -755,13 +754,7 @@ async function addSidebar() {
     });
 
 
-    function convertCanvasToOffset(canvas, pos, out) {
-        out = out || [0, 0];
-        out[0] = pos[0] / canvas.scale - canvas.offset[0];
-        out[1] = pos[1] / canvas.scale - canvas.offset[1];
-        return out;
-    };
-
+    
 
     function handleDrop(event) {
         event.preventDefault();
@@ -973,7 +966,7 @@ function processViews(viewsData, settingsData) {
                     div_panel_title.classList = "panel_sidebar_title sb_label";
                     div_panel_title.id = "panel_title_" + panel;
 
-                    div_panel_title.innerHTML = panel.replace("_", " ");
+                    div_panel_title.innerHTML = view.id.replace("_", " ");
 
 
 
@@ -987,6 +980,7 @@ function processViews(viewsData, settingsData) {
 
                     div_view.insertAdjacentElement('beforeend', div_panel);
                     jsloader(`${cnPath}panels/${panel}/${panel}.jsb`);
+                    //window.custom_templates();
                     console.log("LOADING " + cnPath + `panels/${panel}/${panel}.js`)
                 }
             } catch (error) {

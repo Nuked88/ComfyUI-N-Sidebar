@@ -1,11 +1,31 @@
 [
     {
-        "id": "custom_view",
+        "id": "custom_categories",
         "icon": "⧉",
         "description": "Custom Node Categories",
         "panels": [
             "custom_categories"
+            
+        ]
+    },
+
+    {
+        "id": "templates",
+        "icon": "Τ",
+        "description": "Custom Node templates",
+        "panels": [
+            "custom_templates"
+        ]
+    },
+
+    {
+        "id": "workflows",
+        "icon": "W",
+        "description": "Custom Node workflows",
+        "panels": [
+            "custom_workflows"
         ]
     }
+
    
 ]

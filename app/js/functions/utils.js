@@ -93,7 +93,6 @@
     function addJavascriptVar(name, value) {
         const scripta = document.createElement('script');
         scripta.type = 'text/javascript';
-        console.log("var "+name+" = "+value)
         scripta.innerHTML = "var "+name+" = "+value;
 
         document.head.appendChild(scripta);
@@ -212,16 +211,37 @@ function createContextMenu(event, subMenus,settingsData) {
             showSubMenu(subMenus[index], li);
         });
         try {
+            
+
+
+        if (settingsData.menuctx_opt_callback[index].indexOf(".") !== -1) {
+
+            // Handle sub menu option
+            var mainfunc = settingsData.menuctx_opt_callback[index].split(".")[0];
+            var subfunc = settingsData.menuctx_opt_callback[index].split(".")[1];
+            if (typeof (window[mainfunc][subfunc]) === 'function') {
+                
+            
+                li.addEventListener('click', () => {
+                    // Handle sub menu click
+                    window[mainfunc][subfunc](event);
+                });
+            
+            }
+        }
+        else{
+
         if (typeof (window[settingsData.menuctx_opt_callback[index]]) === 'function') {
             li.addEventListener('click', () => {
                 // Handle main option click
-                //alert(`Selected option: ${option}`);
+                
             
             
                 window[settingsData.menuctx_opt_callback[index]](event); 
             
             }); 
         }
+    }
         } catch (error) {
             console.log(error);
         }
@@ -368,9 +388,16 @@ window.addEventListener("click", function(event) {
 
 
 // Function to check for special characters 
-function containsSpecialCharacters(name) {
+function containsSpecialCharacters(name, level=0) {
     // Define a regular expression pattern to match special characters
-    var specialCharacters = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    if (level == 0) {
+        var specialCharacters = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    } else if (level == 1) {
+        var specialCharacters = /[\*':"\\|,<>\/?]/g;
+    } else{
+        var specialCharacters = /['"]/gi;
+    }
+   
     // Return true if the name contains any special characters, false otherwise
     return specialCharacters.test(name);
 }
@@ -442,7 +469,11 @@ function openModal(addon=null) {
     closeModalButton.addEventListener('click', closeModal);
 try{
     // Focus the input field
-    document.getElementById('sb-categoryName').focus();
+    inputElement = document.getElementById('sb-categoryName');
+    inputElement.focus();
+    const length = inputElement.value.length;
+    inputElement.setSelectionRange(length, length);
+
 }catch(err){
     
 }
@@ -454,11 +485,16 @@ try{
 function closeModal() {
     const modalBackdrop = document.querySelector('.sb-modal-backdrop');
     const modal = document.querySelector('.sb-category-dialog');
-
+    try{
     // Remove the modal from the DOM
     modalBackdrop.parentNode.removeChild(modalBackdrop);
     modal.parentNode.removeChild(modal);
+    }
+    catch(err){
+        console.log(err);
+    }
 }
+
 
 function rgbToHex(rgb) {
     // Verifica se il colore è nel formato "rgb()"
@@ -522,3 +558,10 @@ function isBottomEdgeVisible(el) {
 
     return false;
 }
+
+function convertCanvasToOffset(canvas, pos, out) {
+    out = out || [0, 0];
+    out[0] = pos[0] / canvas.scale - canvas.offset[0];
+    out[1] = pos[1] / canvas.scale - canvas.offset[1];
+    return out;
+};

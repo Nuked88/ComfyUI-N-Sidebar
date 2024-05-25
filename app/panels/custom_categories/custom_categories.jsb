@@ -512,6 +512,13 @@ async function renameCategory(oldCategoryName, newCategoryName) {
     }
 
     let categoryNodeMap = await getNodeMap();
+
+    if (categoryNodeMap[newCategoryName]) {
+        alert("Category already exists!");
+        return;
+    }
+
+    
     let categoryNodeStatus = getNodesStatus();
     if (categoryNodeMap[oldCategoryName]) {
         // Categoty Current Order

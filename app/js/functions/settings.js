@@ -4,30 +4,36 @@ let sbPosition = "left";
 let defaultSearchToggle = "fuzzy";
 let defaultSearchOrder = "comfyui";
 
-async function getConfiguration(name) {
+async function getConfiguration(name,local = false) {
 	//console.log("getStyles called " + name);
       try {
-    const response = await fetch('/sidebar/settings', {
-        cache: "no-store",
-		method: 'POST',
-		headers: {
-		  'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-            action : "read",
-		    parameter: name
-		    
-		}),
-		  
-	  });
-     
-      const data = await response.json();
+        if (local) {
+            return localStorage.getItem(name);
+        } else {
+            
+       
+            const response = await fetch('/sidebar/settings', {
+                cache: "no-store",
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action : "read",
+                    parameter: name
+                    
+                }),
+                
+            });
+          
+            const data = await response.json();
 
-      return data["value"];
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+            return data["value"];
+  } 
+            } catch (error) {
+                console.log(error);
+                return null;
+            }
     }
 
   function addConfiguration(name,value) {
@@ -45,7 +51,11 @@ async function getConfiguration(name) {
 	  })
   }
 
-  function updateConfiguration(name,value) {
+  function updateConfiguration(name,value,local = false) {
+    if (local) {
+        return  localStorage.setItem(name,value)
+    } else {
+        
 	return fetch('/sidebar/settings', {
 		method: 'POST',
 		headers: {
@@ -57,6 +67,8 @@ async function getConfiguration(name) {
 		    value: value
 		}),
 	})
+
+    }
 }
 
 function removeConfiguration(name) {
@@ -91,9 +103,9 @@ function factoryResetSettings() {
 
 
 
-function settingsSetup(app,$el) {
+async function settingsSetup(app,$el) {
 
-  
+    
     app.ui.settings.addSetting({
         id: "0_sidebar",
         name: "[Sidebar] Better ComfyUI Settings Style",
@@ -118,6 +130,33 @@ function settingsSetup(app,$el) {
     });
 
   
+    addSBSetting( "sb_settingsDiv",{
+        id: "workflow_preview",
+        name: "Enable Workflow Node List",
+        defaultValue: "false",
+        type: "boolean",
+        local: true,
+        info: "This is disabled by default since workflows preview can be slow.",
+       
+   
+        onChange(value) {
+            
+        },
+    });
+
+    addSBSetting( "sb_settingsDiv",{
+        id: "workflow_replace",
+        name: "Workflow Replace Popup",
+        defaultValue: "true",
+        type: "boolean",
+        local: true,
+       
+   
+        onChange(value) {
+            
+        },
+    });
+    
     addSBSetting( "sb_settingsDiv",{
         id: "font",
         name: "Font Size",
@@ -147,7 +186,7 @@ function settingsSetup(app,$el) {
             addDynamicCSSRule('.sidebar li', 'padding', value + 'px');
         },
     });
-    
+   
     addSBSetting( "sb_settingsDiv", {
         id: "bartop",
         name: "Space Top",
@@ -395,7 +434,7 @@ function settingsSetup(app,$el) {
         },
     });
 
-    addSBSetting( "sb_settingsDiv", {
+    await addSBSetting( "sb_settingsDiv", {
         id: "order_type",
         name: "Nodes Order Type",
         defaultValue: "comfyui",
@@ -414,6 +453,23 @@ function settingsSetup(app,$el) {
      
         },
     });
+
+
+    addSBSetting( "sb_settingsDiv", {
+        id: "wf_path",
+        name: "Workflow Paths",
+        defaultValue: "",
+        type: "textarea",
+        info: "Paths must be row separated (only one per row).\nThe default ComfyUI workflows path has already been set.\nReboot ComfyUI to apply changes!",
+       
+        onChange(value) {
+            
+            NaN
+  
+     
+        },
+    });
+
 
 
   
@@ -446,18 +502,22 @@ function settingsSetup(app,$el) {
             factoryReset();
             
         })
+
+
+
+       
         
 }
 
 
 async function addSBSetting(fieldLocation, setting) {
-    setting.id = "sb_" + setting.id; // Aggiunge il prefisso del campo
+    setting.id = "sb_" + setting.id; 
 
-    // Crea l'elemento HTML per il campo di impostazione
+  
     const settingElement = document.createElement("div");
     settingElement.classList.add("setting");
     
-    // Aggiungi il nome del campo
+
     const nameLabel = document.createElement("label");
     nameLabel.textContent = setting.name;
     settingElement.appendChild(nameLabel);
@@ -471,20 +531,27 @@ async function addSBSetting(fieldLocation, setting) {
         nameLabel.appendChild(infoIcon);
     }
 
-    // Aggiungi il tipo appropriato di input per il campo
+    
     let inputElement;
     if (setting.type === "boolean") {
         inputElement = document.createElement("input");
         inputElement.type = "checkbox";
-        inputElement.checked = await getConfiguration(setting.id) || setting.defaultValue;
+ 
+        let configValue = await getConfiguration(setting.id, setting.local) || setting.defaultValue;
+        if (configValue == "true") {
+            inputElement.checked = true;
+        } else if (configValue == "false") {
+            inputElement.checked = false;
+        } 
+        
         setting.onChange(inputElement.checked);
         inputElement.addEventListener("change", function() {
             setting.onChange(inputElement.checked);
-            updateConfiguration(setting.id,inputElement.checked)
+            updateConfiguration(setting.id,inputElement.checked, setting.local)
             
         });
     } else if (setting.type === "slider") {
-        // Crea l'elemento input per lo slider
+    
         const sliderContainer = document.createElement("div");
         sliderContainer.classList.add("slider-container");
 
@@ -497,19 +564,20 @@ async function addSBSetting(fieldLocation, setting) {
         inputElement.value = await getConfiguration(setting.id) || setting.defaultValue || setting.defaultValue;
         setting.onChange(inputElement.value);
         inputElement.addEventListener("input", function() {
-            // Aggiorna il valore del campo testuale quando lo slider viene spostato
+         
             valueText.textContent = inputElement.value;
             setting.onChange(inputElement.value);
             updateConfiguration(setting.id,inputElement.value)
         });
 
-        // Crea l'elemento per il valore testuale dello slider
+        
         const valueText = document.createElement("span");
         valueText.textContent = await getConfiguration(setting.id) || setting.defaultValue;
         valueText.id = setting.id+"_span";
         sliderContainer.appendChild(inputElement);
         sliderContainer.appendChild(valueText);
         settingElement.appendChild(sliderContainer);
+
     } else if (setting.type === "text") {
         inputElement = document.createElement("input");
         inputElement.type = "text";
@@ -519,7 +587,18 @@ async function addSBSetting(fieldLocation, setting) {
             setting.onChange(inputElement.value);
             updateConfiguration(setting.id,inputElement.value)
         });
-    } else if (setting.type === "dropdown") {
+    } 
+    else if (setting.type === "textarea") {
+        inputElement = document.createElement("textarea");
+        inputElement.rows = 3;
+        inputElement.value = await getConfiguration(setting.id) || setting.defaultValue;
+        setting.onChange(inputElement.value);
+        inputElement.addEventListener("input", function() {
+            setting.onChange(inputElement.value);
+            updateConfiguration(setting.id,inputElement.value)
+        });
+    }
+    else if (setting.type === "dropdown") {
         inputElement = document.createElement("select");
         const defaultValue = await getConfiguration(setting.id) || setting.defaultValue;
         setting.options.forEach(async (option) => {
@@ -541,7 +620,7 @@ async function addSBSetting(fieldLocation, setting) {
 
     settingElement.appendChild(inputElement);
 
-    // Aggiungi il campo di impostazione al luogo specificato
+    
     const targetElement = document.getElementById(fieldLocation);
     if (targetElement) {
         targetElement.appendChild(settingElement);
@@ -552,12 +631,9 @@ async function addSBSetting(fieldLocation, setting) {
     
 }
 
-   
-
-
 
 function resetSettings() {
-    let ok = confirm("This option will reset the following settings: \n-Search Type\n-Position\n-Nodes Order Type\n-Font Size\n-Node Size\n-Space Top\n-Space Bottom\n-Node Radius Border\n-Blur Intesity\n-Opacity\nAre you sure you want to reset these settings?");
+    let ok = confirm("This option will reset the following settings: \n-Search Type\n-Position\n-Nodes Order Type\n-Font Size\n-Node Size\n-Space Top\n-Space Bottom\n-Node Radius Border\n-Blur Intesity\n-Opacity\nsidebarWidth\nsb_pinned_collapsed\nsb_minimized\nsb_current_tab\nsb_workflow_preview\nsb_workflow_replace\nAre you sure you want to reset these settings?");
     if (!ok) {
         return;
     }
@@ -565,6 +641,16 @@ function resetSettings() {
     actualSettings.forEach(setting => {
         removeConfiguration(setting);
     });
+
+    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace"];
+
+    localSettings.forEach(setting => {
+        try{
+        removeVar(setting);
+        }catch(err){
+            console.log(err)
+        }
+    })
 
     window.location.reload();
 }
@@ -577,7 +663,7 @@ function factoryReset() {
     }
     factoryResetSettings();
 
-    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_current_tab"];
+    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace"];
 
     localSettings.forEach(setting => {
         try{
