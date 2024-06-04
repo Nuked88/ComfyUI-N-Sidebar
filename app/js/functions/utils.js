@@ -213,7 +213,6 @@ function createContextMenu(event, subMenus,settingsData) {
         try {
             
 
-
         if (settingsData.menuctx_opt_callback[index].indexOf(".") !== -1) {
 
             // Handle sub menu option
@@ -234,9 +233,6 @@ function createContextMenu(event, subMenus,settingsData) {
         if (typeof (window[settingsData.menuctx_opt_callback[index]]) === 'function') {
             li.addEventListener('click', () => {
                 // Handle main option click
-                
-            
-            
                 window[settingsData.menuctx_opt_callback[index]](event); 
             
             }); 
@@ -244,6 +240,7 @@ function createContextMenu(event, subMenus,settingsData) {
     }
         } catch (error) {
             console.log(error);
+            
         }
         menuOptions.appendChild(li);
     });
@@ -334,17 +331,41 @@ async function setContextMenu(settingsData,class_menu_item,main=0,exluded_class=
             subMenu.appendChild(li);
             try {
           
-            if (typeof (window[settingsData.menuctx_sub_opt_callback[i][j]]) === 'function') {
-                li.addEventListener('click', () => {
-                    // Handle main option click
-           
-                    //alert(`Selected option: ${settingsData.menuctx_subOptions[i][j]}`);
-                
-                
-                    window[settingsData.menuctx_sub_opt_callback[i][j]](lastTargetClicked,settingsData.menuctx_subOptions[i][j]); 
-                
-                }); 
+                if (settingsData.menuctx_sub_opt_callback[i][j].indexOf(".") !== -1) {
+
+                    // Handle sub menu option
+                    var mainfunc = settingsData.menuctx_sub_opt_callback[i][j].split(".")[0];
+                    var subfunc = settingsData.menuctx_sub_opt_callback[i][j].split(".")[1];
+                    if (typeof (window[mainfunc][subfunc]) === 'function') {
+                        
+                    
+                        li.addEventListener('click', () => {
+                            // Handle sub menu click
+                        
+                            window[mainfunc][subfunc](lastTargetClicked,settingsData.menuctx_subOptions[i][j]);
+
+                        });
+                    
+                    }
+                }
+                else{
+        
+                    if (typeof (window[settingsData.menuctx_sub_opt_callback[i][j]]) === 'function') {
+                        li.addEventListener('click', () => {
+                            // Handle main option click
+                  
+                        
+                            window[settingsData.menuctx_sub_opt_callback[i][j]](lastTargetClicked,settingsData.menuctx_subOptions[i][j]); 
+                        
+                        }); 
+                    }
             }
+
+
+
+
+
+
             } catch (error) {
                 console.log(error);
             }
@@ -411,24 +432,24 @@ async function reloadCtxMenu() {
 
 }
 
-function setNodeStatus(node,status) {
-    try{
-        const categoryNodeStatus = JSON.parse(localStorage.getItem('sb_categoryNodeStatus')) || {};
+function setNodeStatus(varname,node,status) {
+    try{//'sb_categoryNodeStatus'
+        const categoryNodeStatus = JSON.parse(localStorage.getItem(varname)) || {};
         categoryNodeStatus[node] = [status];
-        localStorage.setItem('sb_categoryNodeStatus', JSON.stringify(categoryNodeStatus));
+        localStorage.setItem(varname, JSON.stringify(categoryNodeStatus));
     }catch(err){ }
 }
 
-function getNodeStatus(node) {
+function getNodeStatus(varname,node) {
     try{
-        const categoryNodeStatus = JSON.parse(localStorage.getItem('sb_categoryNodeStatus')) || {};
+        const categoryNodeStatus = JSON.parse(localStorage.getItem(varname)) || {};
         return categoryNodeStatus[node] || "none";
     }catch(err){ }
     return "none";
 }
 
 function getNodesStatus() {
-    let categoryNodeStatus = JSON.parse(localStorage.getItem('sb_categoryNodeStatus')) || {};
+    let categoryNodeStatus = JSON.parse(localStorage.getItem(varname)) || {};
     return categoryNodeStatus;
 }
 

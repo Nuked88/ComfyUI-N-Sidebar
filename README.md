@@ -11,6 +11,25 @@ For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
 # Updates
+
+- 04-06-2024
+  - Fixed some bugs
+  - Changed icon bar positioning to the border of the screen
+  - Implemented the DAMN subcategory view on the node panel!!! xD (you can disable it in the settings if you don't want it)
+  - Added the ability to disable the "Auto Show" feature
+  - Added the ability to view folders inside the workflow panel
+  - Added some tooltips for better UX
+  - Changed the Custom Node Categories icon (I didn't like the old one)
+  - Added a little icon in custom categories and folders/subcategories
+  - Added the ability to move workflows in custom categories via the context menu
+  - Added the ability to open workflows in another TAB
+
+NOTE: If you had some custom categories in the workflow panel, at the first start they will be migrated to the new system (since I did a full rewrite to support the folders). It is possible that you need to refresh the page more than once to see them again. Also, a backup of the settings.json will be created before the migration in case anything goes wrong.
+
+NOTE2: I hope I did not break anything T_T
+
+
+
 - 25-05-2024
   - Fixed some bugs
   - Added Templates support**
@@ -65,6 +84,11 @@ NOTE: If you choose to use a different method to install the ComfyUI-N-Sidebar, 
 # Update
 1. Navigate to the cloned repo e.g. `custom_nodes/ComfyUI-N-Sidebar`
 2. `git pull`
+
+
+# Settings
+The most important settings are stored in `custom_nodes/ComfyUI-N-Sidebar/settings.json`
+
 
 # Keyboard Shortcuts
 
@@ -129,6 +153,10 @@ PS: Workflow Path
 - [x] Color integration with Jovimetrix
 - [x] Better search
 - [x] Custom Categories!!
+- [x] Workflows
+- [x] Templates
+- [ ] Custom Shortcuts
+- [ ] Export and Import Settings
 
 
 

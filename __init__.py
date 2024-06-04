@@ -5,6 +5,8 @@ import os
 import json
 from collections import OrderedDict
 from pathlib import Path
+import base64
+import shutil
 
 
 
@@ -52,6 +54,55 @@ class JSONConfigManager:
     def add_item(self, parameter_name, value):
         self.data[parameter_name] = value
         self.write_json_file()
+
+def generate_id(file_path):
+    
+    encoded_bytes = base64.b64encode(file_path.encode('utf-8'))
+    encoded_str = str(encoded_bytes, 'utf-8')
+    return encoded_str
+
+
+"""
+def scan_directory(directory, workflows_dict, existing_names, main_path = ''):
+    for entry in os.scandir(directory):
+        if entry.is_file() and entry.name.endswith('.json'):
+            base_name = entry.name[:-5]  # Remove the '.json' extension
+            #unique_name = base_name
+            
+            #if unique_name in workflows_dict:
+            #    folder_name = os.path.basename(directory)
+            #    unique_name = f"{base_name} (from {folder_name})"
+            
+            subfolder = entry.path.replace(main_path, '').replace(entry.name, '')
+
+            workflows_dict[base_name] = {"name": base_name,"path": entry.path, "subfolder": subfolder}
+            existing_names.add(base_name)
+        elif entry.is_dir():
+            scan_directory(entry.path, workflows_dict, existing_names,main_path)
+
+"""
+
+def scan_directory(directory, workflows_dict, existing_names, main_path=''):
+    for entry in os.scandir(directory):
+        if entry.is_file() and entry.name.endswith('.json'):
+            base_name = entry.name[:-5]  # Remove the '.json' extension
+            subfolder = entry.path.replace(main_path, '').replace(entry.name, '')
+            
+            unique_id = generate_id(entry.path)
+            workflows_dict[unique_id] = {
+                "name": base_name,
+                "path": entry.path,
+                "subfolder": subfolder
+            }
+            existing_names.add(base_name)
+        elif entry.is_dir():
+            scan_directory(entry.path, workflows_dict, existing_names, main_path)
+
+
+
+
+
+
 
 
 # If is different from ComfyUISidebar, change it
@@ -109,6 +160,21 @@ for folder in folders:
         list_panels_array.append(folder)
 
 
+@server.PromptServer.instance.routes.get("/sidebar/backup" )
+async def s_get(request):
+    backup_path = file_path + ".bak"
+
+    try:
+        # Crea una copia di settings.json come settings.json.bak
+        shutil.copyfile(file_path, backup_path)
+    except Exception as e:
+        result = {"result": "ERROR", "message": str(e)}
+        return web.json_response(result, content_type='application/json')
+
+    result = {"result": "OK"}
+    return web.json_response(result, content_type='application/json')
+
+
 
 @server.PromptServer.instance.routes.get("/sidebar/workflows" )
 async def s_get(request):
@@ -116,18 +182,9 @@ async def s_get(request):
     existing_names = set()
 
     for list_workflows in workflow_dirs:
-        for entry in os.scandir(list_workflows):
-            if entry.is_file() and entry.name.endswith('.json'):
-                base_name = entry.name[:-5]  # Remove the '.json' extension
-                unique_name = base_name
-                
-                if unique_name in workflows_dict:
-                    folder_name = os.path.basename(list_workflows)
-                    unique_name = f"{base_name} (from {folder_name})"
-                
-                workflows_dict[unique_name] = entry.path
-                existing_names.add(unique_name)
-    sorted_workflows_dict = dict(sorted(workflows_dict.items()))
+        scan_directory(list_workflows, workflows_dict, existing_names, list_workflows)
+
+    sorted_workflows_dict = dict(sorted(workflows_dict.items(), key=lambda x: x[1]["name"].lower()))
 
     return web.json_response(sorted_workflows_dict, content_type='application/json')
 
@@ -153,10 +210,10 @@ async def s_get(request):
         if not path.exists():
                 raise FileNotFoundError(f"The system cannot find the path specified: {path}")
 
-            # Ottieni la directory e il nuovo percorso
         new_path = path.with_name(newName).with_suffix('.json')
+
         if new_path.exists():
-             result = {"result": "File already exists!"}
+            result = {"result": "File already exists!"}
         else:
             #rename 
             os.rename(path, new_path)

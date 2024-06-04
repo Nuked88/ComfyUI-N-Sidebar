@@ -8,6 +8,7 @@
 #custom_workflows_main{
 
 padding-top: 44px;
+padding-bottom: 150px;
 }
 #custom_workflows_header  {
     margin: 10px 20px;
@@ -42,6 +43,23 @@ cursor: pointer;
     border: 2px solid var(--descrip-text);
 
 }
+
+
+.sidebarFolder {
+    list-style-type: none;
+    font-family: 'Open Sans', sans-serif;
+    text-transform: capitalize;
+    margin: 2px;
+    background-color: var(--comfy-input-bg);
+    opacity: 1;
+    border-radius: 8px;
+    padding-top: 11px;
+    font-size: 15px;
+    padding-bottom: 8px;
+}
+
+
+
 .sb-workflow-dialog {
 outline: 0;
 border: 0;
@@ -136,4 +154,15 @@ border: 1px solid var(--border-color);
 }
 #refreshlButton{
      margin-left: 48px !important;
+}
+
+
+.TIPSidebarItem {
+    color: var(--border-color);
+
+    font-family: 'Open Sans';
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+
 }

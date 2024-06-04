@@ -33,6 +33,7 @@ const panel_title_custom_categories = document.getElementById("panel_title_custo
 
 const button_custom_categories = document.createElement("button");
 button_custom_categories.classList = "expand_node";
+button_custom_categories.title = "Expand/Collapse";
 button_custom_categories.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
 <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"></path>
 <path d="M48,39.5c0-0.8-0.7-1.5-1.5-1.5h-41C4.7,38,4,38.7,4,39.5v3C4,43.3,4.7,44,5.5,44h41c0.8,0,1.5-0.7,1.5-1.5
@@ -120,6 +121,8 @@ function afterRender() {
             ]
         ]
     }`
+
+    
     customMenuJSON = JSON.parse(customMenu);
     customMenuItemJSON = JSON.parse(customMenuItem);
 
@@ -221,7 +224,7 @@ async function renderList(elementID) {
             const categoryItem = document.createElement("li");
             categoryItem.classList.add("sidebarCategory");
             categoryItem.dataset.namecategory = categoryName;
-            categoryItem.textContent = categoryName;
+            categoryItem.textContent = "⌬ " + categoryName;
             categoryItem.draggable = true;
 
             const currentColor = await getValueFromConfig("sb_ColorCustomCategories", categoryName);
@@ -238,7 +241,7 @@ async function renderList(elementID) {
 
             const displayNamesList = document.createElement("ul");
             displayNamesList.id = categoryName + "_ul";
-            displayNamesList.style.display = getNodeStatus(categoryName);
+            displayNamesList.style.display = getNodeStatus('sb_categoryNodeStatus',categoryName);
             categoryItem.appendChild(displayNamesList);
 
             let displayName = category;
@@ -365,7 +368,7 @@ async function renderList(elementID) {
 
                     previewDiv.style.top = `${previewDivTop}px`;
 
-                    const  previewDivLeft = sidebar_width - sidebad_view_width;
+                    const  previewDivLeft = sidebar_width - sidebad_view_width + correction_offset;
             
                     if (sbPosition == "left") {
 
@@ -416,7 +419,7 @@ async function renderList(elementID) {
 
                     displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
 
-                    setNodeStatus(displayNamesList.parentElement.dataset.namecategory, displayNamesList.style.display)
+                    setNodeStatus('sb_categoryNodeStatus',displayNamesList.parentElement.dataset.namecategory, displayNamesList.style.display)
                 }
             });
 
@@ -466,7 +469,6 @@ function getNodesStatus() {
 
 async function addCategory() {
 
-
     const newCategoryName = document.getElementById('sb-categoryName').value;
     // Check if the category name contains special characters
     if (containsSpecialCharacters(newCategoryName)) {
@@ -475,11 +477,7 @@ async function addCategory() {
         return;
     }
 
-
-
-
     let categoryNodeMap = await getNodeMap();
-
 
     if (!categoryNodeMap[newCategoryName]) {
 
@@ -638,10 +636,6 @@ async function removeKeyConfig(configName) {
 
 
 
-
-
-
-
 ////////////////////////////////////////////////
 
 async function getCategoriesForNode(nodeName) {
@@ -667,7 +661,6 @@ async function getNodesForCategory(categoryName) {
 
 async function assignNodeToCategory(nodeName, categoryNames) {
     let categoryNodeMap = await getNodeMap();
-
     let assignedCategories = await getCategoriesForNode(nodeName);
     categoryNames = categoryNames.filter(category => !assignedCategories.includes(category));
 
@@ -767,11 +760,6 @@ function colorCategoryCallback(e) {
 
 
 
-
-
-
-
-
 async function colorCategory(name, value) {
 
 
@@ -800,7 +788,9 @@ async function createContextualMenu() {
     new_menu_options_callback = [];
     new_submenu_options_callback = [];
     new_menu_options.push("Add to category");
-
+    /*new_menu_options.push("Pin It");
+    new_menu_options_callback.push("dummy");
+    new_menu_options_callback.push("test_altert");*/
     //for each category
     category_menu = await readCategories();
     callback_menu = [];
@@ -824,6 +814,11 @@ function test_altert(e, trge) {
 
     assignNodeToCategory(e.target.id, [trge]);
 }
+
+function dummy(e, trge) {
+
+}
+
 
 
 const searchCategoryIconCustomCategory = document.querySelector(".searchCategoryIconCustomCategory");

@@ -112,6 +112,7 @@ var custom_templates = (function () {
 
     const button_custom_templates = document.createElement("button");
     button_custom_templates.classList = "expand_node";
+    button_custom_templates.title = "Expand/Collapse";
     button_custom_templates.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
 <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"></path>
 <path d="M48,39.5c0-0.8-0.7-1.5-1.5-1.5h-41C4.7,38,4,38.7,4,39.5v3C4,43.3,4.7,44,5.5,44h41c0.8,0,1.5-0.7,1.5-1.5
@@ -315,6 +316,7 @@ var custom_templates = (function () {
     function handleDocumentTemplateDropEvent(event) {
         event.preventDefault();
         if (draggedElement.id === 'sidebarItem' && event.target.id === 'graph-canvas') {
+            if (draggedElement.dataset.data === 'NaN') { return; }
             clipboardAction(async () => {
                 const data = JSON.parse(draggedElement.dataset.data);
                 localStorage.setItem("litegrapheditor_clipboard", draggedElement.dataset.data);
@@ -323,6 +325,8 @@ var custom_templates = (function () {
                 app.canvas.graph_mouse[0] = coord[0];
                 app.canvas.graph_mouse[1] = coord[1];
                 app.canvas.pasteFromClipboard();
+                localStorage.removeItem("litegrapheditor_clipboard");
+                draggedElement.dataset.data = NaN;
             });
         } else if (draggedElement.id === 'sidebarItem' && (event.target.classList.contains('sidebarCategory') || event.target.classList.contains('displayNamesList'))) {
             const ulElement = event.target.querySelector('ul');
@@ -381,7 +385,7 @@ var custom_templates = (function () {
     }
 
     async function readComfyTemplates() {
-        let comfy_templates;
+        let comfy_templates = {};
         try {
             const response = await fetch('./userdata/comfy.templates.json');
             comfy_templates = await response.json();
@@ -425,7 +429,7 @@ var custom_templates = (function () {
                 const templateItem = document.createElement("li");
                 templateItem.classList.add("sidebarCategory");
                 templateItem.dataset.nametemplate = templateName;
-                templateItem.textContent = templateName;
+                templateItem.textContent = "⌬ " + templateName;
                 templateItem.draggable = true;
 
                 const currentColor = await getValueFromConfig("sb_ColorCustomTemplates", templateName);
@@ -443,16 +447,14 @@ var custom_templates = (function () {
                 const displayNamesList = document.createElement("ul");
                 displayNamesList.id = templateName + "_ul";
                 displayNamesList.classList.add("displayNamesList");
-                displayNamesList.style.display = getNodeStatus(templateName);
+                displayNamesList.style.display = getNodeStatus('sb_templateNodeStatus',templateName);
                 templateItem.appendChild(displayNamesList);
 
                 let displayName = template;
 
 
                 const listNodeForTemplate = await getNodesForTemplate(templateName);
-
-
-                
+                    
                 listNodeForTemplate.forEach(displayName => {
                     try {
                         const displayNameItem = document.createElement("li");
@@ -582,7 +584,7 @@ var custom_templates = (function () {
 
                 previewDiv.style.top = `${previewDivTop}px`;
 
-                const previewDivLeft = sidebar_width - sidebad_view_width;
+                const previewDivLeft = sidebar_width - sidebad_view_width+correction_offset;
 
                 if (sbPosition == "left") {
 
@@ -631,7 +633,7 @@ var custom_templates = (function () {
 
                         displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
 
-                        setNodeStatus(displayNamesList.parentElement.dataset.nametemplate, displayNamesList.style.display)
+                        setNodeStatus('sb_templateNodeStatus',displayNamesList.parentElement.dataset.nametemplate, displayNamesList.style.display)
                     }
                 });
 
@@ -1166,7 +1168,7 @@ var custom_templates = (function () {
     async function createContextualMenu() {
 
         //const menuOptions = document.getElementById('menu-options');
-        new_menu_options_callback = [];
+        //new_menu_options_callback = [];
         //for each template
         template_menu = await readTemplates();
         callback_menu = [];

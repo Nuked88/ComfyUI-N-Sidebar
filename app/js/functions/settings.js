@@ -156,7 +156,39 @@ async function settingsSetup(app,$el) {
             
         },
     });
-    
+    addSBSetting( "sb_settingsDiv",{
+        id: "auto_hide",
+        name: "Auto Show Sidebar",
+        defaultValue: "false",
+        type: "boolean",
+        local: true,
+       
+   
+        onChange(value) {
+            
+        },
+    });
+   
+    await addSBSetting( "sb_settingsDiv", {
+        id: "tree_view",
+        name: "Node Category Tree View",
+        defaultValue: "multi",
+        type: "dropdown",
+        info: "NOTE: The new view will be applied after a page refresh!",
+        options: [
+            { value: "mono", label: "MONO" },
+            { value: "multi", label: "MULTILEVEL" }
+
+  
+        ],
+        onChange(value) {
+            
+            defaultSearchOrder = value;
+  
+     
+        },
+    });
+
     addSBSetting( "sb_settingsDiv",{
         id: "font",
         name: "Font Size",
@@ -168,7 +200,7 @@ async function settingsSetup(app,$el) {
             step: 1,
         },
         onChange(value) {
-            addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'font-size', value + 'px');
+            addDynamicCSSRule('.sidebarCategory, .sidebarFolder, #sidebarBookmarks', 'font-size', value + 'px');
         },
     });
     
@@ -337,7 +369,7 @@ async function settingsSetup(app,$el) {
             step: 1,
         },
         onChange(value) {
-            addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'border-radius', value + 'px');
+            addDynamicCSSRule('.sidebarCategory, .sidebarFolder, #sidebarBookmarks', 'border-radius', value + 'px');
             addDynamicCSSRule('.sidebarItem', 'border-radius', value + 'px');
         },
     });
@@ -374,7 +406,7 @@ async function settingsSetup(app,$el) {
             addDynamicCSSRule('.content_sidebar', 'background', 'rgb(from var(--comfy-menu-bg) r g b / ' + value_perc + '%)');
             addDynamicCSSRule('#sidebar_views', 'background', 'rgb(from var(--comfy-menu-bg) r g b / ' + value_perc + '%)');
             addDynamicCSSRule('#sidebar_views', 'border-left', '2px rgb(from var(--comfy-menu-bg) r g b / ' + (parseFloat(value) + 10) + '%)');
-            addDynamicCSSRule('.sidebarCategory, #sidebarBookmarks', 'background-color', 'rgb(from var(--comfy-input-bg) r g b / ' + value_perc + '%)');
+            addDynamicCSSRule('.sidebarCategory, .sidebarFolder, #sidebarBookmarks', 'background-color', 'rgb(from var(--comfy-input-bg) r g b / ' + value_perc + '%)');
 
         
         },
@@ -416,8 +448,8 @@ async function settingsSetup(app,$el) {
                 addDynamicCSSRule('.dragHandle', 'float', 'right');
                 addDynamicCSSRule('.sidebar', 'left', 'unset');
                 addDynamicCSSRule('.sidebar', 'right', '0');
-                addDynamicCSSRule('.sidebar-header', 'right', '16px');
-                addDynamicCSSRule('#sb_scrollToTopButton', 'right', '12px');
+                addDynamicCSSRule('.sidebar-header', 'right', '52px');
+                addDynamicCSSRule('#sb_scrollToTopButton', 'right', '48px');
 
             }
             if (value == "left") {
@@ -427,7 +459,7 @@ async function settingsSetup(app,$el) {
                 addDynamicCSSRule('.sidebar', 'left', '0');
                 addDynamicCSSRule('.sidebar', 'right', 'unset');
                 addDynamicCSSRule('.sidebar-header', 'right', 'unset');
-                addDynamicCSSRule('#sb_scrollToTopButton', 'right', '56px');
+                addDynamicCSSRule('#sb_scrollToTopButton', 'right', '26px');
             }
             sbPosition = value;
      
@@ -642,7 +674,7 @@ function resetSettings() {
         removeConfiguration(setting);
     });
 
-    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace"];
+    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace","sb_migrated"];
 
     localSettings.forEach(setting => {
         try{
@@ -663,7 +695,7 @@ function factoryReset() {
     }
     factoryResetSettings();
 
-    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace"];
+    const localSettings = ["sidebarWidth","sb_pinned_collapsed","sb_minimized","sb_current_tab","sb_workflow_preview","sb_workflow_replace","sb_migrated"];
 
     localSettings.forEach(setting => {
         try{

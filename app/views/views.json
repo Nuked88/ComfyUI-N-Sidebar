@@ -1,7 +1,7 @@
 [
     {
         "id": "custom_categories",
-        "icon": "⧉",
+        "icon": "⌬",
         "description": "Custom Node Categories",
         "panels": [
             "custom_categories"
@@ -12,7 +12,7 @@
     {
         "id": "templates",
         "icon": "Τ",
-        "description": "Custom Node templates",
+        "description": "Templates list",
         "panels": [
             "custom_templates"
         ]
@@ -21,7 +21,7 @@
     {
         "id": "workflows",
         "icon": "W",
-        "description": "Custom Node workflows",
+        "description": "Workflows list",
         "panels": [
             "custom_workflows"
         ]

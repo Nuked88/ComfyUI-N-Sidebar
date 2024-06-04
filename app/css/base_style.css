@@ -25,9 +25,10 @@
 
         padding-left: 5px;
         padding-right: 5px;
-        margin-bottom: 8px;
+        /*margin-bottom: 8px;*/
         margin-top: 0;
         padding-top: 5px;
+        width: 100%;
     }
 
     .sidebar li {
@@ -78,7 +79,7 @@
         width: calc(100% - 75px);
         margin-top: 5px;
         margin-bottom: 10px;
-        margin-left: 10px;
+        margin-left: 44px;
 
         z-index: 400;
 
@@ -133,7 +134,10 @@
         font-size: 15px;
         padding-bottom: 8px;
     }
-
+    .sidebarCategory {
+        border-bottom:var(--comfy-input-bg) solid 1px;
+        text-wrap: nowrap;
+    }
     #sidebarCustomNodes {
         list-style-type: none;
         font-family: 'Open Sans', sans-serif;
@@ -165,9 +169,30 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        max-width: calc(100% - 39px);
+        /*max-width: calc(100% - 39px);*/
     }
 
+    .displayName{
+        float: left;
+    width: 87%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+   /* margin: 2% auto;*/
+    /*display: flex;*/
+    align-items: center;
+    padding-left: 3%;
+    /*height: 14px;*/
+    }
+    .categoryName{
+     
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        
+
+    
+    }
 
     .content_sidebar::-webkit-scrollbar {
         margin-top: 0.5rem;
@@ -260,11 +285,15 @@
         display: none;
     }
 
-    .sidebarCategory .pinButton {
+    .sidebarCategory .pinButton, .sidebarItem .pinButton {
         background-color: transparent;
         border: 0;
         position: absolute;
-        right: 0;
+        width: 10%;
+        float: left;
+        /* padding-top: 4px; */
+        /* font-size: 39px; */
+        height: 1.5em;
     }
 
     #sb_scrollToTopButton.closed {
@@ -276,8 +305,13 @@
         background-color: transparent;
         border: 0;
 
-        position: absolute;
-        right: 0;
+        /*position: absolute; 
+        right: 0;*/
+
+        position: relative;
+        width: 10%;
+        float: left;
+      
     }
 
     .previewButton {
@@ -294,12 +328,12 @@
 
     .svg_class {
         width: 24px;
-        height: 24px;
+        height: 18px;
         fill: var(--border-color);
         cursor: pointer;
-        /* hacky fix */
+        /* hacky fix 
         margin-top: -5px;
-        margin-left: -25px;
+        margin-left: -25px;*/
     }
 
     .pin_normal {

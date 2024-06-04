@@ -1,5 +1,6 @@
 # Config file
 app/settings.json
+app/settings.json.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

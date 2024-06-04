@@ -37,6 +37,30 @@ var custom_workflows = (function () {
             return '<div class="sb_table"><div class="node_header">' + nodeID + '</div><div class="sb_preview_badge">USED NODES</div><ul><li class="sidebarItem">ERROR</li></ul></div>';
         }
     }
+
+
+    async function getWorkflow(nodeID, jsondata) {
+        try {
+            const req = JSON.stringify({ action: 'load', path: jsondata });
+
+
+            const response = await fetch('/sidebar/workflow', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: req
+            });
+
+            const data = await response.json();
+
+            return data;    
+         
+        } catch (e) {
+            console.log(e);
+            return NaN;
+        }
+    }
     // MODAL
     function createCustomHtml(type, name, elem = null) {
      
@@ -129,6 +153,7 @@ var custom_workflows = (function () {
 
     const button_custom_workflows = document.createElement("button");
     button_custom_workflows.classList = "expand_node";
+    button_custom_workflows.title = "Expand/Collapse";
     button_custom_workflows.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
 <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"></path>
 <path d="M48,39.5c0-0.8-0.7-1.5-1.5-1.5h-41C4.7,38,4,38.7,4,39.5v3C4,43.3,4.7,44,5.5,44h41c0.8,0,1.5-0.7,1.5-1.5
@@ -165,7 +190,18 @@ var custom_workflows = (function () {
 
   
 
-    function afterRender() {
+    async function afterRender() {
+        const workflows = await readWorkflows();
+        const workflowsString = JSON.stringify(workflows, null, 4); // Formatta il JSON con indentazione di 4 spazi
+        
+        callback_menu = [];
+        for (let i = 0; i < workflows.length; i++) {
+            callback_menu.push("custom_workflows.assignNodeToWorkflowCallback");
+    
+        }
+        const callbackString = JSON.stringify(callback_menu, null, 4);
+
+
         customMenuWorkflow = `
         {
             "menuctx_workflow": "Context Menu",
@@ -188,6 +224,8 @@ var custom_workflows = (function () {
                 [
                 ],
                 [
+                ],
+                [
                 ]
             ]
         }`;
@@ -196,48 +234,78 @@ var custom_workflows = (function () {
         {
             "menuctx_workflow": "Context Menu",
             "menuctx_options": [
+                "Open in New Tab",
                 "Delete from Category",
                 "Rename Workflow",
-                "Delete Workflow"
+                "Delete Workflow",
+                "Add to"
+                
             ],
             "menuctx_subOptions": [
                 [
-                ]
-            ],
-            "menuctx_opt_callback": [
-                "custom_workflows.removeNodeFromWorkflowCallback",
-                "custom_workflows.renameWorkflowCallback",
-                "custom_workflows.removeWorkflowCallback"
-            
-            ],
-            "menuctx_sub_opt_callback": [
+                ],
                 [
                 ],
                 [
-                ]
+                ],
+                [
+                ],
+                ${workflowsString}
+            ],
+            "menuctx_opt_callback": [
+                "custom_workflows.openWorkflowInNewTabCallback",
+                "custom_workflows.removeNodeFromWorkflowCallback",
+                "custom_workflows.renameWorkflowCallback",
+                "custom_workflows.removeWorkflowCallback"
+                
+            
+            ],
+            "menuctx_sub_opt_callback": [
+                [ 
+                ],
+                [
+                ],
+                [
+                ],
+                [
+                ],
+                ${callbackString}
             ]
         }`;
         customMenuWorkflowItemOut = `
         {
             "menuctx_workflow": "Context Menu",
             "menuctx_options": [
+                "Open in New Tab",
                 "Rename Workflow",
-                "Delete Workflow"
+                "Delete Workflow",
+                "Add to"
+                
             ],
             "menuctx_subOptions": [
                 [
-                ]
-            ],
-            "menuctx_opt_callback": [
-                "custom_workflows.renameWorkflowCallback",
-                "custom_workflows.removeWorkflowCallback"
-            
-            ],
-            "menuctx_sub_opt_callback": [
+                ],
                 [
                 ],
                 [
-                ]
+                ],
+                ${workflowsString}
+            ],
+            "menuctx_opt_callback": [
+                "custom_workflows.openWorkflowInNewTabCallback",
+                "custom_workflows.renameWorkflowCallback",
+                "custom_workflows.removeWorkflowCallback"
+                
+            
+            ],
+            "menuctx_sub_opt_callback": [
+                [ 
+                ],
+                [
+                ],
+                [
+                ],
+                ${callbackString}
             ]
         }`;
     
@@ -313,10 +381,10 @@ var custom_workflows = (function () {
     async function handleDocumentDropEvent(event) {
         //prevent default action
         event.preventDefault();
-        const sb_workflow_replace = JSON.parse(await getConfiguration('sb_workflow_replace', true))
+        const sb_workflow_replace = JSON.parse(await getConfiguration('sb_workflow_replace', true)) || true;
         if (draggedElement.id === 'sidebarWorkflowItem' && event.target.id === 'graph-canvas') {
-
-
+       
+            if (draggedElement.dataset.data === 'NaN') { return; }
             if (sb_workflow_replace) {
                 const confirmation = confirm("This will replace the current workflow. Are you sure?");
                 if (!confirmation) { return; }
@@ -333,10 +401,12 @@ var custom_workflows = (function () {
             .then(response => response.json())
             .then(data => {
                 app.loadGraphData(data);
+                draggedElement.dataset.data = NaN;
             });
     
         } else if (draggedElement.id === 'sidebarWorkflowItem' && (event.target.classList.contains('sidebarCategory') || event.target.classList.contains('displayNamesList'))) {
             const ulElement = event.target.querySelector('ul');
+
             if (ulElement) {
                 ulElement.appendChild(draggedElement);
             } else {
@@ -345,7 +415,10 @@ var custom_workflows = (function () {
     
             updateConfiguration('sb_workflowNodeMap', JSON.stringify(getCustomWorkflowStructure()));
             renderList("custom_workflows_main");
-        } else if (draggedElement.id === 'sidebarWorkflowItem' && event.target.parentElement.parentElement.classList.contains('sidebarCategory')) {
+        } 
+        
+        
+        else if (draggedElement.id === 'sidebarWorkflowItem' && event.target.parentElement.parentElement.classList.contains('sidebarCategory')) {
             event.target.parentElement.insertBefore(draggedElement, event.target);
             updateConfiguration('sb_workflowNodeMap', JSON.stringify(getCustomWorkflowStructure()));
             renderList("custom_workflows_main");
@@ -374,7 +447,7 @@ var custom_workflows = (function () {
         let node = [];
         const objMain = document.getElementById(idcat);
         objMain.querySelectorAll(".sidebarItem").forEach(function (item) {
-            node.push(item.dataset.nameworkflow)
+            node.push(item.dataset.id)
 
         });
         return node
@@ -384,7 +457,7 @@ var custom_workflows = (function () {
         let cat = {};
         const custom_workflows_main = document.getElementById("custom_workflows_main");
         custom_workflows_main.querySelectorAll(".sidebarCategory").forEach(function (item) {
-
+            
             cat[item.dataset.nameworkflow] = getCustomNodeOrder(item.dataset.nameworkflow + "_ul")
 
         });
@@ -405,7 +478,87 @@ var custom_workflows = (function () {
 
     }
 
-   
+    function splitPath(path) {
+        // Replace all backslashes with forward slashes
+        let normalizedPath = path.replace(/\\/g, '/');
+        // Split the normalized path by the forward slash
+        let pathArray = normalizedPath.split('/');
+        // Remove any empty strings from the array (which can happen if there are trailing slashes)
+        pathArray = pathArray.filter(part => part !== '');
+        return pathArray;
+    }
+    
+    function buildTree(workflows) {
+        const tree = {};
+    
+        for (const workflow in workflows) {
+            const subfolder = workflows[workflow].subfolder.replace(/\\/g, '/'); // Normalize path
+            const parts = subfolder.split('/').filter(part => part !== '');
+    
+            let current = tree;
+            for (const part of parts) {
+                if (!current[part]) {
+                    current[part] = {};
+                }
+                current = current[part];
+            }
+    
+            if (!current.workflows) {
+                current.workflows = [];
+            }
+    
+            current.workflows.push({
+                name: workflows[workflow].name,
+                path: workflows[workflow].path,
+                id: workflow
+            });
+        }
+    
+        return tree;
+    }
+    
+
+
+    function createHtmlFromTree(tree, parentElement) {
+        // Prima, crea le sottocartelle
+        for (const key in tree) {
+            if (key !== 'workflows') {
+                const subfolderLi = document.createElement('li');
+                subfolderLi.textContent = "🗀 "+ key;
+                subfolderLi.classList.add('sidebarFolder');
+                subfolderLi.dataset.nameworkflow = key;
+    
+                const subfolderUl = document.createElement('ul');
+                subfolderUl.classList.add('subfolder');
+                subfolderUl.dataset.subfolder = key;
+                subfolderUl.id = key + "_ul";
+                subfolderUl.classList.add("displayNamesList");
+    
+                subfolderLi.appendChild(subfolderUl);
+                parentElement.appendChild(subfolderLi);
+    
+                createHtmlFromTree(tree[key], subfolderUl);
+            }
+        }
+    
+        // Poi, crea i workflow
+        if (tree.workflows) {
+            tree.workflows.forEach(workflow => {
+                const workflowItem = document.createElement('li');
+                workflowItem.classList.add('sidebarItem');
+                workflowItem.id = "sidebarWorkflowItem";
+                workflowItem.dataset.nameworkflow = workflow.name;
+                workflowItem.dataset.data = workflow.path;
+                workflowItem.dataset.id = workflow.id;
+                workflowItem.textContent = workflow.name;
+                workflowItem.draggable = true;
+                parentElement.appendChild(workflowItem);
+            });
+        }
+    }
+
+
+
 
     async function renderList(elementID) {
         const data = await readComfyWorkflows()  //load all workflows
@@ -420,13 +573,16 @@ var custom_workflows = (function () {
             sidebarCustomNodes.innerHTML = "";
 
             exclusion_list = []
+            general_index = 0
+
+
             for (const workflow in workflows) {
                 //data[objKey].title.toLowerCase();
                 let workflowName = workflows[workflow]
                 const workflowItem = document.createElement("li");
                 workflowItem.classList.add("sidebarCategory");
                 workflowItem.dataset.nameworkflow = workflowName;
-                workflowItem.textContent = workflowName;
+                workflowItem.textContent = "⌬ " + workflowName;
                 workflowItem.draggable = true;
 
                 const currentColor = await getValueFromConfig("sb_ColorCustomWorkflows", workflowName);
@@ -445,7 +601,7 @@ var custom_workflows = (function () {
                 const displayNamesList = document.createElement("ul");
                 displayNamesList.id = workflowName + "_ul";
                 displayNamesList.classList.add("displayNamesList");
-                displayNamesList.style.display = getNodeStatus(workflowName);
+                displayNamesList.style.display = getNodeStatus('sb_workflowNodeStatus',workflowName);
                 workflowItem.appendChild(displayNamesList);
 
                 let displayName = workflow;
@@ -460,14 +616,11 @@ var custom_workflows = (function () {
                         const displayNameItem = document.createElement("li");
                         displayNameItem.classList.add("sidebarItem");
                         displayNameItem.id = "sidebarWorkflowItem"
-                        displayNameItem.textContent = displayName;
-                        displayNameItem.dataset.nameworkflow = displayName;
-                        displayNameItem.dataset.data = data[displayName];
+                        displayNameItem.textContent = data[displayName].name;
+                        displayNameItem.dataset.nameworkflow = data[displayName].name;
+                        displayNameItem.dataset.data = data[displayName].path;
+                        displayNameItem.dataset.id = displayName;
                         displayNameItem.draggable = true;
-
-
-
-
 
                         exclusion_list.push(displayName);
 
@@ -483,7 +636,6 @@ var custom_workflows = (function () {
                                 if (dragItem.parentElement == event.target.parentElement) {
 
                                     displayNamesList.insertBefore(dragItem, event.target);
-
                                     reorderNodeInWorkflow(workflowItem.dataset.nameworkflow, getCustomNodeOrder(dragItem.parentElement.id))
 
                                 }
@@ -503,6 +655,7 @@ var custom_workflows = (function () {
                 } catch (err) {
                     console.log(err);
                 }
+                general_index++;
             }
 
             //adding workflows not categorized
@@ -510,42 +663,23 @@ var custom_workflows = (function () {
             sidebarCustomNodes.appendChild(space);
 
             let comfy_workflows = await readComfyWorkflows();
-            for (const workflow in comfy_workflows) {
-
-                //data[objKey].title.toLowerCase();
 
 
-                //if workflowname is not in exclusion list
-                if (!exclusion_list.includes(workflow)) {
+            comfy_workflows = Object.fromEntries(Object.entries(comfy_workflows).filter(([key]) => !exclusion_list.includes(key)));
+
+            const tree = buildTree(comfy_workflows);
+            general_index = general_index + (Object.keys(tree).length);
 
 
-                    const workflowItem = document.createElement("li");
-                    workflowItem.classList.add("sidebarItem");
-                    workflowItem.id = "sidebarWorkflowItem";
-                    workflowItem.dataset.nameworkflow = workflow;
-                    workflowItem.dataset.data = comfy_workflows[workflow];
-                    workflowItem.textContent = workflow;
-                    workflowItem.draggable = true;
+            createHtmlFromTree(tree, sidebarCustomNodes);
 
-
-
-
-
-                    let displayName = workflow;
-
-
-
-                    try {
-                        sidebarCustomNodes.appendChild(workflowItem);
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-
-
-          
-
+            if (general_index == 0) {
+                const noWorkflow = document.createElement("div");
+                noWorkflow.classList.add("TIPSidebarItem");
+                noWorkflow.textContent = "It's pretty empty here... Try adding your Workflow folder in the sidebar settings! :D";
+                sidebarCustomNodes.appendChild(noWorkflow);
             }
+
 
       // Preview
 
@@ -587,7 +721,7 @@ var custom_workflows = (function () {
 
                       previewDiv.style.top = `${previewDivTop}px`;
 
-                      const previewDivLeft = sidebar_width - sidebad_view_width;
+                      const previewDivLeft = sidebar_width - sidebad_view_width+correction_offset;
 
                       if (sbPosition == "left") {
 
@@ -639,7 +773,25 @@ var custom_workflows = (function () {
 
                         displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
 
-                        setNodeStatus(displayNamesList.parentElement.dataset.nameworkflow, displayNamesList.style.display)
+                        setNodeStatus('sb_workflowNodeStatus',displayNamesList.parentElement.dataset.nameworkflow, displayNamesList.style.display)
+                    }
+                });
+
+
+
+            });
+
+
+            const folderItems = document.querySelectorAll("#custom_workflows_main .sidebarFolder");
+            folderItems.forEach(function (folderItem) {
+                folderItem.addEventListener("click", function (event) {
+
+                    if (event.target === event.currentTarget) {
+                        const displayNamesList = event.target.querySelector("ul");
+
+                        displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
+
+                        setNodeStatus('sb_workflowNodeStatus',displayNamesList.parentElement.dataset.nameworkflow, displayNamesList.style.display)
                     }
                 });
 
@@ -790,6 +942,9 @@ var custom_workflows = (function () {
             alert("Workflow not found!");
         }
     }
+
+
+
     async function readWorkflows() {
         let workflowNodeMap = await getNodeMap();
         if (workflowNodeMap) {
@@ -800,6 +955,8 @@ var custom_workflows = (function () {
         }
 
     }
+
+
     // Function to delete a workflow
     async function removeCategory(e) {
 
@@ -825,38 +982,47 @@ var custom_workflows = (function () {
     }
 
     async function renameWorkflow(path,oldWorkflowName, newWorkflowName) {
-        
-        if (containsSpecialCharacters(newWorkflowName, level=1)) {
-            // Alert the user and return if special characters are found
-            alert("Workflow name cannot contain special characters.");
-            return;
-        }
-       await fetch('./sidebar/workflow', {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'rename',
-                path: path,
-                newName: newWorkflowName
-            }),
-            headers: {
-                'Content-Type': 'application/json'
+   
+
+                
+            if (containsSpecialCharacters(newWorkflowName, level=1)) {
+                // Alert the user and return if special characters are found
+                alert("Workflow name cannot contain special characters.");
+                return;
             }
-       }).then(response => response.json())
-       .then(data => {
+
+            const parts = path.split('/');
+            parts.pop();
+  
+            let oldWorkflowNameHash = btoa(parts.join('\\')+'\\'+oldWorkflowName + '.json');
+            let newWorkflowNameHash = btoa(parts.join('\\')+'\\'+newWorkflowName + '.json');
+                
+            await fetch('./sidebar/workflow', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'rename',
+                        path: path,
+                        newName: newWorkflowName
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+            }).then(response => response.json())
+            .then(data => {
 
             if (data.result == 'OK') {
-    
-            renameWorkflowNode("sb_workflowNodeMap", oldWorkflowName, newWorkflowName)
-            
-            const element = document.getElementById('panel_workflows');
-            let position = element.scrollTop;
-            closeModal()
-            renderList("custom_workflows_main");
 
-            //little hack
-            setTimeout(() => {
-                element.scrollTop = position;
-            },200);
+                renameWorkflowNode("sb_workflowNodeMap", oldWorkflowNameHash, newWorkflowNameHash)
+                
+                const element = document.getElementById('panel_workflows');
+                let position = element.scrollTop;
+                closeModal()
+                renderList("custom_workflows_main");
+
+                //little hack
+                setTimeout(() => {
+                    element.scrollTop = position;
+                },200);
             } else {
                 alert(data.result);
             }
@@ -1014,7 +1180,14 @@ var custom_workflows = (function () {
             workflowNodeMap[workflowName].push(nodeName);
         });
         updateConfiguration('sb_workflowNodeMap', JSON.stringify(workflowNodeMap));
+        const element = document.getElementById('panel_workflows');
+        let position = element.scrollTop;
         renderList("custom_workflows_main");
+
+        //little hack
+        setTimeout(() => {
+            element.scrollTop = position;
+        },200);
     }
 
 
@@ -1082,11 +1255,12 @@ var custom_workflows = (function () {
     // Callbacks
     function removeNodeFromWorkflowCallback(e, trge) {
 
-        removeNodeFromWorkflow(e.target.dataset.nameworkflow, e.target.parentElement.parentElement.dataset.nameworkflow)
+        removeNodeFromWorkflow(e.target.dataset.id, e.target.parentElement.parentElement.dataset.nameworkflow)
     }
 
     function assignNodeToWorkflowCallback(e, trge) {
-        assignNodeToWorkflow(e.target.id, [trge]);
+        assignNodeToWorkflow(e.target.dataset.id, [trge]);
+        
     }
 
     function renameWorkflowCallback(e, trge) {
@@ -1105,9 +1279,8 @@ var custom_workflows = (function () {
     
 
     function removeWorkflowCallback(e, trge) {
-        const name = e.target.dataset.nameworkflow;
+        const name = e.target.textContent;
         const path = e.target.dataset.data;
-
         removeWorkflow(name,path)
     }
     function colorWorkflowCallback(e) {
@@ -1117,7 +1290,14 @@ var custom_workflows = (function () {
         //colorWorkflow(e.target.id, e.target.parentElement.parentElement.dataset.nameworkflow)
     }
 
+    async function  openWorkflowInNewTabCallback(e, trge)  {
 
+       var win = window.open(`${window.location.origin}/?wfsb=${e.target.dataset.id}`, '_blank');
+       win.focus();
+
+    }
+
+   
 
     async function colorWorkflow(name, value) {
 
@@ -1142,15 +1322,15 @@ var custom_workflows = (function () {
     async function createContextualMenu() {
 
         //const menuOptions = document.getElementById('menu-options');
-        new_menu_options_callback = [];
+        //new_menu_options_callback = [];
 
         //for each workflow
-        workflow_menu = await readWorkflows();
-        callback_menu = [];
-        for (let i = 0; i < workflow_menu.length; i++) {
-            callback_menu.push("assignNodeToWorkflowCallback");
+       //workflow_menu = await readWorkflows();
+       //callback_menu = [];
+       //for (let i = 0; i < workflow_menu.length; i++) {
+       //    callback_menu.push("assignNodeToWorkflowCallback");
 
-        }
+       //}
 
 
         console.log("custom workflow panel loaded")
@@ -1175,6 +1355,81 @@ var custom_workflows = (function () {
         }
     });
 
+
+    function checkAndLoadWorkflow() {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('wfsb')) {
+    
+          const wfsbValue = url.searchParams.get('wfsb');  
+    
+              const req = JSON.stringify({ action: 'load', path: atob(wfsbValue) });
+              fetch('/sidebar/workflow', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: req
+              })
+              .then(response => response.json())
+              .then(data => {
+                  app.loadGraphData(data);
+              });
+          url.searchParams.delete('wfsb');
+          window.history.replaceState({}, document.title, url.pathname + url.search);
+        }
+      }
+      
+
+    /*temp funciton*/
+   async function migrationSettings() {
+    if (!getVar("sb_migrated")) {
+        fetch('/sidebar/backup', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(async data => {
+            if (data.result === "OK") { 
+                console.log("Starting migration...");
+                // Get actual config
+                let jsonObject = await getNodeMap();
+                // Get actual list of workflows   
+                let workflowNodeMap = await readComfyWorkflows();
+
+                function findKeyByName(jsonObject, targetName) {
+                    for (let key in jsonObject) {
+                        if (jsonObject[key].name === targetName) {
+                            return key;
+                        }
+                    }
+                    return null;
+                }
+
+                // Iterate over the workflow 
+                for (let workflow in jsonObject) {
+                    let nodes = jsonObject[workflow];
+                    for (let node of nodes) {
+                        let key = findKeyByName(workflowNodeMap, node);
+                        if (key !== null) {
+                            await renameWorkflowNode("sb_workflowNodeMap", node, key);
+                        } 
+                    }
+                }
+                setVar("sb_migrated", true);
+                console.log("Migration completed.");
+            } else {
+                console.error("Backup failed, migration aborted.");
+            }
+        })
+        .catch(error => {
+            console.error("Error during backup request:", error);
+        });
+    }
+}
+
+
     return {
         openModal,
         addSidebarStyles,
@@ -1195,14 +1450,19 @@ var custom_workflows = (function () {
         removeNodeFromWorkflowCallback,
         removeWorkflowCallback,
         assignNodeToWorkflowCallback,
+        openWorkflowInNewTabCallback,
         renameWorkflowCallback,
         renameCategoryCallback,
         colorWorkflowCallback,
-        resetColorWorkflow
+        resetColorWorkflow,
+        migrationSettings,
+        checkAndLoadWorkflow
     };
 
 
 })();
+custom_workflows.migrationSettings();
 custom_workflows.addSidebarStyles("panels/custom_workflows/style.css");
 custom_workflows.createContextualMenu()
 custom_workflows.renderList("custom_workflows_main"); 
+custom_workflows.checkAndLoadWorkflow();
