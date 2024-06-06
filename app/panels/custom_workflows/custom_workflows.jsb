@@ -381,11 +381,11 @@ var custom_workflows = (function () {
     async function handleDocumentDropEvent(event) {
         //prevent default action
         event.preventDefault();
-        const sb_workflow_replace = JSON.parse(await getConfiguration('sb_workflow_replace', true)) || true;
+        const sb_workflow_replace = localStorage.getItem('sb_workflow_replace') || "true";
         if (draggedElement.id === 'sidebarWorkflowItem' && event.target.id === 'graph-canvas') {
        
             if (draggedElement.dataset.data === 'NaN') { return; }
-            if (sb_workflow_replace) {
+            if (sb_workflow_replace=="true") {
                 const confirmation = confirm("This will replace the current workflow. Are you sure?");
                 if (!confirmation) { return; }
             }
