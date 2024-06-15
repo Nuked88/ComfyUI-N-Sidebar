@@ -94,7 +94,7 @@ function postPinned() {
                 let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
                 previewDiv.style.top = `${previewDivTop}px`;
                 const previewDivLeft = sidebar_width - sidebad_view_width + correction_offset;
-                
+
                 if (sbPosition == "left") {
                     previewDiv.style.left = `${previewDivLeft}px`;
                 } else {
@@ -440,34 +440,34 @@ async function createCategoryList() {
 
     function buildTree(categories, useSubcategories = true) {
         const tree = {};
-    
+
         for (const category in categories) {
             const parts = useSubcategories ? category.split('/').filter(part => part !== '') : [category];
-    
+
             let current = tree;
             if (parts.length > 0 || !useSubcategories) {
-                
-            
+
+
             for (const part of parts) {
                 if (!current[part]) {
                     current[part] = {};
                 }
                 current = current[part];
             }
-    
+
             if (!current.items) {
                 current.items = [];
             }
-    
+
             categories[category].forEach(displayName => {
                 current.items.push(displayName);
             });
             }
         }
-    
+
         return tree;
     }
-    
+
     function createHtmlFromTree(tree, parentElement,pinnedItems) {
         for (const key in tree) {
             if (key !== 'items') {
@@ -475,21 +475,21 @@ async function createCategoryList() {
                 subfolderLi.textContent = "🗀 " + key;
                 subfolderLi.classList.add('sidebarCategory');
                 subfolderLi.dataset.nameworkflow = key;
-    
+
                 const subfolderUl = document.createElement('ul');
                 subfolderUl.style.display = "none";
                 subfolderUl.classList.add('subfolder');
                 subfolderUl.dataset.subfolder = key;
                 subfolderUl.id = key + "_ul";
                 subfolderUl.classList.add("displayNamesList");
-    
+
                 subfolderLi.appendChild(subfolderUl);
                 parentElement.appendChild(subfolderLi);
-    
+
                 createHtmlFromTree(tree[key], subfolderUl,pinnedItems);
             }
         }
-    
+
         if (tree.items) {
             tree.items.forEach(displayName => {
                 try {
@@ -498,53 +498,51 @@ async function createCategoryList() {
                     displayNameMain.classList.add('displayName');
                     displayNameMain.title =  displayName.title;
                     displayNameMain.id = displayName.type;
-
                     displayNameMain.textContent = displayName.title;
-
-
-
                     const displayNameItem = document.createElement('li');
                     displayNameItem.classList.add('sidebarItem');
                     //displayNameItem.innerHTML = "<div class='displayName'>"+displayName.title+"</div>";
                     displayNameItem.title = displayName.title;
                     displayNameItem.draggable = true;
                     displayNameItem.appendChild(displayNameMain);
-    
+
+                    let color;
+                    const nodeData = displayName?.nodeData;
+                    // USE NODE'S DEFAULT COLOR, IF ANY
+                    if (color === undefined && nodeData !== undefined) {
+                        color = nodeData.color;
+                    }
                     // JOVIMETRIX CUT-OUT FOR CUSTOM COLORED NODES
                     if (CUSTOM_COLORS) {
-                        let color = CUSTOM_COLORS[displayName.title];
-                        const nodeData = displayName?.nodeData;
-                        if (color === undefined) {
-                            if (nodeData !== undefined) {
-                                let k = nodeData.category;
-                                while (k) {
-                                    color = CUSTOM_COLORS[k];
-                                    if (color) {
-                                        color = color.title;
-                                        break;
-                                    }
-                                    const last = k.lastIndexOf('/');
-                                    k = last !== -1 ? k.substring(0, last) : '';
+                        color = CUSTOM_COLORS[displayName.title];
+                        if (color === undefined && nodeData !== undefined) {
+                            let k = nodeData.category;
+                            while (k) {
+                                color = CUSTOM_COLORS[k];
+                                if (color) {
+                                    color = color.title;
+                                    break;
                                 }
+                                const last = k.lastIndexOf('/');
+                                k = last !== -1 ? k.substring(0, last) : '';
                             }
-                        } else {
-                            color = color.title;
-                        }
-                        if (color) {
-                            displayNameItem.style = `background: ${color}`;
                         }
                     }
+                    // APPLY THE COLOR, IF ANY
+                    if (color) {
+                        displayNameItem.style = `background: ${color}`;
+                    }
                     //
-    
+
                     displayNameItem.id = displayName.type;
-    
+
                     /* Create Pin Button */
-                    
+
                     const pinButton = document.createElement('button');
                     pinButton.classList.add('pinButton');
-    
+
                     let add_class = "";
-    
+
                     if (pinnedItems.includes(displayName.type)) {
                         add_class = "pinned";
                     }
@@ -552,10 +550,10 @@ async function createCategoryList() {
                     <path class="pin_normal ${add_class}" d="M19.1835 7.80516L16.2188 4.83755C14.1921 2.8089 13.1788 1.79457 12.0904 2.03468C11.0021 2.2748 10.5086 3.62155 9.5217 6.31506L8.85373 8.1381C8.59063 8.85617 8.45908 9.2152 8.22239 9.49292C8.11619 9.61754 7.99536 9.72887 7.86251 9.82451C7.56644 10.0377 7.19811 10.1392 6.46145 10.3423C4.80107 10.8 3.97088 11.0289 3.65804 11.5721C3.5228 11.8069 3.45242 12.0735 3.45413 12.3446C3.45809 12.9715 4.06698 13.581 5.28476 14.8L6.69935 16.2163L2.22345 20.6964C1.92552 20.9946 1.92552 21.4782 2.22345 21.7764C2.52138 22.0746 3.00443 22.0746 3.30236 21.7764L7.77841 17.2961L9.24441 18.7635C10.4699 19.9902 11.0827 20.6036 11.7134 20.6045C11.9792 20.6049 12.2404 20.5358 12.4713 20.4041C13.0192 20.0914 13.2493 19.2551 13.7095 17.5825C13.9119 16.8472 14.013 16.4795 14.2254 16.1835C14.3184 16.054 14.4262 15.9358 14.5468 15.8314C14.8221 15.593 15.1788 15.459 15.8922 15.191L17.7362 14.4981C20.4 13.4973 21.7319 12.9969 21.9667 11.9115C22.2014 10.826 21.1954 9.81905 19.1835 7.80516Z" />
                     <rect class="pin_node" style="opacity:0" x="0" y="0" width="24" height="24"  />
                     </svg>`;
-    
+
                     displayNameItem.appendChild(pinButton);
                     /* End Pin Button */
-    
+
                     parentElement.appendChild(displayNameItem);
                 } catch (err) {
                     console.log(err);
@@ -563,20 +561,20 @@ async function createCategoryList() {
             });
         }
     }
-    
-    
+
+
     async function renderList() {
 
         return new Promise(async (resolve, reject) => {
             const pinnedItems = await loadPinnedItems();
             //
             const sidebarCustomNodes = document.getElementById("sidebarCustomNodes");
-         
+
 
             let tree_view = await getConfiguration("sb_tree_view") || "multi";
             if (tree_view=="multi" ) {
                 tree_view = true;
-            } else{ 
+            } else{
                 tree_view = false;
             }
             const tree = buildTree(categories,tree_view);
@@ -819,7 +817,7 @@ async function addSidebar() {
     });
 
 
-    
+
 
     function handleDrop(event) {
         event.preventDefault();
@@ -897,17 +895,17 @@ function toggleSHSB(force = undefined) {
                 searchCategoryIcon.classList.add('closed');
                 search_bar.classList.add('closed');
                 scrollToTopButton.classList.add('closed');
-                
+
             } else {
                 side_bar.classList.remove('closed');
                 clearIcon.classList.remove('closed');
                 searchCategoryIcon.classList.remove('closed');
                 search_bar.classList.remove('closed');
                 scrollToTopButton.classList.remove('closed');
-                setVar("sb_minimized", "true"); 
+                setVar("sb_minimized", "true");
             }
         } else {
-           
+
             if (side_bar.classList.contains('closed')) {
                 side_bar.classList.remove('closed');
                 clearIcon.classList.remove('closed');
@@ -934,8 +932,8 @@ function toggleSHSB(force = undefined) {
 
     });
 
- 
-        
+
+
         if (getVar("sb_minimized") == "false") {
 
             if (force == undefined) {
@@ -949,7 +947,7 @@ function toggleSHSB(force = undefined) {
                 main_sidebar.style.width = getVar("sidebarWidth") || '300px';
             } else if (force == true) {
 
-                main_sidebar.style.width = '45px'; 
+                main_sidebar.style.width = '45px';
 
             } else {
                 main_sidebar.style.width = getVar("sidebarWidth") || '300px';
@@ -958,7 +956,7 @@ function toggleSHSB(force = undefined) {
         }
 
 
-    
+
 
 }
 
@@ -1035,7 +1033,7 @@ function processViews(viewsData, settingsData) {
                     div_panel_title.id = "panel_title_" + panel;
 
                     div_panel_title.innerHTML = view.id.replace("_", " ");
-                    
+
 
 
 
@@ -1089,11 +1087,11 @@ function processViews(viewsData, settingsData) {
             switchTab(getVar('sb_current_tab'));
             const sidebar_view = document.getElementById('sidebar_views');
             const sidebar = document.getElementById('sidebar');
-            
-                
-           
+
+
+
             sidebar_view.addEventListener('mouseover', function () {
-             
+
                 if (getVar('sb_auto_hide') == "true") {
                     if (getVar('sb_minimized') == "true") {
                         toggleSHSB(false);
