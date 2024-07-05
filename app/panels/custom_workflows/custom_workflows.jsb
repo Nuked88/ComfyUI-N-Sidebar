@@ -520,7 +520,7 @@ var custom_workflows = (function () {
 
 
     function createHtmlFromTree(tree, parentElement) {
-        // Prima, crea le sottocartelle
+        // Make i subfolder
         for (const key in tree) {
             if (key !== 'workflows') {
                 const subfolderLi = document.createElement('li');
@@ -541,7 +541,7 @@ var custom_workflows = (function () {
             }
         }
     
-        // Poi, crea i workflow
+        // Then make workflows
         if (tree.workflows) {
             tree.workflows.forEach(workflow => {
                 const workflowItem = document.createElement('li');
@@ -550,6 +550,7 @@ var custom_workflows = (function () {
                 workflowItem.dataset.nameworkflow = workflow.name;
                 workflowItem.dataset.data = workflow.path;
                 workflowItem.dataset.id = workflow.id;
+                workflowItem.title = workflow.name;
                 workflowItem.textContent = workflow.name;
                 workflowItem.draggable = true;
                 parentElement.appendChild(workflowItem);
@@ -617,6 +618,7 @@ var custom_workflows = (function () {
                         displayNameItem.classList.add("sidebarItem");
                         displayNameItem.id = "sidebarWorkflowItem"
                         displayNameItem.textContent = data[displayName].name;
+                        displayNameItem.title = data[displayName].name;
                         displayNameItem.dataset.nameworkflow = data[displayName].name;
                         displayNameItem.dataset.data = data[displayName].path;
                         displayNameItem.dataset.id = displayName;

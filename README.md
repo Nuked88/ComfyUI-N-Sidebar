@@ -11,6 +11,10 @@ For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
 # Updates
+- 05-07-2024
+  - Fixed bug on dragging templates  
+  - Added multi user support on templates
+
 
 - 04-06-2024
   - Fixed some bugs
@@ -157,8 +161,11 @@ PS: Workflow Path
 - [x] Templates
 - [ ] Custom Shortcuts
 - [ ] Export and Import Settings
+- [ ] Touch Support
 
 
+### Known Issues:
+ - After you drag a template onto the workflow, if you drag any other file from your PC that does not include a workflow, it will paste the last template you dragged again.
 
 ## Contributing
 

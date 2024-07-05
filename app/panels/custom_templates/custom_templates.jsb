@@ -326,7 +326,7 @@ var custom_templates = (function () {
                 app.canvas.graph_mouse[1] = coord[1];
                 app.canvas.pasteFromClipboard();
                 localStorage.removeItem("litegrapheditor_clipboard");
-                draggedElement.dataset.data = NaN;
+                //draggedElement.dataset.data = NaN;
             });
         } else if (draggedElement.id === 'sidebarItem' && (event.target.classList.contains('sidebarCategory') || event.target.classList.contains('displayNamesList'))) {
             const ulElement = event.target.querySelector('ul');
@@ -386,8 +386,18 @@ var custom_templates = (function () {
 
     async function readComfyTemplates() {
         let comfy_templates = {};
-        try {
-            const response = await fetch('./userdata/comfy.templates.json');
+        try {            
+            //multi user check
+            //if Comfy.User local storage exists
+            if (localStorage.getItem('Comfy.userId')) {
+                headers = {
+                    'Comfy-User': localStorage.getItem('Comfy.userId')
+                }
+            } else {
+                headers = {}
+            }
+        
+            const response = await fetch('./userdata/comfy.templates.json', { headers: headers });
             comfy_templates = await response.json();
         } catch (error) {
             console.error('Error fetching data:', error);
