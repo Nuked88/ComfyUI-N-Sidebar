@@ -966,24 +966,25 @@ function toggleSHSB(force = undefined) {
 
 function handleKeyPress(event) {
 
-    if (event.altKey && event.key.toLowerCase() === "x") {
-        //toggle sidebar if it's closed
+    // Per la combinazione Alt + X
+    if (event.altKey && (event.key.toLowerCase() === "x" || event.keyCode === 88)) {
+        // Toggle sidebar if it's closed
         const side_bar = document.getElementById('content_sidebar_home');
         if (side_bar.classList.contains('closed')) {
             toggleSHSB();
-
         }
-        //focus on searchInput
+        // Focus on searchInput
         searchInput.focus();
+    }
 
-
+    // Per la combinazione Alt + Z
+    if (event.altKey && (event.key.toLowerCase() === "z" || event.keyCode === 90)) {
+        toggleSHSB();
     }
-    if (event.altKey && event.key.toLowerCase() === "z") {
-        toggleSHSB()
+    if (event.altKey && (event.key.toLowerCase() === "g" || event.keyCode === 71)) {
+        showSettings();
     }
-    if (event.altKey && event.key.toLowerCase() === "g") {
-        showSettings()
-    }
+   
 }
 
 

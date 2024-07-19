@@ -96,9 +96,9 @@ The most important settings are stored in `custom_nodes/ComfyUI-N-Sidebar/settin
 
 # Keyboard Shortcuts
 
-- `Alt+Z` to toggle show/hide sidebar
-- `Alt+X` to focus on the search field
-- `Alt+G` to open the settings
+- `Alt+Z` or `Option+Z` to toggle show/hide sidebar
+- `Alt+X` or `Option+X` to focus on the search field
+- `Alt+G` or `Option+G` to open the settings
 
 # Features
 
