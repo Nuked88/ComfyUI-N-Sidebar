@@ -396,8 +396,8 @@ var custom_templates = (function () {
             } else {
                 headers = {}
             }
-        
-            const response = await fetch('./userdata/comfy.templates.json', { headers: headers });
+            const timestamp = new Date().getTime();
+            const response = await fetch('./userdata/comfy.templates.json?v=' + timestamp, { headers: headers });
             comfy_templates = await response.json();
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -797,7 +797,8 @@ var custom_templates = (function () {
             alert("Template name cannot contain special characters.");
             return;
         }
-        const response = await fetch('./userdata/comfy.templates.json');
+        const timestamp = new Date().getTime();
+        const response = await fetch('./userdata/comfy.templates.json?v=' + timestamp);
         const nodeTemplates = await response.json();
         
 
@@ -826,8 +827,8 @@ var custom_templates = (function () {
                 break;
             }
         }
-        
-       await fetch('./userdata/comfy.templates.json', {
+
+       await fetch('./userdata/comfy.templates.json?v=' + timestamp, {
             method: 'POST',
             body: JSON.stringify(nodeTemplates),
             headers: {
@@ -846,8 +847,8 @@ var custom_templates = (function () {
 
 
     async function removeTemplate(name) {
-        
-        const response = await fetch('./userdata/comfy.templates.json');
+        timestamp = new Date().getTime();
+        const response = await fetch('./userdata/comfy.templates.json?v=' + timestamp);
         const nodeTemplates = await response.json();
         //let nodeTemplates = JSON.parse(comfy_templates);
 
@@ -866,7 +867,7 @@ var custom_templates = (function () {
                 break; // Assuming the node names are unique, we can break once we find it
             }
         }
-       await fetch('./userdata/comfy.templates.json', {
+       await fetch('./userdata/comfy.templates.json?v=' + timestamp, {
             method: 'POST',
             body: JSON.stringify(nodeTemplates),
             headers: {

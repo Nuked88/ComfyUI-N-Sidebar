@@ -53,8 +53,6 @@ function getSidebarItemIds() {
     return itemIds;
 }
 function postPinned() {
-
-
     var dragItem = null;
 
     const pinnedElement = document.getElementById("sidebarBookmarks");
@@ -65,8 +63,27 @@ function postPinned() {
             dragItem = event.target;
         });
 
-        item.addEventListener('mouseover', function () {
+        item.addEventListener('touchstart', function (event) {
+            dragItem = event.target;
+        });
 
+        item.addEventListener('touchmove', function (event) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            const dropZone = document.elementFromPoint(touch.clientX, touch.clientY).closest("ul");
+            if (dropZone && dragItem) {
+                dropZone.appendChild(dragItem); // O usa insertBefore se necessario
+            }
+        });
+
+        item.addEventListener('touchend', function (event) {
+            if (dragItem) {
+                savePinnedItems(getSidebarItemIds());
+                dragItem = null;
+            }
+        });
+
+        item.addEventListener('mouseover', function () {
             if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
                 let descriptionDiv = "";
                 const itemPosition = getElementPosition(this);
@@ -80,15 +97,11 @@ function postPinned() {
                 const correction_offset = 45;
 
                 if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-                    previewDivTop = itemPosition.top - this.offsetHeight
+                    previewDivTop = itemPosition.top - this.offsetHeight;
 
                 } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
                     previewDivTop = 0 + correction_offset;
-
-
-                }
-                else {
-
+                } else {
                     previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
                 }
                 let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
@@ -100,18 +113,14 @@ function postPinned() {
                 } else {
                     previewDiv.style.right = `${previewDivLeft}px`;
                 }
-
-
-
             }
         });
 
         item.addEventListener('mouseout', function () {
             previewDiv.style.display = 'none';
-        })
+        });
 
-        reloadCtxMenu()
-
+        reloadCtxMenu();
     });
 
     pinnedElement.addEventListener("dragover", function (event) {
@@ -124,17 +133,10 @@ function postPinned() {
             var dropZone = event.target.closest("ul");
             dropZone.insertBefore(dragItem, event.target);
             dragItem = null;
-            //list element in sidebarBookmarks
-
             savePinnedItems(getSidebarItemIds());
         }
     });
-
-
-
-
 }
-
 
 
 function saveSidebarWidth(sideb) {
@@ -690,37 +692,29 @@ async function createCategoryList() {
 
 
 
-
-
     const dragHandle = document.getElementById("dragHandle");
 
     let isDragging = false;
     let startX;
     let startWidth;
-
-
+    
+    // Funzioni per gestire gli eventi del mouse
     dragHandle.addEventListener("mousedown", function (event) {
         isDragging = true;
         startX = event.clientX;
         startWidth = parseInt(window.getComputedStyle(sidebar_main).width);
-
     });
-
-
+    
     document.addEventListener("mouseup", function () {
-
         if (isDragging) {
             isDragging = false;
-
             saveSidebarWidth(sidebar_main);
-
         }
     });
-
-
+    
     document.addEventListener("mousemove", function (event) {
         if (!isDragging) return;
-
+    
         const delta = event.clientX - startX;
         if (sbPosition === "left") {
             sidebar_main.style.width = (startWidth + delta) + "px";
@@ -728,7 +722,32 @@ async function createCategoryList() {
             sidebar_main.style.width = (startWidth - delta) + "px";
         }
     });
-
+    
+    // Funzioni per gestire gli eventi touch
+    dragHandle.addEventListener("touchstart", function (event) {
+        isDragging = true;
+        startX = event.touches[0].clientX;
+        startWidth = parseInt(window.getComputedStyle(sidebar_main).width);
+    });
+    
+    document.addEventListener("touchend", function () {
+        if (isDragging) {
+            isDragging = false;
+            saveSidebarWidth(sidebar_main);
+        }
+    });
+    
+    document.addEventListener("touchmove", function (event) {
+        if (!isDragging) return;
+    
+        const delta = event.touches[0].clientX - startX;
+        if (sbPosition === "left") {
+            sidebar_main.style.width = (startWidth + delta) + "px";
+        } else {
+            sidebar_main.style.width = (startWidth - delta) + "px";
+        }
+    });
+    
 
 
 }
@@ -821,53 +840,78 @@ async function addSidebar() {
 
     function handleDrop(event) {
         event.preventDefault();
-
+    
         if (event.srcElement.tagName.toLowerCase() != "canvas") {
             return;
         }
+    
         const coord = convertCanvasToOffset(app.canvasEl.data.ds, [event.clientX, event.clientY]);
         const x = coord[0];
         const y = coord[1];
         sidebarAddNode(draggedElementId, draggedElementId, x, y);
         draggedElementId = null;
     }
-
-
+    
     function allowDrop(event) {
         event.preventDefault();
     }
 
 
+
+    function handleTouchMove(event) {
+        event.preventDefault();
+    }
+    
+    function handleTouchEnd(event) {
+        event.preventDefault();
+    
+        const touch = event.changedTouches[0];
+        const dropZone = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+        if (dropZone.tagName.toLowerCase() != "canvas") {
+            return;
+        }
+    
+        const coord = convertCanvasToOffset(app.canvasEl.data.ds, [touch.clientX, touch.clientY]);
+        const x = coord[0];
+        const y = coord[1];
+        sidebarAddNode(draggedElementId, draggedElementId, x, y);
+        draggedElementId = null;
+    }
+    
     // const search_bar = document.getElementById('searchInput');
 
 
+  
+    // Gestione degli eventi di trascinamento
     canvas.addEventListener("dragstart", function (event) {
-
         draggedElementId = event.target.id;
         previewDiv.style.display = 'none';
     });
 
+    canvas.addEventListener("dragover", allowDrop);
 
+    // Gestione degli eventi touch
+    canvas.addEventListener("touchstart", function (event) {
+        draggedElementId = event.target.id;
+        previewDiv.style.display = 'none';
+    });
 
+    canvas.addEventListener("touchmove", handleTouchMove);
+
+    canvas.addEventListener("touchend", handleTouchEnd);
+
+    // Altri eventi
     document.getElementById('switch_sidebar').addEventListener('click', function () {
         toggleSHSB();
-
     });
 
     document.addEventListener('drop', handleDrop);
 
-
-    canvas.addEventListener('dragover', allowDrop);
-
-
-    // expand/collapse pinned
     const pinnedLabel = document.getElementById("sb_label_pinned");
-
-
     pinnedLabel.addEventListener('click', function () {
         toggleCollapsePinned();
     });
-
 
 
     createCategoryList();

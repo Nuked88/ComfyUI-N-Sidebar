@@ -11,6 +11,13 @@ For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
 # Updates
+
+- 21-07-2024
+  - Fixed a cache bug on the templates panel
+
+- 19-07-2024
+  - Added OSX shortcut support
+
 - 05-07-2024
   - Fixed bug on dragging templates  
   - Added multi user support on templates
@@ -31,7 +38,6 @@ Maybe you don't need it. I need it >.<
 NOTE: If you had some custom categories in the workflow panel, at the first start they will be migrated to the new system (since I did a full rewrite to support the folders). It is possible that you need to refresh the page more than once to see them again. Also, a backup of the settings.json will be created before the migration in case anything goes wrong.
 
 NOTE2: I hope I did not break anything T_T
-
 
 
 - 25-05-2024
