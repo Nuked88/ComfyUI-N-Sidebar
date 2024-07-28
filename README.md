@@ -106,6 +106,12 @@ The most important settings are stored in `custom_nodes/ComfyUI-N-Sidebar/settin
 - `Alt+X` or `Option+X` to focus on the search field
 - `Alt+G` or `Option+G` to open the settings
 
+# How To Set Workflows Folder
+
+1. Open the settings with the ⚙ icon or use the shortcut `Alt+G` (`Option+G` on Mac).
+2. In **WORKFLOW PATHS**, set the folder path to where your workflows are located. If you want to set multiple paths, just put one folder path per line!
+3. Restart ComfyUI
+
 # Features
 
 ### 🖱️Drag and Drop Nodes🖱️
