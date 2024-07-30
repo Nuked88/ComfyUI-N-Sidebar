@@ -61,7 +61,7 @@
         background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);
     }
 
-    #searchInput {
+    #searchInputSB {
         box-sizing: border-box;
         width: 100%;
         border-radius: 5px;
@@ -269,7 +269,7 @@
     }
 
 
-    #searchInput.closed {
+    #searchInputSB.closed {
         display: none;
     }
 

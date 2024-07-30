@@ -278,13 +278,14 @@ async function createCategoryList() {
 
     const sidebar_main = document.getElementById('sidebar');
     //const categoriesList = document.getElementById("content_sidebar");
-    const itemSearchInput = document.getElementById("searchInput");
+    const itemSearchInput = document.getElementById("searchInputSB");
 
     itemSearchInput.addEventListener("input", async function () {
+        console.log("pressed");
         // defaultSearchToggle = await getConfiguration("sb_search_type")
         if (defaultSearchToggle == "original" && itemSearchInput.value != "") {
             //search in all .sidebarItem
-            handleSearch(categorySearchToggle, "#content_sidebar_home", "searchInput")
+            handleSearch(categorySearchToggle, "#content_sidebar_home", "searchInputSB")
         }
         else {
             updateList();
@@ -879,7 +880,7 @@ async function addSidebar() {
         draggedElementId = null;
     }
     
-    // const search_bar = document.getElementById('searchInput');
+    // const search_bar = document.getElementById('searchInputSB');
 
 
   
@@ -922,7 +923,7 @@ async function addSidebar() {
 function toggleSHSB(force = undefined) {
     const side_bars = document.querySelectorAll(".content_sidebar");
     const main_sidebar = document.getElementById('sidebar');
-    const search_bar = document.getElementById('searchInput');
+    const search_bar = document.getElementById('searchInputSB');
     const scrollToTopButton = document.getElementById("sb_scrollToTopButton");
     const clearIcon = document.querySelector(".clearIcon");
     const searchCategoryIcon = document.querySelector(".searchCategoryIcon");
@@ -1017,8 +1018,8 @@ function handleKeyPress(event) {
         if (side_bar.classList.contains('closed')) {
             toggleSHSB();
         }
-        // Focus on searchInput
-        searchInput.focus();
+        // Focus on searchInputSB
+        searchInputSB.focus();
     }
 
     // Per la combinazione Alt + Z
