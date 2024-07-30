@@ -281,7 +281,7 @@ async function createCategoryList() {
     const itemSearchInput = document.getElementById("searchInputSB");
 
     itemSearchInput.addEventListener("input", async function () {
-        console.log("pressed");
+    
         // defaultSearchToggle = await getConfiguration("sb_search_type")
         if (defaultSearchToggle == "original" && itemSearchInput.value != "") {
             //search in all .sidebarItem
