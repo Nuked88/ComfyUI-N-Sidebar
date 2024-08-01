@@ -14,6 +14,7 @@ Before submitting a bug report, please ensure you have followed these steps:
 1. **Browser Verification:**
    - Check if the issue occurs in a different browser.
    - Alternatively, try to reproduce the issue in incognito mode (this helps rule out cache-related issues).
+   - If the issue is related to cache, clear the cache for the ComfyUI address (usually 127.0.0.1:8188 if it's running in local) in your browser settings.
 
 2. **Sidebar Test:**
    - Remove additional nodes by doing the following:
