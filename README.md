@@ -12,6 +12,18 @@ Maybe you don't need it. I need it >.<
 
 # Updates
 
+- 01-08-2024
+  - A lot of people are having trouble with the CSS class change in the last update because of a browser cache issue: the old CSS file keeps loading from disk instead of the new one with the latest changes (thanks, modern browsers!). To fix this, I've changed the name of the CSS file, which SHOULD force browsers to load the new one. If this doesn't fix the issue, I'm not sure what will 😭.
+  - Added the new option `Show at Startup` in the settings. This lets you have the sidebar open at startup (if it's not in fixed mode).
+  - Changed the refresh icon so that it displays correctly in Chromium browsers on macOS.
+  - Minor change to the CSS
+
+- 30-07-2024
+  - Changed the name of the sidebar class to prevent a conflict with the `comfyui-search-navigation` node.
+
+<details>
+	<summary>Previous Updates</summary>
+
 - 21-07-2024
   - Fixed a cache bug on the templates panel
 
@@ -77,6 +89,7 @@ NOTE2: I hope I did not break anything T_T
   - Fixed some bugs
   - Started migration from cookies to localstorage
   - 🐰 Happy Easter! 🐰
+</details>
 
 # Installation
 

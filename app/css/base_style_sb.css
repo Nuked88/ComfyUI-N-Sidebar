@@ -3,6 +3,7 @@
     }
 
     .sidebar {
+        
         position: absolute;
         top: 0;
         left: -250px;
@@ -101,6 +102,9 @@
 
     .clearIcon:hover, .clearIconCustomCategory:hover, .clearIconCustomTemplate:hover, .clearIconCustomWorkflow:hover {
         opacity: 1.0;
+    }
+    .clearIcon,.clearIconCustomTemplate,.clearIconCustomWorkflow {
+        line-height: 1.25 !important
     }
 
     .searchCategoryIcon, .searchCategoryIconCustomCategory, .searchTemplateIconCustomTemplate, .searchWorkflowIconCustomWorkflow {

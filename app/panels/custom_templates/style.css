@@ -11,13 +11,13 @@ padding-top: 0px;
 padding-bottom: 150px;
 }
 #custom_templates_header  {
-    margin: 10px 20px;
+    margin: 10px 0px;
     font-size: 16px;
     
 }
 #custom_templates_header #h_search {
     position: absolute;
-    width: calc(100% - 123px);
+    width: calc(100% - 92px);
     margin-top: 0px;
     left: 10px;
     z-index: 400;
@@ -35,7 +35,7 @@ color: var(--input-text);
 border-radius: 5px;
 float: right;
 position: relative;
-margin: 3px 2px 2px 8px;
+margin: 3px 2px 2px 2px;
 cursor: pointer;
 }
 

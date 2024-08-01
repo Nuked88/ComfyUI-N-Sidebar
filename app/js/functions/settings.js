@@ -168,7 +168,20 @@ async function settingsSetup(app,$el) {
             
         },
     });
+    addSBSetting( "sb_settingsDiv",{
+        id: "show_at_startup",
+        name: "Show at Startup",
+        defaultValue: "false",
+        type: "boolean",
+        local: true,
+        info: "This setting is only considered when the sidebar is not fixed",
+       
    
+        onChange(value) {
+            
+        },
+    });
+
     await addSBSetting( "sb_settingsDiv", {
         id: "tree_view",
         name: "Node Category Tree View",
@@ -485,7 +498,6 @@ async function settingsSetup(app,$el) {
      
         },
     });
-
 
     addSBSetting( "sb_settingsDiv", {
         id: "wf_path",

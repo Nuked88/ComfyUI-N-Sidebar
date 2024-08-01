@@ -1208,6 +1208,13 @@ async function SidebarPostBoot() {
     if (getVar("sb_minimized") == "false") {
         const switch_sidebar = document.getElementById('switch_sidebar');
         switch_sidebar.style.filter = "brightness(0.8)";
+    }else{
+        console.log("test")
+        var sb_show_at_startup = getVar("sb_show_at_startup") || "false";
+
+        if (sb_show_at_startup == "false" ) {
+            toggleSHSB(true);
+        }
     }
 
 
@@ -1264,7 +1271,7 @@ function SidebarBoot() {
         //MIGRATION
         migrationSettings()
 
-        addSidebarStyles("css/base_style.css");
+        addSidebarStyles("css/base_style_sb.css");
 
         addSidebar();
 
