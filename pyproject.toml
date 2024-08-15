@@ -1,8 +1,8 @@
 [project]
 name = "comfyui-n-sidebar"
 description = "A simple sidebar for ComfyUI."
-version = "1.2.6"
-license = "LICENSE"
+version = "1.2.7"
+license = { file = "LICENSE" }
 
 [project.urls]
 Repository = "https://github.com/Nuked88/ComfyUI-N-Sidebar"
