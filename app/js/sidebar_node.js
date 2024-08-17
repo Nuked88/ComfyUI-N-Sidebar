@@ -32,6 +32,8 @@ jsloader(cnPath + "js/functions/settings.js");
 
 
 let CUSTOM_COLORS;
+
+
 try {
     var response = await api.fetchApi("/jovimetrix/config", { cache: "no-store" })
     const CONFIG_CORE =  await response.json()
@@ -760,7 +762,8 @@ async function addSidebar() {
 
     let draggedElementId;
     const sidebar_width = restoreSidebarWidth();
-    const response = await fetch(cnPath + 'html/sidebar.html');
+    const timestamp = new Date().getTime();
+    const response = await fetch(cnPath + 'html/sidebar.html?v=' + timestamp);
     let html = await response.text();
 
     html = html.replace(/{{sidebar_width}}/g, sidebar_width);
@@ -769,6 +772,10 @@ async function addSidebar() {
         parent: document.body,
         innerHTML: html
     });
+
+
+
+
 
     document.getElementById("content_sidebar_home").addEventListener("click", async function (event) {
         const clickedElement = event.target;
@@ -1209,7 +1216,6 @@ async function SidebarPostBoot() {
         const switch_sidebar = document.getElementById('switch_sidebar');
         switch_sidebar.style.filter = "brightness(0.8)";
     }else{
-        console.log("test")
         var sb_show_at_startup = getVar("sb_show_at_startup") || "false";
 
         if (sb_show_at_startup == "false" ) {

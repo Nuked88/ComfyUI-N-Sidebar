@@ -1,3 +1,6 @@
+    
+    
+    
     .litegraph .dialog {
         z-index: 100 !important;
     }
@@ -16,8 +19,13 @@
         padding-top: 19px;
         left: 0;
         user-select: none;
+        box-sizing: content-box;
+
+    }
 
 
+    sidebar * {
+        box-sizing: revert; /* o qualsiasi valore tu voglia usare */
     }
 
     .sidebar ul {
@@ -118,7 +126,7 @@
         width: 18px;
         text-align: center;
         top: 0;
-
+        box-sizing: content-box;
 
     }
 
@@ -246,6 +254,7 @@
         border-radius: 5px;
   
         margin-top:2px;
+        box-sizing: content-box;
     }
     .view_button:hover {
         opacity: 1.0;
@@ -655,6 +664,7 @@
         width: 19px;
         height: 20px;
         line-height: 1;
+        box-sizing: content-box;
     }
 
     #sb_settingsDiv{
@@ -811,6 +821,7 @@
   #switch_home,#switch_custom_view{
     width: 1.3rem;
     height: 1.3rem;
+
   }
 
   #switch_sidebar{
