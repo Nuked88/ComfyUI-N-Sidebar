@@ -10,7 +10,18 @@ A simple sidebar for ComfyUI.
 For what i know nobody did it, so i did it.
 Maybe you don't need it. I need it >.< 
 
+
 # Updates
+
+- 04-09-2024
+  - Changed the resize system of the n-sidebar (it can now be resized directly from its sides NOTE: the top side wilL only move the bar)
+  - Added the ability to directly download CIVITAI models into chosen folders (this includes Checkpoint, Textual Inversion, Hypernetwork, Aesthetic Gradient, LORA, LoCon, DoRA, Controlnet, Upscaler, Motion Module, VAE, Poses, Wildcards, Workflows). [More Info](#assets-downloader).
+  - Added the ability to import/export your settings.
+  - EXPERIMENTAL: You can now embed ComfyUI's native bar within the n-sidebar
+  - EXPERIMENTAL: Added a small console (useful if you don’t have direct access to the machine). If you want to remove this feature, simply delete the `terminal` folder within `ComfyUI-N-Sidebar/app/panels`
+  - EXPERIMENTAL: Added the ability to edit the layout of the bar, this functionality is highly unstable and its use may lead to unexpected behaviors
+  - Redesigned configuration menu
+  - Fixed some bugs
 
 - 01-08-2024
   - A lot of people are having trouble with the CSS class change in the last update because of a browser cache issue: the old CSS file keeps loading from disk instead of the new one with the latest changes (thanks, modern browsers!). To fix this, I've changed the name of the CSS file, which SHOULD force browsers to load the new one. If this doesn't fix the issue, I'm not sure what will 😭.
@@ -171,7 +182,16 @@ This feature is enabled by default, you can disable it in the settings. I've use
 ### 🎨 New Settings Panel 🎨
 ![ComfyUI Settings](./images/settings.png)
 
-PS: Workflow Path 
+### ASSETS DOWNLOADER
+![ComfyUI Assets](./images/assets.gif)
+
+This new panel allows you to download CIVITAI models (Checkpoint, TextualInversion, Hypernetwork, AestheticGradient, LORA, LoCon, DoRA, Controlnet, Upscaler, MotionModule, VAE, Poses, Wildcards, Workflows).  
+The various models will be downloaded into the folders set in the settings.  
+There is also the option to rebuild the "My Library" section (the dots at the top right corner):  
+once the reference folders are set in the settings, by launching the rebuild, the already existing models will be identified and added to the library (if they exist in the CivitAI database).
+
+NOTE: you can set your own API key for models that are not publicly available.
+
 
 
 
@@ -184,8 +204,8 @@ PS: Workflow Path
 - [x] Custom Categories!!
 - [x] Workflows
 - [x] Templates
+- [x] Export and Import Settings
 - [ ] Custom Shortcuts
-- [ ] Export and Import Settings
 - [ ] Touch Support
 
 

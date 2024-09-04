@@ -1,7 +1,8 @@
 # Config file
 app/settings.json
 app/settings.json.bak
-
+app/views/views_backup.json
+metadata/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

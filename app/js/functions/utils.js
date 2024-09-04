@@ -69,7 +69,24 @@
         var response = await api.fetchApi(url, { cache: "no-store" })
         return await response.json()
     }
+    function getDynamicCSSRule(selector, property) {
+        const styleId = 'dynamic-styles';
+        const customStyle = document.getElementById(styleId);
+    
+        if (!customStyle) {
+            return null; 
+        }
 
+        const existingRule = Array.from(customStyle.sheet.cssRules).find(rule => rule.selectorText === selector);
+    
+        if (existingRule) {
+            return existingRule.style.getPropertyValue(property);
+        }
+    
+        return null; 
+    }
+    
+    
     function addDynamicCSSRule(selector, property, value) {
         const styleId = 'dynamic-styles'; 
         let customStyle = document.getElementById(styleId);
@@ -83,7 +100,7 @@
     
         const existingRule = Array.from(customStyle.sheet.cssRules).find(rule => rule.selectorText === selector);
         if (existingRule) {
-            existingRule.style[property] = value;
+            existingRule.style.setProperty(property, value, 'important');
         } else {
     
             customStyle.sheet.insertRule(`${selector} { ${property}: ${value} !important; }`, customStyle.sheet.cssRules.length);
@@ -189,8 +206,17 @@ function cleanText(text) {
     return cleanedText;
 }
 
-
-    
+function calcSBTop() {
+    let sb = document.getElementById('sidebar');
+    let sbtop = window.getComputedStyle(sb).getPropertyValue('top').replace('px', '');
+    if (getVar('Comfy.Settings.Comfy.UseNewMenu') === '"Top"') {
+        
+        return parseInt(sbtop) + 35; 
+    }
+    else{
+        return sbtop;
+    }
+}
 //CONTEXT MENU
 function createContextMenu(event, subMenus,settingsData) {
     event.preventDefault();
@@ -247,7 +273,9 @@ function createContextMenu(event, subMenus,settingsData) {
 
     // Show context menu
     sbcontextMenu.style.display = 'block';
-    sbcontextMenu.style.top = event.clientY + 'px';
+    let sbtop = calcSBTop();
+    
+    sbcontextMenu.style.top = (event.clientY - sbtop) + 'px';
     if (sbPosition === "left") {
     
     sbcontextMenu.style.left = event.clientX + 'px';
@@ -374,7 +402,7 @@ async function setContextMenu(settingsData,class_menu_item,main=0,exluded_class=
     }
    
    const sidebarItems = document.querySelectorAll(class_menu_item);
-//const sb =document.getElementById('content_sidebar_home');
+//const sb =document.getElementById('panel_home');
 
 
 for (const sidebarItem of sidebarItems) {
@@ -428,7 +456,7 @@ async function reloadCtxMenu() {
     const response3 = await fetch(cnPath +'settings.json');
     const settingsData = await response3.json();
 
-    setContextMenu(settingsData,"#content_sidebar_home .sidebarItem",1);
+    setContextMenu(settingsData,"#panel_home .sidebarItem",1);
 
 }
 
@@ -462,7 +490,7 @@ function setModalContext(addon=null) {
             <h2 class="sb-modal-title">Add New Category</h2>
             <form id="sb-category-form" action="javascript:void(0);">
                 <input type="text" autocomplete="off" class="sb-input" id="sb-categoryName" name="sb-categoryName" placeholder="Category Name" required>
-                <button type="submit" class="sb-button" onclick="addCategory()">Add Category</button>
+                <button type="submit" class="sb-button" onclick="custom_categories.addCategory()">Add Category</button>
             </form>
             <button id="closeModalButton"  class="sb-button">X</button>
             `;
@@ -566,6 +594,15 @@ function showSettings() {
     const sb_modal_backdrop = document.getElementById("sb-modal-backdrop-settings");
         sb_settingsDiv.classList.remove('sb_hidden');
         sb_modal_backdrop.classList.remove('sb_hidden');
+}
+
+
+
+ 
+function showIESettings(operation) {
+    const sb_settingsDiv = document.getElementById("sb_settingsDiv_"+operation);
+        sb_settingsDiv.classList.remove('sb_hidden');
+
 }
 
 function isBottomEdgeVisible(el) {

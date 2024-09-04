@@ -253,10 +253,10 @@ var custom_templates = (function () {
         customMenuItemJSONOut = JSON.parse(customMenuTemplateItemOut);
     
         setContextMenu(customMenuJSON, "#custom_templates_main .sidebarCategory", 0, "sidebarItem", "sidebarCategory");
-        
-        //setContextMenu(customMenuItemJSONOut, "#custom_templates_main .sidebarItem");
-
         setContextMenu(customMenuItemJSON, "#custom_templates_main .displayNamesList .sidebarItem");
+       
+       
+       
         // ORDER CUSTOM CATEGORIES
         const custom_templates_main = document.getElementById("custom_templates_main");
         
@@ -286,7 +286,9 @@ var custom_templates = (function () {
             item.addEventListener("dragstart", handleTemplateDragStart);
         });
     }
-    
+
+    // handler
+
     function handleTemplateDragStart(event) {
         dragItem = event.target;
     }
@@ -447,8 +449,8 @@ var custom_templates = (function () {
                     const value_perc = await getConfiguration("sb_opacity") || "1.0";
 
                     const rgbColor = hexToRgb(currentColor);
-
-                    templateItem.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
+                    templateItem.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
+                   
                 }
 
 
@@ -474,9 +476,6 @@ var custom_templates = (function () {
                         displayNameItem.dataset.nametemplate = displayName;
                         displayNameItem.dataset.data = data[displayName];
                         displayNameItem.draggable = true;
-
-
-
 
 
                         exclusion_list.push(displayName);
@@ -552,6 +551,7 @@ var custom_templates = (function () {
                 }
 
 
+         
             
 
 
@@ -562,95 +562,41 @@ var custom_templates = (function () {
     const sidebarItems_cat = document.querySelectorAll('#' + elementID + ' .sidebarItem');
     const previewDiv = document.getElementById('previewDiv');
     let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
+    const previewFunction = (item) => {
+        const previewContent = createTemplatePreview(item.dataset.nametemplate, item.dataset.data);
+        return [previewContent, null];  
+    };
 
-    sidebarItems_cat.forEach(item => {
+        sidebarItems_cat.forEach(item => {
+            getPreview(item,previewDiv,sidebad_view_width,previewFunction);
 
-        item.addEventListener('mouseover', function () {
-
-            if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
-                let descriptionDiv = "";
-                const itemPosition = getElementPosition(this);
-                let previewDivTop = 0;
-                const previewContent = createTemplatePreview(item.dataset.nametemplate, item.dataset.data);
-
-                previewDiv.innerHTML = previewContent + descriptionDiv;
-                previewDiv.style.display = 'block';
-                const correction_offset = 45;
-
-                if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-                    previewDivTop = itemPosition.top - this.offsetHeight
-
-                } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
-                    previewDivTop = 0 + correction_offset;
-
-
-                }
-                else {
-
-                    previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
-                }
-
-                let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
-
-                previewDiv.style.top = `${previewDivTop}px`;
-
-                const previewDivLeft = sidebar_width - sidebad_view_width+correction_offset;
-
-                if (sbPosition == "left") {
-
-                    previewDiv.style.left = `${previewDivLeft}px`;
-                } else {
-
-                    previewDiv.style.right = `${previewDivLeft}px`;
-                }
-
-
+        });
+        window.addEventListener('click', function (event) {
+            if (!event.target.classList.contains('sidebarItem')) {
+                previewDiv.style.display = 'none';
 
             }
         });
 
-        item.addEventListener('mouseout', function () {
-            previewDiv.style.display = 'none';
-        })
-
-    });
 
 
+        const templateItems = document.querySelectorAll("#custom_templates_main .sidebarCategory");
+        templateItems.forEach(function (templateItem) {
+            templateItem.addEventListener("click", function (event) {
 
+                if (event.target === event.currentTarget) {
+                    const displayNamesList = event.target.querySelector("ul");
 
+                    displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
 
-
-            window.addEventListener('click', function (event) {
-
-                if (!event.target.classList.contains('sidebarItem')) {
-                    previewDiv.style.display = 'none';
-
+                    setNodeStatus('sb_templateNodeStatus',displayNamesList.parentElement.dataset.nametemplate, displayNamesList.style.display)
                 }
             });
 
 
 
-
-
-
-
-            const templateItems = document.querySelectorAll("#custom_templates_main .sidebarCategory");
-            templateItems.forEach(function (templateItem) {
-                templateItem.addEventListener("click", function (event) {
-
-                    if (event.target === event.currentTarget) {
-                        const displayNamesList = event.target.querySelector("ul");
-
-                        displayNamesList.style.display = displayNamesList.style.display === "none" ? "block" : "none";
-
-                        setNodeStatus('sb_templateNodeStatus',displayNamesList.parentElement.dataset.nametemplate, displayNamesList.style.display)
-                    }
-                });
-
-
-
-            });
-            resolve(afterRender);
+        });
+        resolve(afterRender);
 
 
 
@@ -1162,7 +1108,7 @@ var custom_templates = (function () {
         const value_perc = await getConfiguration("sb_opacity") || "1.0";
         const rgbColor = hexToRgb(value);
 
-        currentElement.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
+        currentElement.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
 
 
         assignValueToConfig("sb_ColorCustomTemplates", name, value)
@@ -1181,12 +1127,12 @@ var custom_templates = (function () {
         //const menuOptions = document.getElementById('menu-options');
         //new_menu_options_callback = [];
         //for each template
-        template_menu = await readTemplates();
+        /*template_menu = await readTemplates();
         callback_menu = [];
         for (let i = 0; i < template_menu.length; i++) {
             callback_menu.push("assignNodeToTemplateCallback");
 
-        }
+        }*/
 
 
         console.log("custom template panel loaded")

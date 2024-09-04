@@ -22,19 +22,18 @@ function sidebarAddNode(name, text, x, y) {
     }
 }
 
-
-function sdExpandAll(forceExpand=0) {
-
+function sdExpandAll(forceExpand = 0) {
     const categoryItems = document.querySelectorAll(".content_sidebar .sidebarCategory");
     const side_bar_status = document.querySelector(".content_sidebar").dataset.expanded;
-    const expand_node = document.getElementsByClassName("expand_node")[0];
+    const expand_nodes = document.querySelectorAll(".expand_node");
 
     let display_value = "true";
 
     if (side_bar_status === "true" && forceExpand === 0) {
-
         display_value = "none";
-        expand_node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg"
+        expand_nodes.forEach(node => {
+            if (node.tagName.toLowerCase() === "button") {
+                node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve">
                     <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"
                         />
@@ -45,12 +44,15 @@ function sdExpandAll(forceExpand=0) {
                         c0,0.8,0.7,1.5,1.5,1.5h3c0.8,0,1.5-0.7,1.5-1.5V30C29,29.4,29.4,29,30,29z"/>
                         <rect class="expand_node" style="opacity:0" x="0" y="0" width="52" height="52"  />
                     </svg>`;
+            }
+        });
         document.querySelector(".content_sidebar").dataset.expanded = "false";
 
     } else {
-
         display_value = "block";
-        expand_node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"  enable-background="new 0 0 52 52" xml:space="preserve" >
+        expand_nodes.forEach(node => {
+            if (node.tagName.toLowerCase() === "button") {
+                node.innerHTML = `<svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"  enable-background="new 0 0 52 52" xml:space="preserve" >
                     <path d="M48,9.5C48,8.7,47.3,8,46.5,8h-41C4.7,8,4,8.7,4,9.5v3C4,13.3,4.7,14,5.5,14h41c0.8,0,1.5-0.7,1.5-1.5V9.5z"></path>
                     <path d="M48,39.5c0-0.8-0.7-1.5-1.5-1.5h-41C4.7,38,4,38.7,4,39.5v3C4,43.3,4.7,44,5.5,44h41c0.8,0,1.5-0.7,1.5-1.5
                         V39.5z"></path>
@@ -59,22 +61,20 @@ function sdExpandAll(forceExpand=0) {
 
                         <rect class="expand_node" style="opacity:0" x="0" y="0" width="52" height="52"  />
                     </svg>`;
+            }
+        });
         document.querySelector(".content_sidebar").dataset.expanded = "true";
-
     }
-
 
     categoryItems.forEach(function (categoryItem) {
         const displayNamesList = categoryItem.querySelector("ul");
 
-        if (expand_node) {
-
-
+        if (displayNamesList) {
             displayNamesList.style.display = display_value;
         }
-
     });
 }
+
 
 
 function handleSearch(categorySearchToggle,searchSection,searchIdInput) {
@@ -331,30 +331,101 @@ return [`<div class="sb_table">
 }
 
 
+
+async function getPreview(item, previewDiv, sidebad_view_width, contentFunction, configFunction = null) {
+    try {
+        item.addEventListener('mouseover', async function () {
+            let shouldShowPreview = true;
+
+           
+            if (configFunction) {
+                shouldShowPreview = await configFunction();
+            }
+
+            if (shouldShowPreview && this.classList.contains('sidebarItem') && this.tagName === 'LI') {
+                let descriptionDiv = "";
+                const itemPosition = getElementPosition(this);
+                let previewDivTop = 0;
+
+                // Usa la funzione contentFunction per ottenere il contenuto del preview
+                const [previewContent, node_description] = await contentFunction(item);
+
+                if (node_description) {
+                    descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
+                }
+
+                previewDiv.innerHTML = previewContent + descriptionDiv;
+                previewDiv.style.display = 'block';
+                const correction_offset = 45;
+                let sbtop = calcSBTop();
+
+                if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
+                    previewDivTop = itemPosition.top - this.offsetHeight - sbtop;
+                } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
+                    previewDivTop = 0 + correction_offset - sbtop;
+                } else {
+                    previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight - sbtop;
+                }
+
+                let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
+
+                previewDiv.style.top = `${previewDivTop}px`;
+
+                const previewDivLeft = sidebar_width - sidebad_view_width + correction_offset;
+
+                if (sbPosition == "left") {
+                    previewDiv.style.left = `${previewDivLeft}px`;
+                } else {
+                    previewDiv.style.right = `${previewDivLeft}px`;
+                }
+            }
+        });
+
+        item.addEventListener('mouseout', function () {
+            previewDiv.style.display = 'none';
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+
 //change view
 function switchTab(tabId) {
     if (tabId != null) {
     const tabContents = document.querySelectorAll('.content_sidebar');
     const tabHead = document.querySelectorAll('.sidebar-header');
+    
+    let switch_id= tabId.replace("panel", "switch");
+    const switchButton = document.getElementById(switch_id);
 
-    if (tabId=="content_sidebar_home"){
+    if (tabId=="panel_home"){
         const tabIdHead = document.getElementById("sidebar-header");
         tabIdHead.classList.remove('sb_hidden');
+        document.getElementById("switch_home").classList.add('sb_button_active');
+
     }
     else{
         tabHead.forEach(content => {
             content.classList.add('sb_hidden');
+    
         })
     }
     // Hide all tabs
     tabContents.forEach(content => {
         content.classList.add('sb_hidden');
+        let switch_id_disbled= content.id.replace("panel", "switch");
+        const switchButtonDisbled = document.getElementById(switch_id_disbled);
+        switchButtonDisbled.classList.remove('sb_button_active'); 
     });
 
     
 
     // Show the content of the clicked tab
     document.getElementById(tabId).classList.remove('sb_hidden');
+    switchButton.classList.add('sb_button_active');
 
     setVar('sb_current_tab', tabId);
     }
@@ -402,4 +473,95 @@ function migrationSettings() {
         }
     })
    // updateConfiguration('sb_pinnedItems',pinnedItemsString) ;
+}
+
+
+
+function toggleSHSB(force = undefined) {
+    const side_bars = document.querySelectorAll(".content_sidebar");
+    const main_sidebar = document.getElementById('sidebar');
+    const search_bar = document.getElementById('searchInputSB');
+    const scrollToTopButton = document.getElementById("sb_scrollToTopButton");
+    const clearIcon = document.querySelector(".clearIcon");
+    const searchCategoryIcon = document.querySelector(".searchCategoryIcon");
+    const switch_sidebar = document.getElementById('switch_sidebar');
+    const sidebar_views = document.getElementById("sidebar_views");
+
+    //search_bar.classList.toggle('closed',force);
+
+    side_bars.forEach(side_bar => {
+        //side_bar.classList.toggle('closed',force);
+
+        if (force !== undefined) {
+            if (force) {
+                side_bar.classList.add('closed');
+                clearIcon.classList.add('closed');
+                searchCategoryIcon.classList.add('closed');
+                search_bar.classList.add('closed');
+                scrollToTopButton.classList.add('closed');
+                sidebar_views.classList.add('full_rounded');
+
+            } else {
+                side_bar.classList.remove('closed');
+                clearIcon.classList.remove('closed');
+                searchCategoryIcon.classList.remove('closed');
+                search_bar.classList.remove('closed');
+                scrollToTopButton.classList.remove('closed');
+                sidebar_views.classList.remove('full_rounded');
+                setVar("sb_minimized", "true");
+            }
+        } else {
+
+            if (side_bar.classList.contains('closed')) {
+                side_bar.classList.remove('closed');
+                clearIcon.classList.remove('closed');
+                searchCategoryIcon.classList.remove('closed');
+                search_bar.classList.remove('closed');
+                sidebar_views.classList.remove('full_rounded');
+                scrollToTopButton.classList.remove('closed');
+                //fix for keyboard shortcuts
+                if (getVar("sb_minimized") == "true") {
+                    switch_sidebar.style.filter = "brightness(0.8)";
+                }
+
+            } else {
+                if (getVar("sb_minimized") == "false") {
+                    side_bar.classList.add('closed');
+                    clearIcon.classList.add('closed');
+                    searchCategoryIcon.classList.add('closed');
+                    search_bar.classList.add('closed');
+                    scrollToTopButton.classList.add('closed');
+                    sidebar_views.classList.add('full_rounded');
+                    switch_sidebar.style.filter = "brightness(1.0)";
+                } else {
+                    switch_sidebar.style.filter = "brightness(0.8)";
+                }
+            }
+        }
+
+    });
+
+
+
+        if (getVar("sb_minimized") == "false") {
+
+            if (force == undefined) {
+                setVar("sb_minimized", true);
+            }
+            main_sidebar.style.width = '45px';
+        } else {
+
+            if (force == undefined) {
+                setVar("sb_minimized", false);
+                main_sidebar.style.width = getVar("sidebarWidth") + 'px' || '300px';
+            } else if (force == true) {
+
+                main_sidebar.style.width = '45px';
+
+            } else {
+                main_sidebar.style.width = getVar("sidebarWidth") + 'px' || '300px';
+            }
+
+        }
+
 }

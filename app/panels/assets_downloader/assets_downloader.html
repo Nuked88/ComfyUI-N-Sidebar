@@ -1,0 +1,128 @@
+<div id="tabContainer" class="n-sb-tab-container">
+    <div id="tabSettings2" class="n-sb-tab n-sb-active">Explore</div>
+    <div id="tabCustomize2" class="n-sb-tab" onclick="assets_downloader.loadLibrary();">My Library</div>
+</div>
+<div id="t1" class="n-sb-active">
+    <div id="assets_downloader_header">
+        <div class="h-header" id="h_search" data-content="panel_head_home">
+            <!-- Search Input -->
+            <div class="search-row">
+                <input type="text" id="searchTemplateInput" class="n-sb-searchmodels"
+                    oninput="assets_downloader.searchT()" placeholder="Search..." autocomplete="off" class="">
+            </div>
+
+            <div class="filters-row">
+                <!-- NSFW Filter -->
+                <select id="nsfwFilter" onchange="assets_downloader.searchT()">
+                    <option value="true">NSFW</option>
+                    <option value="false" selected>SFW</option>
+                </select>
+
+                <!-- Type Filter -->
+                <select id="typeFilter" data-placeholder="Type(s)" multiple data-multi-select>
+                    <option value="Checkpoint">Checkpoint</option>
+                    <option value="TextualInversion">TextualInversion</option>
+                    <option value="Hypernetwork">Hypernetwork</option>
+                    <option value="AestheticGradient">AestheticGradient</option>
+                    <option value="LORA">LORA</option>
+                    <option value="LoCon">LoCon</option>
+                    <option value="DoRA">DoRA</option>
+                    <option value="Controlnet">Controlnet</option>
+                    <option value="Upscaler">Upscaler</option>
+                    <option value="MotionModule">MotionModule</option>
+                    <option value="VAE">VAE</option>
+                    <option value="Poses">Poses</option>
+                    <option value="Wildcards">Wildcards</option>
+                    <option value="Workflows">Workflows</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <!-- Sort Option -->
+                <select id="sortOption" onchange="assets_downloader.searchT()">
+                    <option value="">Sort By</option>
+                    <option value="Highest Rated">Rates</option>
+                    <option value="Most Downloaded">Downloads</option>
+                    <option value="Newest">Newest</option>
+                </select>
+
+                <!-- Period Option -->
+                <select id="periodOption" onchange="assets_downloader.searchT()">
+                    <option value="">All Time</option>
+                    <option value="Year">Year</option>
+                    <option value="Month">Month</option>
+                    <option value="Week">Week</option>
+                    <option value="Day">Day</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="assets_downloader_main">
+        <div class="result-container" id="results-container">
+            <!-- Results will be injected here -->
+        </div>
+    </div>
+</div>
+
+<div id="t2">
+    <div class="sb-mymodels">
+        <div id="assets_downloader_header">
+            <div class="h-header" id="h_search" data-content="panel_head_home">
+                <!-- Search Input -->
+                <div class="search-row">
+                    <input type="text" id="searchLibraryInput" class="n-sb-searchmodels"
+                        oninput="assets_downloader.searchInLibrary()" placeholder="Search..." autocomplete="off"
+                        class="">
+                    <div class="sb-kebab-menu">
+                        <div class="sb-kebab-icon" onclick="toggleMenu()">⋮</div>
+                        <ul id="sb-menu" class="sb-menu">
+                            <li id="sb-rebuild" onclick="assets_downloader.rebuildLibrary(0)">Rebuild Library</li>
+                            <li id="sb-rebuild" onclick="assets_downloader.rebuildLibrary(1)">Rebuild Library From Zero</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="sb-rebuild-bg-pgs">
+                        <label>Building library...</label>
+                        <div class="sb-rebuild-pgs"></div>
+                    </div>
+                </div>
+                <div class="filters-row">
+                    <!-- NSFW Filter -->
+                    <select id="nsfwFilterLibrary" onchange="assets_downloader.searchInLibrary()">
+                        <option value="true">NSFW</option>
+                        <option value="false" selected>SFW</option>
+                    </select>
+
+                    <!-- Type Filter -->
+                    <select id="typeFilterLibrary" data-placeholder="Type(s)" multiple data-library-multi-select>
+                        <option value="Checkpoint">Checkpoint</option>
+                        <option value="TextualInversion">TextualInversion</option>
+                        <option value="Hypernetwork">Hypernetwork</option>
+                        <option value="AestheticGradient">AestheticGradient</option>
+                        <option value="LORA">LORA</option>
+                        <option value="LoCon">LoCon</option>
+                        <option value="DoRA">DoRA</option>
+                        <option value="Controlnet">Controlnet</option>
+                        <option value="Upscaler">Upscaler</option>
+                        <option value="MotionModule">MotionModule</option>
+                        <option value="VAE">VAE</option>
+                        <option value="Poses">Poses</option>
+                        <option value="Wildcards">Wildcards</option>
+                        <option value="Workflows">Workflows</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <!-- Sort Option -->
+                    <select id="sortOptionLibrary" onchange="assets_downloader.searchInLibrary()">
+                        <option value="">Sort By</option>
+                        <option value="az">A-z</option>
+                        <option value="za">Z-a</option>
+                        <option value="Newest">Newest</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="library-container"></div>
+    </div>
+</div>

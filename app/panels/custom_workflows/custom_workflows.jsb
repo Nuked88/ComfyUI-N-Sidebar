@@ -593,7 +593,8 @@ var custom_workflows = (function () {
 
                     const rgbColor = hexToRgb(currentColor);
 
-                    workflowItem.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
+                    workflowItem.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
+
                 }
 
 
@@ -689,76 +690,32 @@ var custom_workflows = (function () {
       const previewDiv = document.getElementById('previewDiv');
       let sidebad_view_width = document.getElementById("sidebar_views").offsetWidth;
 
-      sidebarItems_cat.forEach(item => {
 
-          item.addEventListener('mouseover', async function () {
-              const preview = JSON.parse(await getConfiguration('sb_workflow_preview', true))
+        const configFunction = async () => {
+            const preview = JSON.parse(await getConfiguration('sb_workflow_preview', true));
+            return preview;
+        };
+    
+        const previewFunction = async (item) => {
+            const previewContent = await createWorkflowPreview(item.dataset.nameworkflow, item.dataset.data);
+            return [previewContent, null];  
+        };
+      
+        const preview = JSON.parse(await getConfiguration('sb_workflow_preview', true))
 
-              // Preview
-              if (preview) {
-                  if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
-                      let descriptionDiv = "";
-                      const itemPosition = getElementPosition(this);
-                      let previewDivTop = 0;
-                      const previewContent = await createWorkflowPreview(item.dataset.nameworkflow, item.dataset.data);
+        sidebarItems_cat.forEach(item => {
+            if (preview) {
+                getPreview(item,previewDiv,sidebad_view_width, previewFunction, configFunction);
+            }
+        });
 
-                      previewDiv.innerHTML = previewContent + descriptionDiv;
-                      previewDiv.style.display = 'block';
-                      const correction_offset = 45;
+        window.addEventListener('click', function (event) {
 
-                      if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-                          previewDivTop = itemPosition.top - this.offsetHeight
+            if (!event.target.classList.contains('sidebarItem')) {
+                previewDiv.style.display = 'none';
 
-                      } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
-                          previewDivTop = 0 + correction_offset;
-
-
-                      }
-                      else {
-
-                          previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
-                      }
-
-                      let sidebar_width = parseInt(getVar("sidebarWidth")) || 500;
-
-                      previewDiv.style.top = `${previewDivTop}px`;
-
-                      const previewDivLeft = sidebar_width - sidebad_view_width+correction_offset;
-
-                      if (sbPosition == "left") {
-
-                          previewDiv.style.left = `${previewDivLeft}px`;
-                      } else {
-
-                          previewDiv.style.right = `${previewDivLeft}px`;
-                      }
-
-
-
-                  }
-              }
-          });
-
-          item.addEventListener('mouseout', function () {
-              previewDiv.style.display = 'none';
-          })
-
-      });
-
-
-
-
-
-
-
-
-            window.addEventListener('click', function (event) {
-
-                if (!event.target.classList.contains('sidebarItem')) {
-                    previewDiv.style.display = 'none';
-
-                }
-            });
+            }
+        });
 
 
 
@@ -1016,7 +973,7 @@ var custom_workflows = (function () {
 
                 renameWorkflowNode("sb_workflowNodeMap", oldWorkflowNameHash, newWorkflowNameHash)
                 
-                const element = document.getElementById('panel_workflows');
+                const element = document.getElementById('custom_workflows_main');
                 let position = element.scrollTop;
                 closeModal()
                 renderList("custom_workflows_main");
@@ -1182,7 +1139,8 @@ var custom_workflows = (function () {
             workflowNodeMap[workflowName].push(nodeName);
         });
         updateConfiguration('sb_workflowNodeMap', JSON.stringify(workflowNodeMap));
-        const element = document.getElementById('panel_workflows');
+      
+        const element = document.getElementById('custom_workflows_main');
         let position = element.scrollTop;
         renderList("custom_workflows_main");
 
@@ -1307,7 +1265,7 @@ var custom_workflows = (function () {
         const value_perc = await getConfiguration("sb_opacity") || "1.0";
         const rgbColor = hexToRgb(value);
 
-        currentElement.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
+        currentElement.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
 
 
         assignValueToConfig("sb_ColorCustomWorkflows", name, value)
@@ -1322,18 +1280,6 @@ var custom_workflows = (function () {
 
 
     async function createContextualMenu() {
-
-        //const menuOptions = document.getElementById('menu-options');
-        //new_menu_options_callback = [];
-
-        //for each workflow
-       //workflow_menu = await readWorkflows();
-       //callback_menu = [];
-       //for (let i = 0; i < workflow_menu.length; i++) {
-       //    callback_menu.push("assignNodeToWorkflowCallback");
-
-       //}
-
 
         console.log("custom workflow panel loaded")
 

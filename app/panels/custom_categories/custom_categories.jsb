@@ -1,5 +1,5 @@
 //console.log(LiteGraph.registered_node_types);
-
+var custom_categories = (function () {
 let currentElement = null;
 
 function createCustomHtml(type, name, elem = null) {
@@ -7,7 +7,7 @@ function createCustomHtml(type, name, elem = null) {
         return `<h2 class="sb-modal-title">Rename Category</h2>
                     <form id="sb-category-form" action="javascript:void(0);">
                         <input type="text" autocomplete="off" class="sb-input" id="sb-categoryName" value="${name}" name="sb-categoryName" required>
-                        <button type="submit" class="sb-button" onclick="renameCategory('${name}',document.getElementById('sb-categoryName').value)">Rename Category</button>
+                        <button type="submit" class="sb-button" onclick="custom_categories.renameCategory('${name}',document.getElementById('sb-categoryName').value)">Rename Category</button>
                     </form>
                     <button id="closeModalButton"  class="sb-button">X</button>
 
@@ -16,10 +16,10 @@ function createCustomHtml(type, name, elem = null) {
         currentElement = elem;
         return `<h2 class="sb-modal-title">Color ${name}</h2>
                    <div class="colorBlob">
-                    <input  class="colorBlobPicker" type="color" oninput="colorCategory('${name}',this.value)" value="${rgbToHex(elem.style.backgroundColor)}" id="colorPicker">
+                    <input  class="colorBlobPicker" type="color" oninput="custom_categories.colorCategory('${name}',this.value)" value="${rgbToHex(elem.style.backgroundColor)}" id="colorPicker">
                     </div>
-                    <button type="button" class="sb-button" onclick="resetColorCategory('${name}')">Reset Color</button>
-                    <button type="button" class="sb-button" onclick="removeKeyConfig('sb_ColorCustomCategories') ">Reset All Colors</button>
+                    <button type="button" class="sb-button" onclick="custom_categories.resetColorCategory('${name}')">Reset Color</button>
+                    <button type="button" class="sb-button" onclick="custom_categories.removeKeyConfig('sb_ColorCustomCategories') ">Reset All Colors</button>
 
                     <button id="closeModalButton"  class="sb-button">X</button>
                 `
@@ -87,9 +87,9 @@ function afterRender() {
             ]
         ],
         "menuctx_opt_callback": [
-            "renameCategoryCallback",
-            "deleteCategory",
-            "colorCategoryCallback"
+            "custom_categories.renameCategoryCallback",
+            "custom_categories.deleteCategory",
+            "custom_categories.colorCategoryCallback"
         
         ],
         "menuctx_sub_opt_callback": [
@@ -111,7 +111,7 @@ function afterRender() {
             ]
         ],
         "menuctx_opt_callback": [
-            "removeNodeFromCategoryCallback"
+            "custom_categories.removeNodeFromCategoryCallback"
         
         ],
         "menuctx_sub_opt_callback": [
@@ -232,8 +232,9 @@ async function renderList(elementID) {
                 const value_perc = await getConfiguration("sb_opacity") || "1.0";
 
                 const rgbColor = hexToRgb(currentColor);
+                categoryItem.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
 
-                categoryItem.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
+                //categoryItem.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
             }
 
 
@@ -337,55 +338,9 @@ async function renderList(elementID) {
 
         sidebarItems_cat.forEach(item => {
 
-            item.addEventListener('mouseover', function () {
-
-                if (this.classList.contains('sidebarItem') && this.tagName === 'LI') {
-                    let descriptionDiv = "";
-                    const itemPosition = getElementPosition(this);
-                    let previewDivTop = 0;
-                    const [previewContent, node_description] = createNodePreview(item.dataset.type);
-                    if (node_description) {
-                        descriptionDiv = "<div class='sb_description'>" + node_description + "</div>";
-                    }
-                    previewDiv.innerHTML = previewContent + descriptionDiv;
-                    previewDiv.style.display = 'block';
-                    const correction_offset = 45;
-
-                    if (itemPosition.top - this.offsetHeight >= 0 && itemPosition.top + previewDiv.offsetHeight < document.body.offsetHeight) {
-                        previewDivTop = itemPosition.top - this.offsetHeight
-
-                    } else if (itemPosition.top - this.offsetHeight - previewDiv.offsetHeight <= 0) {
-                        previewDivTop = 0 + correction_offset;
-
-
-                    }
-                    else {
-
-                        previewDivTop = (itemPosition.top + this.offsetHeight) - previewDiv.offsetHeight;
-                    }
-
-                    let sidebar_width = parseInt(getVar("sidebarWidth")) || 300;
-
-                    previewDiv.style.top = `${previewDivTop}px`;
-
-                    const  previewDivLeft = sidebar_width - sidebad_view_width + correction_offset;
-            
-                    if (sbPosition == "left") {
-
-                        previewDiv.style.left = `${previewDivLeft}px`;
-                    }else {
-
-                        previewDiv.style.right = `${previewDivLeft}px`;
-                    }
-                    
-
-
-                }
+            getPreview(item,previewDiv,sidebad_view_width,(item) => {
+                return createNodePreview(item.id);
             });
-
-            item.addEventListener('mouseout', function () {
-                previewDiv.style.display = 'none';
-            })
 
         });
 
@@ -403,10 +358,6 @@ async function renderList(elementID) {
 
             }
         });
-
-
-
-
 
 
 
@@ -579,12 +530,12 @@ async function deleteCategory(e) {
         removeNodeMapCategory(name);
         createContextualMenu();
         removeKeyFromConfig("sb_ColorCustomCategories", name)
-
+        reloadCtxMenu()
         setTimeout(() => {
            
             renderList("custom_categories_main");
-        },200)
-        reloadCtxMenu()
+        },300)
+        
     } else {
         alert("Category not found!");
     }
@@ -766,8 +717,8 @@ async function colorCategory(name, value) {
     const value_perc = await getConfiguration("sb_opacity") || "1.0";
     const rgbColor = hexToRgb(value);
 
-    currentElement.style.backgroundColor = `rgba(${rgbColor}, ${value_perc})`;
 
+    currentElement.style.setProperty('background-color', `rgba(${rgbColor}, ${value_perc})`, 'important');
 
     assignValueToConfig("sb_ColorCustomCategories", name, value)
 }
@@ -795,7 +746,7 @@ async function createContextualMenu() {
     category_menu = await readCategories();
     callback_menu = [];
     for (let i = 0; i < category_menu.length; i++) {
-        callback_menu.push("assignNodeToCategoryCallback");
+        callback_menu.push("custom_categories.assignNodeToCategoryCallback");
 
     }
     new_submenu_options.push(category_menu);
@@ -837,7 +788,30 @@ searchCategoryIconCustomCategory.addEventListener("click", async function () {
         console.error("Error occurred during search:", error);
     }
 });
+return {
+    openModal,
+    addSidebarStyles,
+    createContextualMenu,
+    renderList,
+    renameCategory,
+    colorCategory,
+    removeKeyConfig,
+    searchT,
+    deleteCategory,
+    addCategory,
+    editNodeCategory,
+    removeNodeMapCategory,
+    reorderNodeInCategory,
+    removeNodeFromCategoryCallback,
+    assignNodeToCategoryCallback,
+    renameCategoryCallback,
+    renameCategoryCallback,
+    colorCategoryCallback,
+    resetColorCategory
+};
 
-addSidebarStyles("panels/custom_categories/style.css");
-createContextualMenu()
-renderList("custom_categories_main"); 
+
+})();
+custom_categories.addSidebarStyles("panels/custom_categories/style.css");
+custom_categories.createContextualMenu()
+custom_categories.renderList("custom_categories_main"); 

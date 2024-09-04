@@ -5,6 +5,11 @@
         z-index: 100 !important;
     }
 
+    :root {
+        --n-sidebar-width: 30px;
+        --sidebar-menu-item-width: 24px;
+        --main-menubar-height:35px;
+      }
     .sidebar {
         
         position: absolute;
@@ -21,11 +26,16 @@
         user-select: none;
         box-sizing: content-box;
 
+
+        display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
     }
 
 
     sidebar * {
-        box-sizing: revert; /* o qualsiasi valore tu voglia usare */
+        box-sizing: revert; 
     }
 
     .sidebar ul {
@@ -45,6 +55,7 @@
         cursor: pointer;
         user-select: none;
         color: var(--input-text);
+        margin-left: 4px;
     }
 
     .content_sidebar {
@@ -56,20 +67,43 @@
         float: left;
         backdrop-filter: blur(5px);
         width: calc(100% - 45px);
+
+
+
+
+    
     }
 
     .dragHandle {
         position: relative;
         float: left;
-        right: 0;
+        right: 5;
         top: 0;
         height: 100%;
         width: 5px;
         cursor: ew-resize;
-        background: rgb(62, 62, 62);
-        background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);
+        background: rgb(119 111 111 / 0%);
+        /*background: linear-gradient(90deg, rgb(62 62 62 / 46%) 0%, rgb(39 39 39 / 47%) 50%, rgb(28 28 28 / 31%) 100%);*/
     }
 
+    .dragHandleTB {
+        background: #ffffff00;
+        height: 10px;
+        width: calc(100% - 10px);
+        position: absolute;
+        cursor: n-resize;
+        
+    }
+
+    #dragHandleV {
+    bottom: -5px;
+    }
+
+    #dragHandleT {
+        
+        top: 15px;
+        z-index: 999999;
+    }
     #searchInputSB {
         box-sizing: border-box;
         width: 100%;
@@ -88,10 +122,12 @@
         width: calc(100% - 75px);
         margin-top: 5px;
         margin-bottom: 10px;
-        margin-left: 44px;
+        margin-left:  var(--n-sidebar-width);
 
         z-index: 400;
-
+        width: calc(100% - 60px);
+        margin-top: 5px;
+        left: 11px;
     }
 
     .clearIcon, .searchCategoryIcon, .clearIconCustomCategory, .searchCategoryIconCustomCategory, .clearIconCustomTemplate, .searchTemplateIconCustomTemplate, .clearIconCustomWorkflow, .searchWorkflowIconCustomWorkflow {
@@ -99,12 +135,21 @@
         padding: 5px;
         right: 30px;
         color: var(--input-text);
-        font-size: x-large;
+        font-size: larger;
         cursor: pointer;
         opacity: 0.5;
         user-select: none;
-        line-height: 1.4;
+        line-height: 1.6;
         top: 0;
+
+
+        display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    height: -moz-available;          /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    height: fill-available;
     }
 
 
@@ -112,21 +157,31 @@
         opacity: 1.0;
     }
     .clearIcon,.clearIconCustomTemplate,.clearIconCustomWorkflow {
-        line-height: 1.25 !important
+        line-height: 1.6 !important
     }
 
     .searchCategoryIcon, .searchCategoryIconCustomCategory, .searchTemplateIconCustomTemplate, .searchWorkflowIconCustomWorkflow {
         right: 0px;
-        padding: 3px;
+        padding: 6px;
         font-size: larger;
         background: var(--border-color);
         color: var(--drag-text);
         margin: 4px;
         border-radius: 5px;
-        width: 18px;
-        text-align: center;
-        top: 0;
-        box-sizing: content-box;
+
+        /* text-align: center; */
+        height: -moz-available;          /* WebKit-based browsers will ignore this. */
+        height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        height: fill-available;
+        
+        /* top: 0; */
+        /* box-sizing: content-box; */
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        line-height: 1;
+        align-items: center;
+    
 
     }
 
@@ -200,29 +255,46 @@
      
         width: 100%;
         text-overflow: ellipsis;
-        overflow: hidden;
-        
-
-    
+        overflow: hidden;    
     }
 
+    /* Firefox-specific styles */
+    @-moz-document url-prefix() {
+        .content_sidebar,#settingsContainer {
+            scrollbar-width: thin; /* Scrollbar thickness */
+            scrollbar-color: hsla(0, 0%, 50%, .8) transparent; /* Thumb and track colors */
+        }
+        #settingsContainer::-moz-scrollbar-thumb:hover,
+        .content_sidebar::-moz-scrollbar-thumb:hover {
+            background-color: rgba(150, 150, 150, 1); /* Thumb color on hover */
+        }
+
+        #settingsContainer::-moz-scrollbar-thumb,
+        .content_sidebar::-moz-scrollbar-thumb {
+            background-color: hsla(0, 0%, 50%, .8); /* Thumb color */
+            border-radius: 9px;
+        }
+    }
+    #settingsContainer::-webkit-scrollbar,
     .content_sidebar::-webkit-scrollbar {
         margin-top: 0.5rem;
         height: 1rem;
         width: .5rem;
         top: 10px;
     }
-
+    #settingsContainer::-webkit-scrollbar:horizontal,
     .content_sidebar::-webkit-scrollbar:horizontal {
         height: .5rem;
         width: 1rem
     }
 
+    #settingsContainer::-webkit-scrollbar-track,
     .content_sidebar::-webkit-scrollbar-track {
-        background-color: transparent;
+        background-color: transparent !important;
         border-radius: 9999px
     }
 
+    #settingsContainer::-webkit-scrollbar-thumb,
     .content_sidebar::-webkit-scrollbar-thumb {
         --tw-border-opacity: 1;
         background-color: hsla(0, 0%, 50%, .8);
@@ -231,6 +303,7 @@
         border-width: 1px
     }
 
+    #settingsContainer::-webkit-scrollbar-thumb:hover,
     .content_sidebar::-webkit-scrollbar-thumb:hover {
         --tw-bg-opacity: 1;
 
@@ -247,19 +320,32 @@
         float: unset;
         cursor: pointer;
         user-select: none;
-        padding: 5px;
+        padding: 5px 0 5px;
         font-size: 20px;
-        background-color: var(--comfy-input-bg);
+        /*background-color: var(--comfy-input-bg);*/
         opacity: 0.7;
-        border-radius: 5px;
+        /*border-radius: 5px;*/
   
         margin-top:2px;
         box-sizing: content-box;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: var(--sidebar-menu-item-width);
+        /*border-right: 2px solid var(--content-bg);*/
+        border-color: var(--content-bg);
+    
     }
     .view_button:hover {
         opacity: 1.0;
     }
     
+
+    .sb_button_active {
+        border-color:  var(--content-hover-fg);
+        color: var(--content-hover-fg);
+    }
     #sidebar_views {
         position: relative;
         float: left;
@@ -269,16 +355,16 @@
         user-select: none;
         padding: 0px 2px 2px 2px;
         font-size: 20px;
-        border-bottom-right-radius: 5px;
-        border-top-right-radius: 5px;
+
         height: 100%;
-        width: 30px;
+        width: var(--n-sidebar-width);
         border: 0;
         border-left: 2px rgb(from var(--comfy-menu-bg) r g b / 100%);
         border-style: solid;
         padding-bottom: 0px;
         backdrop-filter: blur(16px) !important;
         background: rgb(from var(--comfy-menu-bg) r g b / 100%);
+        z-index: 99999;
     }
 
 
@@ -364,11 +450,14 @@
 
 
     #sidebarBookmarks .sidebarItem {
-        margin-left: 10px;
-        margin-right: 29px;
+        margin-left: 0px;
+        margin-right: 0px;
 
     }
-
+    #sidebarBookmarks {
+    width: calc(100% - 16px);
+    margin-left: 3px;
+    }
     .sb_label {
         font-family: 'Open Sans', sans-serif;
         position: relative;
@@ -380,14 +469,20 @@
         padding-left: 6px;
         padding-right: 6px;
         display: block;
+        display: flex;
         width: calc(100% - 20px);
         text-align: center;
         user-select: none;
         cursor: pointer;
+
+        align-items: center;
+    height: 28px;
+    justify-content: center;
+    padding-top: 1px;
     }
 
     .expand_node, .pin_node {
-        position: absolute;
+        position: absolute !important;
         right: 5px;
         background: transparent;
         border: 0;
@@ -497,9 +592,9 @@
         display: grid;
 
         grid-column-gap: 10px;
-        /* Spazio tra le colonne */
+       
         width: 100%;
-        /* Imposta la larghezza della tabella al 100% del contenitore */
+
     }
 
     .sb_row {
@@ -661,13 +756,16 @@
     #switch_settings{
         bottom: 5px;
         position: absolute;
-        width: 19px;
+        width: -moz-available;          /* WebKit-based browsers will ignore this. */
+        width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+        width: fill-available;
         height: 20px;
+        border: 0 !important;
         line-height: 1;
         box-sizing: content-box;
     }
 
-    #sb_settingsDiv{
+    #sb_settingsDiv,#sb_settingsDiv_export, #sb_settingsDiv_import {
         outline: 0;
         border: 0;
         border-radius: 6px;
@@ -675,6 +773,7 @@
         color: var(--input-text);
         box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.05), inset -1px -1px 0px rgba(0, 0, 0, 0.5), 2px 2px 20px rgb(0, 0, 0);
         max-width: 800px;
+        width: 650px;
         box-sizing: border-box;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         font-size: 0.8rem;
@@ -687,9 +786,13 @@
         text-transform: uppercase;
         font-weight: bold;
     }
+    #sb_settingsDiv_export, #sb_settingsDiv_import {
+        z-index: 1005;
+        width: 30vh;
+    }
     #sb_settingsDiv .setting{
         height: 28px;
-        width: 450px;
+        width: 100%;
         margin-bottom: 7px;
     }
     #sb_settingsDiv .setting input[type="range"]{
@@ -702,8 +805,8 @@
         color: var(--drag-text);
         padding: 5px;
         float: right;
-        width: 129px;
-        margin-right: 47px;
+        width: 60%;
+        margin-right: 0px;
         border-radius: 5px;
         border: solid 1px var(--descrip-text);
     }
@@ -717,12 +820,16 @@
         margin-right: 47px;
         border-radius: 5px;
         border: solid 1px var(--descrip-text);
+        margin-bottom: 20px;
     }
-    #sb_settingsDiv .setting input[type="checkbox"]{
+    #sb_settingsDiv .setting input[type="checkbox"], #sb_settingsDiv_export .setting input[type="checkbox"], #sb_settingsDiv_import .setting input[type="checkbox"]{
         width: 18px;
         height: 18px;
     }
-    #sb_settingsDiv .setting input{
+    #sb_settingsDiv_export .setting, #sb_settingsDiv_import .setting{
+        height: 36px;
+    }
+    #sb_settingsDiv .setting input, #sb_settingsDiv_export .setting input , #sb_settingsDiv_import .setting input{
         float: right;
     }
     #sb_settingsDiv .setting label{
@@ -738,7 +845,12 @@
         margin: 5px auto;
         }
 
-    #sb_settingsDiv h1{
+        #sb_settingsDiv_export h1, #sb_settingsDiv_import h1{
+            font-size: medium;
+ 
+        }
+
+    #sb_settingsDiv h1,#sb_settingsDiv_export h1, #sb_settingsDiv_import h1{
         margin: 0 0 20px 0;
         padding: 0 0 5px 0;
         text-align: center;
@@ -746,7 +858,7 @@
         text-transform: uppercase;
     }
 
-    #sb_settingsDiv button{
+    #settingsContainer button{
       
             padding: 9px;
             /* position: absolute; */
@@ -761,9 +873,53 @@
             text-transform: uppercase;
             font-weight: bold;
     }
-    #sb_settingsDiv button:hover{
+    #settingsContainer button:hover{
         filter:  brightness(120%);
     }
+    #settingsContainer{
+        height: 50vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-right: -10px;
+        padding-right: 10px;
+    }
+    #sb_buttonsContainer {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Due colonne, larghezza uguale */
+        grid-template-rows: auto; /* Le righe si adattano all'altezza degli elementi */
+        gap: 5px; /* Spaziatura tra i bottoni */
+        width: 100%; /* Si adatta alla larghezza del contenitore padre */
+        margin-bottom: 8px;
+    }
+    
+    #sb_buttonsContainer button, #sb_buttonsContainerCustomize button {
+        padding: 9px;
+        width: 100%; /* Il bottone si adatta alla colonna */
+        background: var(--comfy-menu-bg);
+        color: var(--input-text);
+        border: 1px solid var(--border-color);
+        margin: 0 0 0px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-weight: bold;
+        box-sizing: border-box; /* Include il padding e il bordo nel calcolo della larghezza */
+    }
+
+    #sb_buttonsContainer #sb_runExportButton{
+        width: 200%;
+    }
+
+
+
+#sb_buttonsContainerCustomize{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Due colonne, larghezza uguale */
+    grid-template-rows: auto; /* Le righe si adattano all'altezza degli elementi */
+    gap: 5px; /* Spaziatura tra i bottoni */
+    width: 100%; /* Si adatta alla larghezza del contenitore padre */
+    margin-bottom: 8px;
+}
 
     #sb_settingsDiv i{
         margin-left: 4px;
@@ -772,6 +928,12 @@
         font-size: larger;
     }
 
+    .remove-section-btn{
+    padding: 5px;
+    position: static;
+    float: right;
+    right: 25px;
+}
 /* MODALS */
 .sb-modal-title{
     position: absolute;
@@ -818,11 +980,11 @@
   
 
 
-  #switch_home,#switch_custom_view{
+  /*#switch_home,#switch_custom_view{
     width: 1.3rem;
     height: 1.3rem;
 
-  }
+  }*/
 
   #switch_sidebar{
 
@@ -832,4 +994,353 @@
   #sbModal{
     display: none;
     z-index: 9999;
+  }
+
+  .full_rounded{
+    border-radius: 5px;
+  }
+
+  .p-button {
+    overflow: visible !important;
+
+}
+  /*************/
+  /*ALPHA: INGLOBE SIDEBAR */
+
+.splitter-overlay{
+    /*width: 486px !important;*/
+    z-index: 100 !important;
+  
+    
+}
+
+
+
+#official_button{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    height: auto;
+    bottom: 50%;
+
+}
+
+#official_button button{
+    width: var(--n-sidebar-width);
+    height: var(--n-sidebar-width);
+}
+
+#official_button i {
+font-size: 20px !important;
+}
+
+/* setup tooltips */
+
+#openModalButton{
+    z-index: 1000 !important;
+}
+
+
+[data-tooltip] {
+    --arrow-size: 5px;
+    position: relative;
+    /*z-index: 10;*/    
+  }
+  
+  /* Positioning and visibility settings of the tooltip */
+  [data-tooltip]:before,
+  [data-tooltip]:after {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    left: 50%;
+    bottom: calc(100% + var(--arrow-size));
+    pointer-events: none;
+    transition: 0.2s;
+    will-change: transform;
+  }
+  
+  /* The actual tooltip with a dynamic width */
+  [data-tooltip]:before {
+    content: attr(data-tooltip);
+    padding: 10px 18px;
+    min-width: 50px;
+    max-width: 350px;
+    width: max-content;
+    width: -moz-max-content;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--border-color);;
+    background-image: linear-gradient(30deg,
+      rgba(59, 72, 80, 0.44),
+      rgba(59, 68, 75, 0.44),
+      rgba(60, 82, 88, 0.44));
+    box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    white-space: pre-wrap;
+    transform: translate(-50%,  calc(0px - var(--arrow-size))) scale(0.5);
+    z-index: 10;
+  }
+  
+  /* Tooltip arrow */
+  [data-tooltip]:after {
+    content: '';
+    border-style: solid;
+    border-width: var(--arrow-size) var(--arrow-size) 0px var(--arrow-size); /* CSS triangle */
+    border-color: var(--border-color) transparent transparent transparent;
+    transition-duration: 0s; /* If the mouse leaves the element, 
+                                the transition effects for the 
+                                tooltip arrow are "turned off" */
+    transform-origin: top;   /* Orientation setting for the
+                                slide-down effect */
+    transform: translateX(-50%) scaleY(0);
+  }
+  
+  /* Tooltip becomes visible at hover */
+  [data-tooltip]:hover:before,
+  [data-tooltip]:hover:after {
+    visibility: visible;
+    opacity: 1;
+  }
+  /* Scales from 0.5 to 1 -> grow effect */
+  [data-tooltip]:hover:before {
+    transition-delay: 0.8s;
+    transform: translate(-50%, calc(0px - var(--arrow-size))) scale(1);
+  }
+  /* 
+    Arrow slide down effect only on mouseenter (NOT on mouseleave)
+  */
+  [data-tooltip]:hover:after {
+    transition-delay: 0.8s; /* Starting after the grow effect */
+    transition-duration: 0.2s;
+    transform: translateX(-50%) scaleY(1);
+  }
+  /*
+    That's it for the basic tooltip.
+  
+    If you want some adjustability
+    here are some orientation settings you can use:
+  */
+  
+  /* LEFT */
+  /* Tooltip + arrow */
+  .left:before,
+  .left:after {
+    left: auto;
+    right: calc(100% + var(--arrow-size));
+    bottom: 50%;
+  }
+  
+  /* Tooltip */
+  .left:before {
+    transform: translate(calc(0px - var(--arrow-size)), 50%) scale(0.5);
+  }
+  .left:hover:before {
+    transform: translate(calc(0px - var(--arrow-size)), 50%) scale(1);
+  }
+  
+  /* Arrow */
+  .left:after {
+    border-width: var(--arrow-size) 0px var(--arrow-size) var(--arrow-size);
+    border-color: transparent transparent transparent var(--border-color);;
+    transform-origin: left;
+    transform: translateY(50%) scaleX(0);
+  }
+  .left:hover:after {
+    transform: translateY(50%) scaleX(1);
+  }
+  
+  
+  
+  /* RIGHT */
+  .right:before,
+  .right:after {
+    left: calc(100% + var(--arrow-size));
+    bottom: 50%;
+  }
+  
+  .right:before {
+    transform: translate(var(--arrow-size), 50%) scale(0.5);
+  }
+  .right:hover:before {
+    transform: translate(var(--arrow-size), 50%) scale(1);
+  }
+  
+  .right:after {
+    border-width: var(--arrow-size) var(--arrow-size) var(--arrow-size) 0px;
+    border-color: transparent var(--border-color) transparent transparent;
+    transform-origin: right;
+    transform: translateY(50%) scaleX(0);
+  }
+  .right:hover:after {
+    transform: translateY(50%) scaleX(1);
+  }
+  
+  
+  
+  /* BOTTOM */
+  [data-tooltip-location="bottom"]:before,
+  [data-tooltip-location="bottom"]:after {
+    top: calc(100% + var(--arrow-size));
+    bottom: auto;
+  }
+  
+  [data-tooltip-location="bottom"]:before {
+    transform: translate(-50%, var(--arrow-size)) scale(0.5);
+  }
+  [data-tooltip-location="bottom"]:hover:before {
+    transform: translate(-50%, var(--arrow-size)) scale(1);
+  }
+  
+  [data-tooltip-location="bottom"]:after {
+    border-width: 0px var(--arrow-size) var(--arrow-size) var(--arrow-size);
+    border-color: transparent transparent var(--border-color) transparent;
+    transform-origin: bottom;
+  }
+  
+  
+ 
+  /* Settings that make the pen look nicer */
+  
+  @keyframes moveFocus { 
+    0%   { background-position: 0% 100% }
+    100% { background-position: 100% 0% }
+  }
+  
+  
+  
+  @media (max-height: 450px) {
+    main {
+      margin: 2rem 0;
+    }
+  }
+  
+  @media (max-width: 800px) {
+    html {
+      font-size: 0.9em;
+    }
+  }
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  /*SETTINGS TAB&CUSTOMIZE*/
+  
+  .n-sb-tab-container {
+    margin-bottom: 1rem;
+    display: grid;
+      grid-template-columns: repeat(2, 1fr); 
+      grid-template-rows: auto; 
+      gap: 5px; 
+      width: 100%; 
+      margin-bottom: 8px;
+  }
+
+  .n-sb-tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-right: 5px;
+      border-bottom: 3px solid rgb(255, 255, 255);
+      text-align: center;
+  }
+
+  .n-sb-tab.n-sb-active {
+
+    border-color:  #0075ff;
+  }
+ 
+
+  .n-sb-tab-content {
+    display: none;
+    height: 50vh;
+    overflow-y: auto;
+  }
+
+.n-sb-active {
+    display: block !important;
+  }
+
+  .sb_hidden {
+    display: none;
+  }
+  
+  .n-sb-tab-container .n-sb-tab {
+      padding: 9px;
+      width: 100%;
+      color: var(--input-text);
+      margin: 0 0 0px 0;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+      box-sizing: border-box;
+      font-size: medium;
+  }
+
+  .n-sb-section {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+      padding: 10px;
+
+      border-radius: 5px;
+      background-color: var(--comfy-menu-bg);
+  }
+  .n-sb-section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+  }
+  .n-sb-section-header input {
+      margin-left: 10px;
+      height: 23px;
+  }
+  .n-sb-section-panels {
+    
+      margin-bottom: 10px;
+  }
+  .n-sb-section-panels .add-panel-btn{
+  padding: 5px;
+  float: right;
+  }
+  .draggable {
+      cursor: move;
+  }
+  .panel-list {
+      list-style-type: none;
+      padding: 0;
+  }
+  .panel-list li {
+      margin-bottom: 5px;
+      margin-right: 5px;
+      padding: 5px !important;
+      background: var(--bg-color);
+  }
+  .panel-select{
+      margin-left: 9px !important;
+      width: 70% !important;
+      float: left !important;
+  }
+  .remove-panel {
+      bottom: 0;
+      float: right;
+      background: var(--comfy-menu-bg);
+      color: var(--input-text);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: bold;
+  }
+  .n-sb-section-header label {
+      padding: 0 0 0px 10px;
+  }
+  .icon-input{    
+  width: 20px;
+  text-align: center;
   }

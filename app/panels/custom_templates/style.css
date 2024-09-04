@@ -6,7 +6,7 @@
     margin: 0;
 }
 #custom_templates_main{
-
+height: auto;
 padding-top: 0px;
 padding-bottom: 150px;
 }
@@ -37,6 +37,7 @@ float: right;
 position: relative;
 margin: 3px 2px 2px 2px;
 cursor: pointer;
+z-index: 999;
 }
 
 #custom_templates_header button:hover {

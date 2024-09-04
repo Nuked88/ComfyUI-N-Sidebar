@@ -1,31 +1,42 @@
 [
     {
         "id": "custom_categories",
-        "icon": "⌬",
         "description": "Custom Node Categories",
+        "icon": "⌬",
         "panels": [
             "custom_categories"
-            
         ]
     },
-
     {
-        "id": "templates",
-        "icon": "Τ",
+        "id": "custom_templates",
         "description": "Templates list",
+        "icon": "Τ",
         "panels": [
             "custom_templates"
         ]
     },
-
     {
-        "id": "workflows",
-        "icon": "W",
+        "id": "custom_workflows",
         "description": "Workflows list",
+        "icon": "W",
         "panels": [
             "custom_workflows"
         ]
+    },
+    {
+        "id": "section_-281285428",
+        "description": "Assets Downloader",
+        "icon": "A",
+        "panels": [
+            "assets_downloader"
+        ]
+    },
+    {
+        "id": "section_-1116604772",
+        "description": "Terminal",
+        "icon": ">",
+        "panels": [
+            "terminal"
+        ]
     }
-
-   
 ]

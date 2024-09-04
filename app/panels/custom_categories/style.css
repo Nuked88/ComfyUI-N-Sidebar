@@ -37,6 +37,7 @@ float: right;
 position: relative;
 margin: 3px 2px 2px 8px;
 cursor: pointer;
+z-index: 999;
 }
 
 #custom_categories_header button:hover {border: 2px solid var(--descrip-text);

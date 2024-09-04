@@ -37,6 +37,7 @@ float: right;
 position: relative;
 margin: 3px 2px 2px 2px;
 cursor: pointer;
+z-index: 999;
 }
 
 #custom_workflows_header button:hover {
