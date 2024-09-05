@@ -482,10 +482,11 @@ async function settingsSetup(app,$el) {
             //ALPHA
             try{
                 if (localStorage.getItem("sb_embed_osb") == 'true')  {
-                        if (localStorage.getItem("Comfy.Settings.Comfy.UseNewMenu").replace(/"/g,'') ==='Top' || 
-                    localStorage.getItem("Comfy.Settings.Comfy.UseNewMenu").replace(/"/g,'') ==='Bottom'){
-                        addDynamicCSSRule('.splitter-overlay', 'margin-left', '35px');
-                    
+                   
+                        if (((localStorage.getItem("Comfy.Settings.Comfy.UseNewMenu") ==='"Top"' || 
+                    localStorage.getItem("Comfy.Settings.Comfy.UseNewMenu") ==='"Bottom"')) && localStorage.getItem("Comfy.Settings.Comfy.Sidebar.Location")==null) {
+                        addDynamicCSSRule('.splitter-overlay', 'margin-left', '0px');
+                   
                         addDynamicCSSRule('.side-bar-panel', 'min-width', 'calc('+localStorage.getItem("sidebarWidth")+'px - 35px)');
                         
                     }
@@ -502,7 +503,7 @@ async function settingsSetup(app,$el) {
             try{
                 if (localStorage.getItem("sb_embed_osb") == 'true')  {
                     
-                    if (localStorage.getItem("Comfy.Settings.Comfy.Sidebar.Location").replace(/"/g,'') === value ) {
+                    if (localStorage.getItem("Comfy.Settings.Comfy.Sidebar.Location") === '"'+value+'"' ) {
                         
                     addDynamicCSSRule('.splitter-overlay', 'margin-left', valueChange);
                     
