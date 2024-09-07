@@ -140,6 +140,9 @@ function saveSidebarPosition(sideb) {
 
 
 function restoreSidebarWidth() {
+    if (getVar("sidebarWidth") == null) {
+        setVar("sidebarWidth", 200);
+    }
     let width_sidebar = "auto";
     let cookieValue = getVar("sidebarWidth");
     if (cookieValue) {
