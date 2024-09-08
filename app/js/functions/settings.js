@@ -565,9 +565,11 @@ addSBSetting( "w_section", {
     const switch_settings = document.getElementById("switch_settings");
     const sb_exportButton = document.getElementById("sb_exportButton");
     const sb_importButton = document.getElementById("sb_importButton");
+    const sb_shortcutButton = document.getElementById("sb_shortcutButton");
     const sb_modal_backdrop = document.getElementById("sb-modal-backdrop-settings");
     const sb_settingsDiv_export = document.getElementById("sb_settingsDiv_export");
     const sb_settingsDiv_import = document.getElementById("sb_settingsDiv_import");
+    const sb_settingsDiv_shortcut = document.getElementById("sb_settingsDiv_shortcut");
     const sb_settingsDiv = document.getElementById("sb_settingsDiv");
         switch_settings.addEventListener('click', function() {
 
@@ -585,6 +587,11 @@ addSBSetting( "w_section", {
         sb_importButton.addEventListener('click', function() {
             showIESettings("import");
 
+        })
+
+
+        sb_shortcutButton.addEventListener('click', function() {
+            showIESettings("shortcut");
         })
 
 
@@ -614,7 +621,17 @@ addSBSetting( "w_section", {
                     !event.target.matches('#sb_importButton')
                 ) {
                     sb_settingsDiv_import.classList.add('sb_hidden');
-                    sb_settingsDiv_import.classList.add('sb_hidden');
+                    //sb_settingsDiv_import.classList.add('sb_hidden');
+                }
+            }
+
+            if (!sb_settingsDiv_shortcut.classList.contains('sb_hidden')) {
+                if (
+                    (event.target === sb_modal_backdrop || sb_settingsDiv.contains(event.target)) &&
+                    !event.target.matches('#sb_shortcutButton')
+                ) {
+                    sb_settingsDiv_shortcut.classList.add('sb_hidden');
+                    //sb_settingsDiv_shortcut.classList.add('sb_hidden');
                 }
             }
 
@@ -670,7 +687,7 @@ addSBSetting( "w_section", {
             document.getElementById('importFileInput').click();
         });
 
-        
+       
         document.getElementById('sb_runImportButton').addEventListener('click', async function() {
             const selectedItems = [];
             
@@ -709,6 +726,135 @@ addSBSetting( "w_section", {
                 alert('Please select a file to import.');
             }
         });
+
+
+
+        /*SHORTCUTS*/
+        const shortcutInputs = document.querySelectorAll('.sb-shortcut');
+        const saveAllButton = document.getElementById('sb_saveAllShortcuts');
+        const resetButton = document.getElementById('sb_resetToDefault');
+        const defaultShortcuts = {
+            action1: 'Alt + X',
+            action2: 'Alt + Z',
+            action3: 'Alt + G'
+        };
+       
+        let shortcuts = JSON.parse(await getConfiguration('sb_shortcuts')) || defaultShortcuts;
+
+
+
+       
+        let currentShortcutKeys = {
+            ctrl: false,
+            alt: false,
+            shift: false,
+            key: null
+        };
+    
+        // Function to update the input with the current shortcut
+        function updateShortcutInput(inputElement) {
+            const modifiers = [];
+            if (currentShortcutKeys.ctrl) modifiers.push('Ctrl');
+            if (currentShortcutKeys.meta) modifiers.push('Meta'); // Display Meta key separately
+            if (currentShortcutKeys.alt) modifiers.push('Alt');
+            if (currentShortcutKeys.shift) modifiers.push('Shift');
+
+            if (modifiers.length > 0 && currentShortcutKeys.key) {
+                inputElement.value = `${modifiers.join(' + ')} + ${currentShortcutKeys.key.toUpperCase()}`;
+            } else {
+                inputElement.value = '';
+            }
+        }
+        // Mostra le shortcut salvate accanto a ciascun campo
+        function displayShortcuts() {
+            
+            shortcutInputs.forEach(inputElement => {
+                const action = inputElement.dataset.action;
+                const shortcutSpan = document.querySelector(`.current-shortcut[data-action="${action}"]`);
+                if (shortcuts[action]) {
+                    shortcutSpan.textContent = shortcuts[action];
+                } else {
+                    shortcutSpan.textContent = 'Not Set';
+                }
+            });
+        }
+    
+        document.addEventListener('keydown', (event) => {
+            // Check if the active element is one of your shortcut input fields
+            const activeElement = document.activeElement;
+            const isShortcutInputActive = Array.from(shortcutInputs).includes(activeElement);
+        
+            if (isShortcutInputActive) {
+                // Only prevent default behavior when interacting with shortcut input fields
+                event.preventDefault();
+        
+                // Separate handling for Ctrl, Alt, Shift, and Meta (Command on Mac)
+                if (event.ctrlKey) currentShortcutKeys.ctrl = true;
+                if (event.metaKey) currentShortcutKeys.meta = true; // Handle Meta separately
+                if (event.altKey) currentShortcutKeys.alt = true;
+                if (event.shiftKey) currentShortcutKeys.shift = true;
+        
+                // Check if the key is a letter, number, special character, or accented letter
+                if (event.key && !['Control', 'Meta', 'Alt', 'Shift'].includes(event.key)) {
+                    currentShortcutKeys.key = event.key;
+                }
+        
+                // Update the input element with the current shortcut combination
+                updateShortcutInput(activeElement);
+            }
+        });
+        
+        document.addEventListener('keyup', (event) => {
+            // Reset the modifier keys when they are released
+            if (!event.ctrlKey) currentShortcutKeys.ctrl = false;
+            if (!event.metaKey) currentShortcutKeys.meta = false; // Reset Meta separately
+            if (!event.altKey) currentShortcutKeys.alt = false;
+            if (!event.shiftKey) currentShortcutKeys.shift = false;
+        });
+        // Funzione per salvare tutte le shortcut
+        function saveAllShortcuts() {
+            shortcutInputs.forEach(inputElement => {
+                const action = inputElement.dataset.action;
+                const shortcut = inputElement.value;
+    
+                if (shortcut) {
+                    shortcuts[action] = shortcut;
+                }
+            });
+    
+            // Salva tutte le shortcut
+            updateConfiguration('sb_shortcuts', JSON.stringify(shortcuts));
+            displayShortcuts();
+            alert('Shortcuts saved successfully!');
+        }
+    
+        // Evento per il pulsante "Save All Shortcuts"
+        saveAllButton.addEventListener('click', () => {
+            saveAllShortcuts();
+        });
+    
+        // Funzione per riportare le shortcut a quelle di default
+        function resetToDefault() {
+            shortcuts = { ...defaultShortcuts };
+            updateConfiguration('sb_shortcuts', JSON.stringify(shortcuts));
+            displayShortcuts();
+        }
+    
+        // Evento per il pulsante "Reset to Default"
+        resetButton.addEventListener('click', () => {
+            resetToDefault();
+        });
+    
+        // Mostra le shortcut salvate all'avvio
+        displayShortcuts();
+
+        /* END OF SHORTCUTS */
+
+
+
+
+
+
         
 // General function to handle tab switching
 function createTabManager(tabs, contents) {

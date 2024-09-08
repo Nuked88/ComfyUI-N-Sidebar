@@ -13,6 +13,9 @@ Maybe you don't need it. I need it >.<
 
 # Updates
 
+- 08-09-2024
+  - Custom shortcuts!
+
 - 04-09-2024
   - Changed the resize system of the n-sidebar (it can now be resized directly from its sides NOTE: the top side wilL only move the bar)
   - Added the ability to directly download CIVITAI models into chosen folders (this includes Checkpoint, Textual Inversion, Hypernetwork, Aesthetic Gradient, LORA, LoCon, DoRA, Controlnet, Upscaler, Motion Module, VAE, Poses, Wildcards, Workflows). [More Info](#assets-downloader).
@@ -205,7 +208,7 @@ NOTE: you can set your own API key for models that are not publicly available.
 - [x] Workflows
 - [x] Templates
 - [x] Export and Import Settings
-- [ ] Custom Shortcuts
+- [x] Custom Shortcuts
 - [ ] Touch Support
 
 

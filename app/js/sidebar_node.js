@@ -938,31 +938,62 @@ async function addSidebar() {
 
 //Shortcuts
 
-function handleKeyPress(event) {
 
-    // Per la combinazione Alt + X
-    if (event.altKey && (event.key.toLowerCase() === "x" || event.keyCode === 88)) {
-        // Toggle sidebar if it's closed
+
+async function handleKeyPress(event) {
+    // Retrieve user-saved shortcuts from localStorage, or fall back to default values if not set
+    let shortcuts = JSON.parse(await getConfiguration('sb_shortcuts')) || {
+        action1: 'Alt + X',
+        action2: 'Alt + Z',
+        action3: 'Alt + G'
+    };
+
+    // Function to check if a key press matches the given shortcut
+    function isShortcutMatch(shortcut, event) {
+        const parts = shortcut.split(' + ');
+        const key = parts.pop().toLowerCase(); // Extract the main key (e.g., 'X')
+        const modifiers = parts; // Remaining parts are the modifiers (e.g., 'Alt', 'Ctrl')
+
+        // Return true if all the modifiers and the main key match the current event
+        return (
+            modifiers.includes('Ctrl') === event.ctrlKey &&
+            modifiers.includes('Alt') === event.altKey &&
+            modifiers.includes('Shift') === event.shiftKey &&
+            key === event.key.toLowerCase()
+        );
+    }
+
+    let isCustomShortcut = false; // Flag to track if a custom shortcut is matched
+
+    // Check if the pressed keys match the shortcut for action1 (Alt + X by default)
+    if (isShortcutMatch(shortcuts.action1, event)) {
         const side_bar = document.getElementById('panel_home');
         if (side_bar.classList.contains('closed')) {
-            toggleSHSB();
+            toggleSHSB(); // Toggle sidebar if it's closed
         }
-        // Focus on searchInputSB
-        searchInputSB.focus();
+        
+        switchTab("panel_home");
+        searchInputSB.focus(); // Focus on the search input
+        isCustomShortcut = true; // Mark that a custom shortcut was triggered
     }
 
-    // Per la combinazione Alt + Z
-    if (event.altKey && (event.key.toLowerCase() === "z" || event.keyCode === 90)) {
-        toggleSHSB();
+    // Check if the pressed keys match the shortcut for action2 (Alt + Z by default)
+    if (isShortcutMatch(shortcuts.action2, event)) {
+        toggleSHSB(); // Toggle the sidebar
+        isCustomShortcut = true; // Mark that a custom shortcut was triggered
     }
-    if (event.altKey && (event.key.toLowerCase() === "g" || event.keyCode === 71)) {
-        showSettings();
+
+    // Check if the pressed keys match the shortcut for action3 (Alt + G by default)
+    if (isShortcutMatch(shortcuts.action3, event)) {
+        showSettings(); // Open settings panel
+        isCustomShortcut = true; // Mark that a custom shortcut was triggered
     }
-   
+
+    // Only prevent the default action if a custom shortcut was triggered
+    if (isCustomShortcut) {
+        event.preventDefault();
+    }
 }
-
-
-
 
 
 // Custom Node View

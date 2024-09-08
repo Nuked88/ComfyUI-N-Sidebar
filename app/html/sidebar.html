@@ -67,6 +67,34 @@
             <button id="sb_runImportButton">Import</button>
         </div>
     </div>
+
+    <div id="sb_settingsDiv_shortcut"  class="sb_hidden">
+        <h1>Shortcut Settings</h1>
+
+        <div  class="setting">
+            <label>Show/hide Sidebar (<span class="current-shortcut" data-action="action1"></span>)</label>
+            <input type="text" class="sb-shortcut" data-action="action1" placeholder="Press Ctrl/Alt/Shift + Letter/Number" readonly>
+            
+        </div>
+    
+        <div  class="setting">
+            <label>Quick Search (<span class="current-shortcut" data-action="action2"></span>) </label>
+            <input type="text" class="sb-shortcut" data-action="action2" placeholder="Press Ctrl/Alt/Shift + Letter/Number" readonly>
+          
+        </div>
+        
+        <div class="setting">
+            <label>Open Settings (<span class="current-shortcut" data-action="action3"></span>)</label>
+            <input type="text" class="sb-shortcut" data-action="action3" placeholder="Press Ctrl/Alt/Shift + Letter/Number" readonly>
+            
+        </div>
+    
+
+        <div id="sb_buttonsContainer">
+            <button id="sb_saveAllShortcuts">Save Shortcuts</button>
+            <button id="sb_resetToDefault">Reset to Default</button>  
+        </div>
+    </div>
     <style>
         #g_section, #w_section, #t_section, #m_section {
             margin-top: 3vh;
@@ -100,6 +128,7 @@
                 <button id="sb_factoryResetButton">Factory Reset</button>
                 <button id="sb_exportButton">Export Config</button>
                 <button id="sb_importButton">Import Config</button>
+                <button id="sb_shortcutButton">Shortcuts</button>
             </div>
             <div id="g_section"><h3>General Settings</h3></div>
             <div id="w_section"><h3>Workflow Panel</h3></div>

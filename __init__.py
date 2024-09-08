@@ -150,6 +150,9 @@ def scan_directory(directory, workflows_dict, existing_names, main_path=''):
 
 def check_model_existence(metadata_path, config_manager, id_model=None):
     metadata_current_path = os.path.join(metadata_path, "models")
+    if not os.path.exists(metadata_current_path):
+        #create directory
+        os.makedirs(metadata_current_path)
     models_report = []
 
     # Scansione del primo livello della directory

@@ -522,9 +522,6 @@
         margin-right: 8px;
     }
 
-    .sb_hidden {
-        display: none;
-    }
 
     .IMAGE {
         background-color: #64b5f6;
@@ -765,7 +762,7 @@
         box-sizing: content-box;
     }
 
-    #sb_settingsDiv,#sb_settingsDiv_export, #sb_settingsDiv_import {
+    #sb_settingsDiv,#sb_settingsDiv_export, #sb_settingsDiv_import, #sb_settingsDiv_shortcut {
         outline: 0;
         border: 0;
         border-radius: 6px;
@@ -786,9 +783,13 @@
         text-transform: uppercase;
         font-weight: bold;
     }
-    #sb_settingsDiv_export, #sb_settingsDiv_import {
+    #sb_settingsDiv_export, #sb_settingsDiv_import{
         z-index: 1005;
         width: 30vh;
+    }
+    #sb_settingsDiv_shortcut {
+        z-index: 1005;
+        width: 100%;
     }
     #sb_settingsDiv .setting{
         height: 28px;
@@ -800,7 +801,7 @@
      
     }
 
-    #sb_settingsDiv .setting  input[type="text"]{
+    #sb_settingsDiv .setting  input[type="text"], #sb_settingsDiv_shortcut .setting input[type="text"]{
         background: var(--comfy-menu-bg);
         color: var(--drag-text);
         padding: 5px;
@@ -809,6 +810,11 @@
         margin-right: 0px;
         border-radius: 5px;
         border: solid 1px var(--descrip-text);
+    }
+
+     #sb_settingsDiv_shortcut .setting input[type="text"] {
+
+        width: 48% !important;
     }
     #sb_settingsDiv .setting  textarea{
         background: var(--comfy-menu-bg);
@@ -826,10 +832,10 @@
         width: 18px;
         height: 18px;
     }
-    #sb_settingsDiv_export .setting, #sb_settingsDiv_import .setting{
+    #sb_settingsDiv_export .setting, #sb_settingsDiv_import .setting , #sb_settingsDiv_shortcut .setting{
         height: 36px;
     }
-    #sb_settingsDiv .setting input, #sb_settingsDiv_export .setting input , #sb_settingsDiv_import .setting input{
+    #sb_settingsDiv .setting input, #sb_settingsDiv_export .setting input , #sb_settingsDiv_import .setting input, #sb_settingsDiv_shortcut .setting input{
         float: right;
     }
     #sb_settingsDiv .setting label{
@@ -845,12 +851,12 @@
         margin: 5px auto;
         }
 
-        #sb_settingsDiv_export h1, #sb_settingsDiv_import h1{
+        #sb_settingsDiv_export h1, #sb_settingsDiv_import h1, #sb_settingsDiv_shortcut h1{
             font-size: medium;
  
         }
 
-    #sb_settingsDiv h1,#sb_settingsDiv_export h1, #sb_settingsDiv_import h1{
+    #sb_settingsDiv h1,#sb_settingsDiv_export h1, #sb_settingsDiv_import h1 , #sb_settingsDiv_shortcut h1{
         margin: 0 0 20px 0;
         padding: 0 0 5px 0;
         text-align: center;
