@@ -141,8 +141,18 @@ function saveSidebarPosition(sideb) {
 
 function restoreSidebarWidth() {
     if (getVar("sidebarWidth") == null) {
-        setVar("sidebarWidth", 200);
+        setVar("sidebarWidth", 400);
+       
+      
     }
+    if (getVar("sb_minimized") == null) {
+        setVar("sb_minimized", "true");
+    }
+    if (getVar("sb_current_tab") == null) {
+        setVar("sb_current_tab", "panel_home");
+
+    }
+
     let width_sidebar = "auto";
     let cookieValue = getVar("sidebarWidth");
     if (cookieValue) {
@@ -665,7 +675,8 @@ Object.keys(dragHandles).forEach(handleId => {
         if (handleId === "sidebar_views") {
             if (!event.altKey) return; // Gestisci l'eccezione altKey per sidebar_views
             element.style.cursor = 'n-resize'; // Cambia cursore quando alt è premuto
-        } else if (handleId === "dragHandle" && localStorage.getItem("sb_minimized") === "true") {
+        } else if (handleId === "dragHandle" && localStorage.getItem("sb_state") === "closed") {
+         
             return; // Gestisci l'eccezione minimized
         } else {
             element.style.cursor = ''; // Cambia cursore per gli altri handle
@@ -733,7 +744,7 @@ document.addEventListener("mousemove", function (event) {
     
     // Funzioni per gestire gli eventi touch
     dragHandle.addEventListener("touchstart", function (event) {
-        if (localStorage.getItem("sb_minimized")==="false")
+        if (localStorage.getItem("sb_state") === "open")
             {
         isDragging = true;
         startX = event.touches[0].clientX;

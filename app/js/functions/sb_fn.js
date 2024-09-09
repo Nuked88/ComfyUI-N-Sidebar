@@ -494,6 +494,8 @@ function toggleSHSB(force = undefined) {
 
         if (force !== undefined) {
             if (force) {
+           
+                setVar("sb_state", "closed");
                 side_bar.classList.add('closed');
                 clearIcon.classList.add('closed');
                 searchCategoryIcon.classList.add('closed');
@@ -502,6 +504,8 @@ function toggleSHSB(force = undefined) {
                 sidebar_views.classList.add('full_rounded');
 
             } else {
+               
+                setVar("sb_state", "open");
                 side_bar.classList.remove('closed');
                 clearIcon.classList.remove('closed');
                 searchCategoryIcon.classList.remove('closed');
@@ -513,6 +517,9 @@ function toggleSHSB(force = undefined) {
         } else {
 
             if (side_bar.classList.contains('closed')) {
+                
+                setVar("sb_state", "open");
+                
                 side_bar.classList.remove('closed');
                 clearIcon.classList.remove('closed');
                 searchCategoryIcon.classList.remove('closed');
@@ -526,6 +533,8 @@ function toggleSHSB(force = undefined) {
 
             } else {
                 if (getVar("sb_minimized") == "false") {
+                
+                    setVar("sb_state", "closed");
                     side_bar.classList.add('closed');
                     clearIcon.classList.add('closed');
                     searchCategoryIcon.classList.add('closed');
@@ -546,19 +555,28 @@ function toggleSHSB(force = undefined) {
         if (getVar("sb_minimized") == "false") {
 
             if (force == undefined) {
+               
+                setVar("sb_state", "closed");
                 setVar("sb_minimized", true);
             }
             main_sidebar.style.width = '45px';
         } else {
 
             if (force == undefined) {
+         
+                setVar("sb_state", "open");
                 setVar("sb_minimized", false);
                 main_sidebar.style.width = getVar("sidebarWidth") + 'px' || '300px';
             } else if (force == true) {
+               
+
+                setVar("sb_state", "closed");
 
                 main_sidebar.style.width = '45px';
 
             } else {
+
+                setVar("sb_state", "open");
                 main_sidebar.style.width = getVar("sidebarWidth") + 'px' || '300px';
             }
 
