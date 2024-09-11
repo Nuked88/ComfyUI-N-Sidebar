@@ -140,6 +140,12 @@ function saveSidebarPosition(sideb) {
 
 
 function restoreSidebarWidth() {
+    //if getVar("sidebarWidth") contains px remove it
+    if (getVar("sidebarWidth") && getVar("sidebarWidth").includes('px')) {
+        setVar("sidebarWidth", getVar("sidebarWidth").replace('px', ''));
+    }   
+
+
     if (getVar("sidebarWidth") == null) {
         setVar("sidebarWidth", 400);
        
