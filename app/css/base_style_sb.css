@@ -520,6 +520,7 @@
         height: 10px;
         float: inline-start;
         margin-right: 8px;
+        margin-top: 3px;
     }
 
 
@@ -596,7 +597,7 @@
 
     .sb_row {
         display: grid;
-        grid-template-columns: 10px 1fr 1fr 1fr 10px;
+        grid-template-columns: 10px 1fr 1fr 0fr 10px;
         grid-column-gap: 10px;
         align-items: baseline;
         padding-left: 9px;
@@ -619,6 +620,13 @@
 
     .sb_inherit {
         display: inherit;
+        width: max-content;
+        flex: revert-layer;
+    }
+
+    .sb_inherit_orig {
+        display: inherit;
+        
     }
 
     .long_field {
@@ -638,6 +646,7 @@
         background: var(--comfy-input-bg);
         font-weight: bold;
         color: var(--error-text);
+        margin-bottom: 3px;
     }
 
     #sb_scrollToTopButton {

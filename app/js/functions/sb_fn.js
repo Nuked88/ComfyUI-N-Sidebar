@@ -150,6 +150,7 @@ function createNodePreview(nodeID) {
     let description = "";
     let rows = "";
     let last_rows = "";
+    let error = '';
     const data = LiteGraph.registered_node_types;
 
 
@@ -181,10 +182,29 @@ function createNodePreview(nodeID) {
                     secondV = inputs.required[inputKeysRequired[i]][0][0];
                     thirdV = inputs.required[inputKeysRequired[i]][0][0];
                 }
-               if (inputs.required[inputKeysRequired[i]][1]!=undefined){  
-                
+            
+                let isArr = false
+
+                try {
+                   if( typeof inputs.required[inputKeysRequired[i]][0] === 'object'){
+                       isArr = true
+                   }
+                }
+                catch(err) {
+                    console.log("error",err)
+                }
+               if (inputs.required[inputKeysRequired[i]][1]!=undefined && Object.keys(inputs.required[inputKeysRequired[i]][1]).length > 0){
+                   
+            
+                    if (!isArr){
                     //object
                     thirdV = inputs.required[inputKeysRequired[i]][1].default;
+                    }
+                    else{
+                        thirdV = inputs.required[inputKeysRequired[i]][0][0];
+                    }
+
+
                 }
 
              
@@ -196,6 +216,7 @@ function createNodePreview(nodeID) {
       
     try{
         for (let i = 0; i < inputKeysOptional.length; i++) {
+            try{
             let thirdV = null;
             let secondV = inputs.optional[inputKeysOptional[i]][0];
                 if (Array.isArray(secondV)){
@@ -203,19 +224,39 @@ function createNodePreview(nodeID) {
                     secondV = inputs.optional[inputKeysOptional[i]][0][0];
                     thirdV = inputs.optional[inputKeysOptional[i]][0][0];
                 }
-               if (inputs.optional[inputKeysOptional[i]][1]!=undefined){  
+
+                let isArr = false
+
+                try {
+                   if( typeof inputs.optional[inputKeysOptional[i]][0] === 'object'){
+                       isArr = true
+                   }
+                }
+                catch(err) {
+                    console.log("error",err)
+                }
                 
-                    //object
-                    thirdV = inputs.optional[inputKeysOptional[i]][1].default;
+               if (inputs.optional[inputKeysOptional[i]][1]!=undefined && Object.keys(inputs.optional[inputKeysOptional[i]][1]).length > 0){  
+
+                    if (!isArr){
+                        //object
+                        thirdV = inputs.optional[inputKeysOptional[i]][1].default;
+                        }
+                    else{
+                            thirdV = inputs.optional[inputKeysOptional[i]][0][0];
+                    }
                 }
             inputArray.push([inputKeysOptional[i],secondV,thirdV]);
+            }catch(err){
+                console.log("error",err)
+            }
          }
       
     }catch(err){
          console.log(err)
     }
 
-
+    
    
   
     for (let i = 0; i < outputs.length; i++) {
@@ -230,16 +271,14 @@ function createNodePreview(nodeID) {
     }
 
 
-
-
-
     
     let length_loop = outputArray.length;
     if (inputArray.length> outputArray.length){ 
+       
         length_loop = inputArray.length;
     }
     for (let i = 0; i < length_loop; i++) {
-      
+       
         const inputList= inputArray[i] ? inputArray[i] : null;
         const outputList= outputArray[i] ? outputArray[i] : null;
         let inputName = "";
@@ -267,17 +306,44 @@ function createNodePreview(nodeID) {
             outputType = "sb_hidden";
             outputName = "";
         }
-
-
+     
+       array_list_type = [
+        "BOOLEAN",
+        "CLIP",
+        "CLIP_VISION",
+        "CLIP_VISION_OUTPUT",
+        "CONDITIONING",
+        "CONTROL_NET",
+        "CONTROL_NET_WEIGHTS",
+        "FLOAT",
+        "GLIGEN",
+        "IMAGE",
+        "IMAGEUPLOAD",
+        "INT",
+        "LATENT",
+        "LATENT_KEYFRAME",
+        "MASK",
+        "MODEL",
+        "SAMPLER",
+        "SIGMAS",
+        "STRING",
+        "STYLE_MODEL",
+        "T2I_ADAPTER_WEIGHTS",
+        "TAESD",
+        "TIMESTEP_KEYFRAME",
+        "UPSCALE_MODEL",
+        "VAE",
+       ]
         if (inputValue != null){
             if (inputType == "STRING"){
                 last_rows += `<div class="sb_row sb_row_string nodepreview long_field">
         <div class="sb_col sb_arrow"></div>
         <div class="sb_col">${inputName}</div>
         <div class="sb_col  middle-column"></div>
-        <div class="sb_col sb_inherit">${inputValue}</div>
+        <div class="sb_col sb_inherit_orig">${inputValue}</div>
         <div class="sb_col sb_arrow"></div>
         </div>`;
+     
             }else{
             last_rows += `<div class="sb_row nodepreview long_field">
         <div class="sb_col sb_arrow">&#x25C0;</div>
@@ -286,12 +352,25 @@ function createNodePreview(nodeID) {
         <div class="sb_col sb_inherit">${inputValue}</div>
         <div class="sb_col sb_arrow">&#x25B6;</div>
         </div>`;
+   
+
             }
         inputType = "sb_hidden";
         inputName = "";
         }
-       
+        else{
+        if (inputType == "STRING"){
+            last_rows += `<div class="sb_row sb_row_string nodepreview long_field">
+            <div class="sb_col sb_arrow"></div>
+            <div class="sb_col">${inputName}</div>
+            <div class="sb_col  middle-column"></div>
+            <div class="sb_col sb_inherit_orig"></div>
+            <div class="sb_col sb_arrow"></div>
+            </div>`;
+        }
 
+        }
+        if (inputType != "STRING"){
             rows += `<div class="sb_row nodepreview">
         <div class="sb_col"><div class="sb_dot ${inputType}"></div></div>
         <div class="sb_col">${inputName}</div>
@@ -300,7 +379,7 @@ function createNodePreview(nodeID) {
         <div class="sb_col "><div class="sb_dot ${outputType}"></div></div>
         </div>`;
         
-
+        }
       
 
        
@@ -311,20 +390,15 @@ function createNodePreview(nodeID) {
    //const nodePreview = document.createElement("div");
    //nodePreview.classList.add("node_preview");
    //nodePreview.id = nodeID;
-
+    error = "";
     }catch(err){
-        rows = `<div class="sb_row nodepreview">
-        <div class="sb_col"></div>
-        <div class="sb_col"></div>
-        <div class="sb_col middle-column sb_preview_badge ">NOT AVAILABLE</div>
-        <div class="sb_col sb_inherit"></div>
-        <div class="sb_col "></div>
-        </div>`
+        error = "NOT AVAILABLE";
+        rows = ``
         last_rows = ``
     }
 return [`<div class="sb_table">
        <div class="node_header"><div class="sb_dot headdot"></div>${nodeID}</div>
-       <div class="sb_preview_badge">PREVIEW</div>
+       <div class="sb_preview_badge">PREVIEW ${error}</div>
        ${rows}
        ${last_rows}
        </div>`,description];
