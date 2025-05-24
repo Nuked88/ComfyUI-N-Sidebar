@@ -1,4 +1,21 @@
-const cnPath="../extensions/ComfyUI-N-Sidebar/"
+
+//load folder name
+
+
+function getNameFolderSync() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "sidebar/current", false); // false = sincrona (blasfemia)
+    xhr.send(null);
+
+    if (xhr.status === 200) {
+        return JSON.parse(xhr.responseText);
+    } else {
+        throw new Error("Errore nella richiesta");
+    }
+}
+const nameFolder = getNameFolderSync();
+const cnPath = `../extensions/${nameFolder}/`;
+
 function addSidebarStyles(cssPath) {
     const timestamp = new Date().getTime();
     const   linkElement = document.createElement("link");

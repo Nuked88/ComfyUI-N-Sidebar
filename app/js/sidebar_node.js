@@ -8,7 +8,10 @@ import { GroupNodeConfig, GroupNodeHandler } from "../../../../extensions/core/g
 const gnc = GroupNodeConfig;
 //import {settingsSetup} from './functions/settings.jsb';
 console.time('execution time');
-const cnPath = "../extensions/ComfyUI-N-Sidebar/"
+//load folder name
+var nameRequest = await fetch('sidebar/current');
+var nameFolder = await nameRequest.json();
+const cnPath =  `../extensions/${nameFolder}/`
 function jsloader(url) {
     return new Promise((resolve, reject) => {
         try{

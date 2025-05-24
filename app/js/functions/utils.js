@@ -452,7 +452,12 @@ function containsSpecialCharacters(name, level=0) {
 }
 
 async function reloadCtxMenu() {
-    const cnPath="../extensions/ComfyUI-N-Sidebar/"
+    //load folder name
+    var nameRequest = await fetch('sidebar/current');
+    var nameFolder = await nameRequest.json();
+    
+    const cnPath =  `../extensions/${nameFolder}/`
+
     const response3 = await fetch(cnPath +'settings.json');
     const settingsData = await response3.json();
 
