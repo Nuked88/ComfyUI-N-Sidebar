@@ -760,8 +760,8 @@
 
     /* Settings */
     #switch_settings{
-        bottom: 5px;
-        position: absolute;
+        /*bottom: 5px;
+        position: absolute;*/
         width: -moz-available;          /* WebKit-based browsers will ignore this. */
         width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
         width: fill-available;

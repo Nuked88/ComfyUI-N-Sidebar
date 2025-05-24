@@ -241,18 +241,7 @@ def check_model_existence(metadata_path, config_manager, id_model=None):
 
 
 
-
-# If is different from ComfyUISidebar, change it
-if __package__ != "ComfyUI-N-Sidebar":
-    RED = "\033[31m"
-    END = '\33[0m'
-    print(f"{RED}!!!{END}")
-    print(f"{RED}!!!{END}")
-    print(f"{RED}WARNING:'{__package__}' folder name is WRONG!!! Please rename it 'ComfyUI-N-Sidebar'.{END}")
-    print(f"{RED}!!!{END}")
-    print(f"{RED}!!!{END}")
-else:
-    print("ComfyUI-N-Sidebar is loading...") 
+print("ComfyUI-N-Sidebar is loading...") 
     
 
 
@@ -297,6 +286,18 @@ folders = os.listdir(list_panels)
 for folder in folders:
     if os.path.isdir(os.path.join(list_panels, folder)):
         list_panels_array.append(folder)
+
+
+
+@server.PromptServer.instance.routes.get("/sidebar/current" )
+async def s_get(request):
+    #current directory
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    current_dir_name = os.path.basename(current_dir)
+
+    return web.json_response(current_dir_name, content_type='application/json')
+
+
 
 
 @server.PromptServer.instance.routes.get("/sidebar/backup" )

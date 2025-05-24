@@ -1,6 +1,6 @@
 
 
-let sbPosition = "left";
+let sbPosition = "right";
 let defaultSearchToggle = "fuzzy";
 let defaultSearchOrder = "comfyui";
 let current_path = null;
@@ -508,6 +508,13 @@ async function settingsSetup(app,$el) {
                     addDynamicCSSRule('.splitter-overlay', 'margin-left', valueChange);
                     
                     addDynamicCSSRule('.side-bar-panel', 'min-width', 'calc('+localStorage.getItem("sidebarWidth")+'px - 35px)');
+                    }
+
+                    
+                    if (localStorage.getItem("Comfy.Settings.Comfy.Sidebar.Location") === null ) {
+                        addDynamicCSSRule('.side-bar-panel', 'min-width', 'calc('+localStorage.getItem("sidebarWidth")+'px - 35px)');
+                        addDynamicCSSRule('.splitter-overlay', 'margin-left', '35px');
+                    
                     }
 
                 }
