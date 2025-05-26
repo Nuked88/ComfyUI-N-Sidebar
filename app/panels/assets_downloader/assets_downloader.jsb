@@ -622,9 +622,13 @@ setupWebSocket();
         // Get search query and filters
         const query = document.getElementById('searchTemplateInput').value;
         const nsfwFilter = Array.from(document.getElementById('nsfwFilter').selectedOptions).map(option => option.value);
-        const multiSelectElement = document.getElementById('typeFilter');
-        const hiddenInputs = multiSelectElement.querySelectorAll('input[type="hidden"]');
-        const typeFilter = Array.from(hiddenInputs).map(input => input.value);
+        const typeMultiSelectElement = document.getElementById('typeFilter');
+        const typeHiddenInputs = typeMultiSelectElement.querySelectorAll('input[type="hidden"]');
+        const typeFilter = Array.from(typeHiddenInputs).map(input => input.value);
+
+        const baseModelMultiSelectElement = document.getElementById('baseModelFilter');
+        const baseModelHiddenInputs = baseModelMultiSelectElement.querySelectorAll('input[type="hidden"]');
+        const baseModelFilter = Array.from(baseModelHiddenInputs).map(input => input.value);
 
         const sortOption = document.getElementById('sortOption').value;
         const periodOption = document.getElementById('periodOption').value;
@@ -646,6 +650,11 @@ setupWebSocket();
         // Add type filter
         if (typeFilter.length > 0) {
             typeFilter.forEach(type => params.append("types", type));
+        }
+
+        // Add base model filter
+        if (baseModelFilter.length > 0) {
+            baseModelFilter.forEach(model => params.append("baseModels", model));
         }
 
         // Add sort option
@@ -842,9 +851,14 @@ setupWebSocket();
         const nsfwFilter = document.getElementById('nsfwFilterLibrary').value;
 
         // Filtro tipo (multi-select)
-        const multiSelectElement = document.getElementById('typeFilterLibrary');
-        const hiddenInputs = multiSelectElement.querySelectorAll('input[type="hidden"]');
-        const selectedTypes = Array.from(hiddenInputs).map(option => option.value.toLowerCase());
+        const typeMultiSelectElement = document.getElementById('typeFilterLibrary');
+        const typeHiddenInputs = typeMultiSelectElement.querySelectorAll('input[type="hidden"]');
+        const selectedTypes = Array.from(typeHiddenInputs).map(option => option.value.toLowerCase());
+
+        // Filtro baseModels (multi-select)
+        const baseModelMultiSelectElement = document.getElementById('baseModelFilterLibrary');
+        const baseModelHiddenInputs = baseModelMultiSelectElement.querySelectorAll('input[type="hidden"]');
+        const selectedBaseModels = Array.from(baseModelHiddenInputs).map(option => option.value.toLowerCase());
 
         // Opzione di ordinamento
         const sortOption = document.getElementById('sortOptionLibrary').value;
@@ -859,6 +873,7 @@ setupWebSocket();
             const cardNSFW = card.querySelector('input[name="nsfw"]').value;
 
             const cardTypes = Array.from(card.querySelectorAll('.main-stripe .sub-stripe div')).map(el => el.innerText.toLowerCase());
+            const cardBaseModel = card.querySelector('.main-stripe .sub-stripe div:nth-child(3)').innerText.toLowerCase();
 
             // Filtra per testo (searchQuery)
             let matchesSearch = searchQuery === "" || cardTitle.includes(searchQuery);
@@ -869,8 +884,11 @@ setupWebSocket();
             // Filtra per tipo (se selezionati)
             let matchesType = selectedTypes.length === 0 || selectedTypes.some(type => cardTypes.includes(type));
 
+            // Filtra per baseModel (se selezionati)
+            let matchesBaseModel = selectedBaseModels.length === 0 || selectedBaseModels.includes(cardBaseModel);
+
             // Mostra o nascondi la card in base ai filtri
-            if (matchesSearch && matchesNSFW && matchesType) {
+            if (matchesSearch && matchesNSFW && matchesType && matchesBaseModel) {
                 card.style.display = "block";
             } else {
                 card.style.display = "none";
@@ -1169,7 +1187,7 @@ setupWebSocket();
         }
 
     }
-    document.querySelectorAll('[data-multi-select]').forEach(select => new MultiSelect(select, { onChange: debouncedSearchType }));
+    document.querySelectorAll('[data-multi-select]').forEach(select => new MultiSelect(select, { onChange: debouncedSearchT }));
     document.querySelectorAll('[data-library-multi-select]').forEach(select => new MultiSelect(select, { onChange: debouncedSearchInLibrary }));
 
     return {

@@ -305,7 +305,9 @@ padding-bottom: 150px;
   }
 
 
-
+  #baseModelFilter{
+    width: 157px !important;
+  }
   #t1, #t2{
     display: none;
   }
