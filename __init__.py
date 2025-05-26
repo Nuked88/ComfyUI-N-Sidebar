@@ -13,8 +13,9 @@ import asyncio
 import subprocess
 import requests
 from urllib.parse import urlencode
-import importlib.util
+import importlib
 import sys
+import pkg_resources 
 from packaging import version
 
 def check_and_install(package, import_name="", desired_version=None,reboot=False):
@@ -23,9 +24,12 @@ def check_and_install(package, import_name="", desired_version=None,reboot=False
     try:
         library_module = importlib.import_module(import_name)
         current_version  = getattr(library_module, '__version__', None)
-        if current_version :
-            if current_version:
-                print(f"Current version of {import_name}: {current_version}")
+        if current_version is None:
+            current_version = pkg_resources.get_distribution(import_name).version
+            
+   
+        if current_version:
+            print(f"Current version of {import_name}: {current_version}")
             if desired_version:
                 if version.parse(current_version) < version.parse(desired_version):
                     print(f"Updating {import_name} to version {desired_version}...")
@@ -41,7 +45,9 @@ def check_and_install(package, import_name="", desired_version=None,reboot=False
     except ImportError:
         print(f"Installing {import_name}...")
         install_package(package)
-
+    except pkg_resources.DistributionNotFound:
+        print(f"{import_name} is not installed. Installing...")
+        install_package(package)
 
 def install_package(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", "--no-cache-dir", package])

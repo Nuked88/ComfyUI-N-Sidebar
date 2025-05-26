@@ -199,7 +199,7 @@ async function settingsSetup(app,$el) {
     addSBSetting( "g_section",{
         id: "embed_osb",
         name: "Embed Official Sidebar",
-        defaultValue: "true",
+        defaultValue: "false",
         type: "boolean",
         local: true,
         info: "This will move the buttons of the official sidebar inside  the N-Sidebar.",
@@ -278,7 +278,7 @@ async function settingsSetup(app,$el) {
     addSBSetting( "g_section", {
         id: "bartop",
         name: "Space Top",
-        defaultValue: 0,
+        defaultValue: 6,
         type: "slider",
         local: true,
         attrs: {
@@ -413,7 +413,7 @@ async function settingsSetup(app,$el) {
     addSBSetting( "g_section", {
         id: "position",
         name: "Position",
-        defaultValue: "left",
+        defaultValue: "right",
         type: "dropdown",
         options: [
             { value: "left", label: "LEFT" },
@@ -513,7 +513,7 @@ async function settingsSetup(app,$el) {
                     
                     if (localStorage.getItem("Comfy.Settings.Comfy.Sidebar.Location") === null ) {
                         addDynamicCSSRule('.side-bar-panel', 'min-width', 'calc('+localStorage.getItem("sidebarWidth")+'px - 35px)');
-                        addDynamicCSSRule('.splitter-overlay', 'margin-left', '35px');
+                        //addDynamicCSSRule('.splitter-overlay', 'margin-left', '35px');
                     
                     }
 
