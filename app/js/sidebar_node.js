@@ -39,12 +39,15 @@ jsloader(cnPath + "js/functions/settings.js");
 
 
 let CUSTOM_COLORS;
-
+const SETTING_THEME = 'jovi.color.theme';
 
 try {
-    var response = await api.fetchApi("/jovimetrix/config", { cache: "no-store" })
-    const CONFIG_CORE =  await response.json()
-    CUSTOM_COLORS = CONFIG_CORE?.user?.default?.color?.theme;
+    CUSTOM_COLORS = app.extensionManager.setting.get(SETTING_THEME) || {};
+    Object.keys(DEFAULT_THEME).forEach(key => {
+        if (!(key in CONFIG_THEME)) {
+            CONFIG_THEME[key] = DEFAULT_THEME[key];
+        }
+    });
 } catch (err) {
     console.log(err)
 }
