@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-n-sidebar"
-description = "A simple sidebar for ComfyUI."
-version = "1.6.5"
+description = "Optional template collections, external workflow libraries, workflow inspection and Civitai downloads for the official ComfyUI sidebar."
+version = "2.0.0"
 license = { file = "LICENSE" }
 
 [project.urls]

@@ -1,1 +1,1 @@
-aiofiles
+# Uses aiohttp supplied by ComfyUI. No additional packages required.

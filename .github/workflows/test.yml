@@ -1,0 +1,27 @@
+name: Test sidebar extras
+on:
+  push:
+    branches: [feat/native-sidebar-extras]
+  pull_request:
+    paths: ["backend.py", "__init__.py", "web/**", "tests/**", ".github/workflows/test.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install aiohttp
+      - run: node tests/core.test.mjs
+      - run: python -m unittest discover -s tests -p 'test_*.py' -v
